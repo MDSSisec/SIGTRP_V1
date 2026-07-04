@@ -1,1 +1,1 @@
-export {};
+export { WelcomeHero } from "./welcome-hero"
