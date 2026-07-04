@@ -1,7 +1,10 @@
 "use client"
 
 import { usePathname } from "next/navigation"
+import { PlusIcon } from "lucide-react"
 
+import { Button } from "@/components/ui/button"
+import { PROJETOS_ROUTE } from "@/features/projetos/constants"
 import { APP_NAME, WELCOME_TAGLINE } from "@/features/welcome/constants"
 
 const PAGE_TITLES: Record<string, string> = {
@@ -31,10 +34,18 @@ export function AppPageHeader() {
 
   return (
     <header className="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
-      <div className="min-w-0 space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
-        {subtitle ? (
-          <p className="text-muted-foreground">{subtitle}</p>
+      <div className="flex items-start justify-between gap-4">
+        <div className="min-w-0 space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight">{title}</h1>
+          {subtitle ? (
+            <p className="text-muted-foreground">{subtitle}</p>
+          ) : null}
+        </div>
+        {pathname === PROJETOS_ROUTE ? (
+          <Button type="button" className="shrink-0">
+            <PlusIcon />
+            Criar Projeto
+          </Button>
         ) : null}
       </div>
     </header>

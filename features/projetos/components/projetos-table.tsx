@@ -10,7 +10,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import type { Projeto } from "../types"
-import { ProjetoStatusBadge } from "./projeto-status-badge"
+import { ProjetoStatusBadge } from "./statusBadge/status-badge"
 
 type ProjetosTableProps = {
   projetos: Projeto[]
