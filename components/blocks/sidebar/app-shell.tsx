@@ -1,7 +1,8 @@
 "use client"
 
-import type { PublicUser } from "@/server/auth/auth.types"
+import type { PublicUser } from "@/features/login/types"
 import { AppPageHeader } from "@/components/blocks/sidebar/app-page-header"
+import { PageHeaderActionProvider } from "@/components/blocks/sidebar/page-header-action"
 import { AppSidebar } from "@/components/blocks/sidebar/app-sidebar"
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar"
 
@@ -15,10 +16,12 @@ export function AppShell({ user, children }: AppShellProps) {
     <SidebarProvider>
       <AppSidebar user={user} />
       <SidebarInset className="h-svh max-h-svh overflow-hidden">
-        <AppPageHeader />
-        <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 pt-2 md:gap-6 md:p-6 md:pt-4">
-          {children}
-        </div>
+        <PageHeaderActionProvider>
+          <AppPageHeader />
+          <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden p-4 pt-2 md:gap-6 md:p-6 md:pt-4">
+            {children}
+          </div>
+        </PageHeaderActionProvider>
       </SidebarInset>
     </SidebarProvider>
   )

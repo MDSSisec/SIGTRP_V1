@@ -2,14 +2,14 @@
 
 export {
   ADMIN_ROUTE,
-  ADMIN_ROLES_ROUTE,
+  ADMIN_PROFILES_ROUTE,
+  ADMIN_PERMISSOES_ROUTE,
   ADMIN_STATUS_ROUTE,
-  ADMIN_TIPOS_ROUTE,
   ADMIN_USUARIOS_ROUTE,
 } from "./constants"
 export {
+  AdminProfilesScreen,
   AdminRolesScreen,
   AdminStatusScreen,
-  AdminTiposScreen,
   AdminUsuariosScreen,
 } from "./screens"

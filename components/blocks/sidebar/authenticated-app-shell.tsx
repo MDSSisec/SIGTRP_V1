@@ -1,11 +1,15 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
-import type { PublicUser } from "@/server/auth/auth.types";
+import type { PublicUser } from "@/features/login/types";
 import { Loading } from "@/components/ui/loading";
 import { fetchSessionUser } from "@/features/login/services";
+import {
+  canAccessRoute,
+  getDefaultAuthenticatedRoute,
+} from "./sidebar-nav-rules";
 import { AppShell } from "./app-shell";
 
 type AuthenticatedAppShellProps = {
@@ -14,6 +18,7 @@ type AuthenticatedAppShellProps = {
 
 export function AuthenticatedAppShell({ children }: AuthenticatedAppShellProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<PublicUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -39,6 +44,14 @@ export function AuthenticatedAppShell({ children }: AuthenticatedAppShellProps) 
       cancelled = true;
     };
   }, [router]);
+
+  useEffect(() => {
+    if (!user || isLoading) return;
+
+    if (!canAccessRoute(user, pathname)) {
+      router.replace(getDefaultAuthenticatedRoute(user));
+    }
+  }, [isLoading, pathname, router, user]);
 
   if (isLoading) {
     return (

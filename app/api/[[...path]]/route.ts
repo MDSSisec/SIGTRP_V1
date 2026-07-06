@@ -1,6 +1,6 @@
 import type { NextRequest } from "next/server"
 
-import { handleApiRequest } from "@/server"
+import { handleApiRequest } from "@/lib/api"
 
 type RouteContext = {
   params: Promise<{ path?: string[] }>

@@ -1,4 +1,4 @@
-export { AdminUsuariosScreen } from "./admin-usuarios-screen"
-export { AdminRolesScreen } from "./admin-roles-screen"
-export { AdminStatusScreen } from "./admin-status-screen"
-export { AdminTiposScreen } from "./admin-tipos-screen"
+export { AdminUsuariosScreen } from "./users/admin-users-screen"
+export { AdminRolesScreen } from "./roles/admin-roles-screen"
+export { AdminStatusScreen } from "./status/admin-status-screen"
+export { AdminProfilesScreen } from "./profiles/admin-profiles-screen"

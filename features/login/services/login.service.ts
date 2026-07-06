@@ -1,4 +1,4 @@
-import type { PublicUser } from "@/server/auth/auth.types"
+import type { PublicUser } from "@/features/login/types"
 import { parseApiResponse } from "@/lib/parse-api-response"
 
 type SessionResponse = {

@@ -1,0 +1,116 @@
+import { NextResponse, type NextRequest } from "next/server"
+
+import { getSessionUser } from "@/features/login/server/session"
+import { listProfiles } from "./profiles.repository"
+import { listRoles } from "./roles.repository"
+import { createUsuario, listUsuarios } from "./usuarios.repository"
+
+export async function handleAdminRequest(
+  request: NextRequest,
+  path: string[],
+) {
+  const sessionUser = await getSessionUser()
+
+  if (!sessionUser?.isAdmin) {
+    return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+  }
+
+  const [resource, ...rest] = path
+
+  if (resource === "usuarios" && rest.length === 0 && request.method === "GET") {
+    try {
+      const usuarios = await listUsuarios()
+
+      return NextResponse.json({ usuarios })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar os usuários."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (resource === "usuarios" && rest.length === 0 && request.method === "POST") {
+    try {
+      const body = (await request.json()) as {
+        nome?: string
+        email?: string
+        tipo?: string
+        perfilId?: number
+        roles?: number[]
+        senha?: string
+        ativo?: boolean
+      }
+
+      const nome = body.nome?.trim() ?? ""
+      const email = body.email?.trim().toLowerCase() ?? ""
+      const tipo = body.tipo?.trim() ?? ""
+      const perfilId = body.perfilId
+      const roles = Array.isArray(body.roles)
+        ? body.roles.filter((role): role is number => typeof role === "number")
+        : []
+      const ativo = body.ativo ?? true
+      const senha = body.senha?.trim() ?? ""
+
+      if (!nome || !email || !tipo || typeof perfilId !== "number" || !senha) {
+        return NextResponse.json(
+          { error: "Dados do usuário inválidos." },
+          { status: 400 },
+        )
+      }
+
+      const usuario = await createUsuario({
+        nome,
+        email,
+        tipo,
+        perfilId,
+        roles,
+        senha,
+        ativo,
+      })
+
+      return NextResponse.json({ usuario }, { status: 201 })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível criar o usuário."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (resource === "roles" && rest.length === 0 && request.method === "GET") {
+    try {
+      const roles = await listRoles()
+
+      return NextResponse.json({ roles })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar as roles."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (resource === "profiles" && rest.length === 0 && request.method === "GET") {
+    try {
+      const profiles = await listProfiles()
+
+      return NextResponse.json({ profiles })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar os perfis."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  return NextResponse.json({ error: "Rota não encontrada" }, { status: 404 })
+}

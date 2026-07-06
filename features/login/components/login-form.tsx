@@ -13,7 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { AUTHENTICATED_HOME_ROUTE } from "../constants"
+import { getDefaultAuthenticatedRoute } from "@/components/blocks/sidebar/sidebar-nav-rules"
 import { loginRequest } from "../services"
 
 export function LoginForm({
@@ -35,8 +35,8 @@ export function LoginForm({
     setError(null)
 
     try {
-      await loginRequest(email, password)
-      router.push(AUTHENTICATED_HOME_ROUTE)
+      const user = await loginRequest(email, password)
+      router.push(getDefaultAuthenticatedRoute(user))
       router.refresh()
     } catch (submitError) {
       setError(

@@ -1,36 +1,28 @@
 "use client"
 
 import { usePathname } from "next/navigation"
-import { PlusIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { PROJETOS_ROUTE } from "@/features/projetos/constants"
 import { APP_NAME, WELCOME_TAGLINE } from "@/features/welcome/constants"
+import { usePageHeaderSlot } from "./page-header-action"
 
 const PAGE_TITLES: Record<string, string> = {
   "/inicio": "Início",
   "/projetos": "Projetos",
   "/configuracoes": "Configurações",
-  "/administracao/usuarios": "Usuários",
-  "/administracao/roles": "Roles",
-  "/administracao/status": "Status",
-  "/administracao/tipos": "Tipos",
 }
 
 const PAGE_SUBTITLES: Record<string, string> = {
   "/inicio": `Bem-vindo ao ${APP_NAME}. ${WELCOME_TAGLINE}`,
   "/projetos": "Todos os projetos do sistema.",
   "/configuracoes": "Preferências do sistema.",
-  "/administracao/usuarios": "Gerencie os usuários do sistema.",
-  "/administracao/roles": "Configure roles e permissões de acesso.",
-  "/administracao/status": "Gerencie os status dos projetos.",
-  "/administracao/tipos": "Gerencie os tipos de projeto.",
 }
 
 export function AppPageHeader() {
   const pathname = usePathname()
-  const title = PAGE_TITLES[pathname] ?? ""
-  const subtitle = PAGE_SUBTITLES[pathname]
+  const screenHeader = usePageHeaderSlot()
+  const title = screenHeader?.title ?? PAGE_TITLES[pathname] ?? ""
+  const subtitle = screenHeader?.subtitle ?? PAGE_SUBTITLES[pathname]
+  const action = screenHeader?.action
 
   return (
     <header className="shrink-0 px-4 pt-4 md:px-6 md:pt-6">
@@ -41,12 +33,7 @@ export function AppPageHeader() {
             <p className="text-muted-foreground">{subtitle}</p>
           ) : null}
         </div>
-        {pathname === PROJETOS_ROUTE ? (
-          <Button type="button" className="shrink-0">
-            <PlusIcon />
-            Criar Projeto
-          </Button>
-        ) : null}
+        {action ? <div className="shrink-0">{action}</div> : null}
       </div>
     </header>
   )
