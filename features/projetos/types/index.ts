@@ -1,13 +1,9 @@
-export type ProjetoStatus =
-  | "Aprovado"
-  | "Em análise"
-  | "Pendente"
-  | "Concluído"
+export type {
+  NewProjetoFormValues,
+  Projeto,
+  ProjetoRow,
+  ProjetoStatus,
+  ResponsavelOption,
+} from "./projeto"
 
-export type Projeto = {
-  id: string
-  nome: string
-  responsavel: string
-  status: ProjetoStatus
-  tipo: string
-}
+export { toProjeto } from "./projeto"

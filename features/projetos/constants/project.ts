@@ -1,0 +1,33 @@
+export const PROJETOS_FORM = {
+  createTitle: "Criar projeto",
+  editTitle: "Editar projeto",
+  viewTitle: "Visualizar projeto",
+  createDescription: "Informe os dados para cadastrar um novo projeto.",
+  editDescription: "Atualize os dados do projeto selecionado.",
+  viewDescription: "Confira os dados do projeto selecionado.",
+  fields: {
+    nome: "Nome do projeto",
+    valorTotal: "Valor total do projeto",
+    responsavelInterno: "Responsável interno",
+    responsavelExterno: "Responsável externo",
+  },
+  placeholders: {
+    nome: "Ex.: Modernização da infraestrutura",
+    valorTotal: "Ex.: 150000.00",
+    responsavelInterno: "Selecione o responsável interno",
+    responsavelExterno: "Selecione o responsável externo",
+  },
+  validation: {
+    nome: "Informe o nome do projeto.",
+    valorTotal: "Informe o valor total do projeto.",
+    valorTotalInvalid: "Informe um valor numérico válido.",
+    responsavelInterno: "Selecione o responsável interno.",
+    responsavelExterno: "Selecione o responsável externo.",
+  },
+  submitError: "Não foi possível salvar o projeto.",
+  saving: "Salvando...",
+  save: "Salvar projeto",
+  saveChanges: "Salvar alterações",
+  cancel: "Cancelar",
+  close: "Fechar",
+} as const

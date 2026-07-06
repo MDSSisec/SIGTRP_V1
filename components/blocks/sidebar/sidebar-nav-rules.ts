@@ -12,16 +12,16 @@ export const SIDEBAR_NAV = {
 export type SidebarNavKey =
   (typeof SIDEBAR_NAV)[keyof typeof SIDEBAR_NAV]
 
-const PROFILE_NAV_RULES = {
-  administrador: [
-    SIDEBAR_NAV.INICIO,
-    SIDEBAR_NAV.PROJETOS,
-    SIDEBAR_NAV.ADMINISTRADOR,
-  ],
-  proponente: [SIDEBAR_NAV.INICIO, SIDEBAR_NAV.PROJETOS],
-  parceiro: [SIDEBAR_NAV.PROJETOS],
-  consultor: [SIDEBAR_NAV.PROJETOS],
-} as const satisfies Record<string, SidebarNavKey[]>
+const INTERNAV_ITEMS: SidebarNavKey[] = [
+  SIDEBAR_NAV.INICIO,
+  SIDEBAR_NAV.PROJETOS,
+]
+
+const ADMIN_ITEMS: SidebarNavKey[] = [
+  SIDEBAR_NAV.INICIO,
+  SIDEBAR_NAV.PROJETOS,
+  SIDEBAR_NAV.ADMINISTRADOR,
+]
 
 const NAV_ROUTE_BY_KEY: Record<SidebarNavKey, string> = {
   [SIDEBAR_NAV.INICIO]: DASHBOARD_ROUTE,
@@ -33,22 +33,16 @@ function normalizeTipo(tipo: string) {
   return tipo.trim().toLowerCase()
 }
 
-function normalizePerfilNome(perfilNome: string) {
-  return perfilNome.trim().toLowerCase()
-}
-
 export function getAllowedSidebarNavItems(user: PublicUser): SidebarNavKey[] {
   if (normalizeTipo(user.tipo) === "externo") {
     return [SIDEBAR_NAV.PROJETOS]
   }
 
-  const perfil = normalizePerfilNome(user.perfilNome)
-
-  if (perfil in PROFILE_NAV_RULES) {
-    return [...PROFILE_NAV_RULES[perfil as keyof typeof PROFILE_NAV_RULES]]
+  if (user.isAdmin) {
+    return ADMIN_ITEMS
   }
 
-  return [SIDEBAR_NAV.PROJETOS]
+  return INTERNAV_ITEMS
 }
 
 export function canAccessSidebarNav(

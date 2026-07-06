@@ -1,13 +1,26 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { SearchIcon } from "lucide-react"
+import { useCallback, useEffect, useMemo, useState } from "react"
+import { PlusIcon, SearchIcon } from "lucide-react"
 
+import { PageHeader } from "@/components/blocks/sidebar/page-header-action"
+import { AsyncLoadState } from "@/components/ui/async-load-state"
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { MenuBar, type MenuBarItem } from "@/components/ui/menuBar"
+import { useAsyncData } from "@/hooks/use-async-data"
+import { fetchSessionUser } from "@/features/login/services"
+import type { PublicUser } from "@/features/login/types"
+import { PopUpNewProject } from "../components/popUpNewProject"
 import { ProjetosTable } from "../components/projetos-table"
-import { MOCK_PROJETOS } from "../constants/mock-projetos"
-import type { Projeto, ProjetoStatus } from "../types"
+import {
+  createProjeto,
+  fetchProjetos,
+  fetchResponsaveisExternos,
+  fetchResponsaveisInternos,
+} from "../services"
+import type { Projeto, ProjetoStatus, ResponsavelOption } from "../types"
+import { canCreateProjeto } from "../utils/projetos-permissions"
 
 type ProjetoFilter = "todos" | ProjetoStatus
 
@@ -57,30 +70,125 @@ function filterProjetos(projetos: Projeto[], filter: ProjetoFilter, search: stri
 export function ProjetosScreen() {
   const [filter, setFilter] = useState<ProjetoFilter>("todos")
   const [search, setSearch] = useState("")
+  const [isPopupOpen, setIsPopupOpen] = useState(false)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [responsaveisInternos, setResponsaveisInternos] = useState<
+    ResponsavelOption[]
+  >([])
+  const [responsaveisExternos, setResponsaveisExternos] = useState<
+    ResponsavelOption[]
+  >([])
 
-  const menuItems = useMemo(() => buildMenuItems(MOCK_PROJETOS), [])
+  const { data: sessionUser } = useAsyncData(fetchSessionUser, {
+    initialData: null as PublicUser | null,
+    errorMessage: "Não foi possível carregar o usuário.",
+  })
+
+  const canCreate = useMemo(
+    () => Boolean(sessionUser && canCreateProjeto(sessionUser)),
+    [sessionUser],
+  )
+
+  const {
+    data: projetos,
+    isLoading,
+    error,
+    reload: loadProjetos,
+  } = useAsyncData(fetchProjetos, {
+    initialData: [] as Projeto[],
+    errorMessage: "Não foi possível carregar os projetos.",
+  })
+
+  const loadResponsaveis = useCallback(async () => {
+    const [internos, externos] = await Promise.all([
+      fetchResponsaveisInternos(),
+      fetchResponsaveisExternos(),
+    ])
+
+    setResponsaveisInternos(internos)
+    setResponsaveisExternos(externos)
+  }, [])
+
+  useEffect(() => {
+    if (!canCreate) return
+
+    void loadResponsaveis().catch(() => {
+      setResponsaveisInternos([])
+      setResponsaveisExternos([])
+    })
+  }, [canCreate, loadResponsaveis])
+
+  const menuItems = useMemo(() => buildMenuItems(projetos), [projetos])
 
   const projetosFiltrados = useMemo(
-    () => filterProjetos(MOCK_PROJETOS, filter, search),
-    [filter, search],
+    () => filterProjetos(projetos, filter, search),
+    [projetos, filter, search],
+  )
+
+  async function handleCreateProjeto(
+    data: Parameters<typeof createProjeto>[0],
+  ) {
+    setIsSubmitting(true)
+
+    try {
+      await createProjeto(data)
+      await loadProjetos()
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  const pageHeader = (
+    <PageHeader
+      title="Projetos"
+      subtitle="Gerencie os projetos do sistema."
+      action={
+        canCreate ? (
+          <Button type="button" onClick={() => setIsPopupOpen(true)}>
+            <PlusIcon />
+            Criar Projeto
+          </Button>
+        ) : undefined
+      }
+    />
   )
 
   return (
-    <div className="space-y-4">
-      <MenuBar items={menuItems} value={filter} onValueChange={setFilter}>
-        <div className="relative w-full">
-          <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            type="search"
-            value={search}
-            onChange={(event) => setSearch(event.target.value)}
-            placeholder="Buscar projeto..."
-            className="bg-background pl-8"
-            aria-label="Buscar projeto"
-          />
+    <>
+      {pageHeader}
+      <AsyncLoadState
+        isLoading={isLoading}
+        error={error}
+        loadingLabel="Carregando projetos..."
+      >
+        <div className="space-y-4">
+          <MenuBar items={menuItems} value={filter} onValueChange={setFilter}>
+            <div className="relative w-full">
+              <SearchIcon className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                type="search"
+                value={search}
+                onChange={(event) => setSearch(event.target.value)}
+                placeholder="Buscar projeto..."
+                className="bg-background pl-8"
+                aria-label="Buscar projeto"
+              />
+            </div>
+          </MenuBar>
+          <ProjetosTable projetos={projetosFiltrados} />
         </div>
-      </MenuBar>
-      <ProjetosTable projetos={projetosFiltrados} />
-    </div>
+      </AsyncLoadState>
+
+      {canCreate && (
+        <PopUpNewProject
+          open={isPopupOpen}
+          onClose={() => setIsPopupOpen(false)}
+          onSubmit={handleCreateProjeto}
+          isSubmitting={isSubmitting}
+          responsaveisInternos={responsaveisInternos}
+          responsaveisExternos={responsaveisExternos}
+        />
+      )}
+    </>
   )
 }

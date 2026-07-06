@@ -4,6 +4,7 @@ import { getSessionUser } from "@/features/login/server/session"
 import { listProfiles } from "./profiles.repository"
 import { listRoles } from "./roles.repository"
 import { createUsuario, listUsuarios } from "./usuarios.repository"
+import { normalizeUsuarioTipo } from "../constants/users"
 
 export async function handleAdminRequest(
   request: NextRequest,
@@ -46,7 +47,7 @@ export async function handleAdminRequest(
 
       const nome = body.nome?.trim() ?? ""
       const email = body.email?.trim().toLowerCase() ?? ""
-      const tipo = body.tipo?.trim() ?? ""
+      const tipo = normalizeUsuarioTipo(body.tipo ?? "")
       const perfilId = body.perfilId
       const roles = Array.isArray(body.roles)
         ? body.roles.filter((role): role is number => typeof role === "number")
@@ -56,7 +57,7 @@ export async function handleAdminRequest(
 
       if (!nome || !email || !tipo || typeof perfilId !== "number" || !senha) {
         return NextResponse.json(
-          { error: "Dados do usuário inválidos." },
+          { error: "Dados do usuário inválidos. Verifique o tipo (interno ou externo)." },
           { status: 400 },
         )
       }

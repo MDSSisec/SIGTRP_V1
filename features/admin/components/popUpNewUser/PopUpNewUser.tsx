@@ -5,7 +5,7 @@ import { XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { ADMIN_USERS_FORM } from "../../constants/users"
+import { ADMIN_USERS_FORM, normalizeUsuarioTipo, USUARIO_TIPOS } from "../../constants/users"
 import type { Profile } from "../../types/profile"
 import type { Role } from "../../types/role"
 import type { Usuario } from "../../types/usuario"
@@ -135,6 +135,13 @@ export function PopUpNewUser({
       return
     }
 
+    const tipo = normalizeUsuarioTipo(formValues.tipo)
+
+    if (!tipo) {
+      setSubmitError(ADMIN_USERS_FORM.validation.tipo)
+      return
+    }
+
     if (formValues.perfilId === null) {
       setSubmitError(ADMIN_USERS_FORM.validation.perfil)
       return
@@ -149,7 +156,7 @@ export function PopUpNewUser({
       await onSubmit({
         nome: formValues.nome.trim(),
         email: formValues.email.trim().toLowerCase(),
-        tipo: formValues.tipo.trim(),
+        tipo,
         perfilId: formValues.perfilId,
         roles: formValues.roles,
         senha,
@@ -271,8 +278,8 @@ export function PopUpNewUser({
                   required
                 >
                   <option value="">{ADMIN_USERS_FORM.placeholders.tipo}</option>
-                  <option value="Interno">Interno</option>
-                  <option value="Externo">Externo</option>
+                  <option value={USUARIO_TIPOS.INTERNO}>Interno</option>
+                  <option value={USUARIO_TIPOS.EXTERNO}>Externo</option>
                 </select>
               </div>
 
@@ -326,7 +333,6 @@ export function PopUpNewUser({
                     )
                   }
                   disabled={isReadOnly}
-                  required
                 >
                   <option value="">{ADMIN_USERS_FORM.placeholders.roles}</option>
                   {roles.map((role) => (

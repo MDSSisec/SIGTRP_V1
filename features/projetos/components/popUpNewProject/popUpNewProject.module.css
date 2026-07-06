@@ -1,0 +1,143 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: color-mix(in oklch, var(--background) 80%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+.container {
+  width: 100%;
+  max-width: 48rem;
+  max-height: min(90vh, 48rem);
+  overflow: hidden;
+  color: var(--card-foreground);
+  background-color: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+.header {
+  padding: 1.25rem 1.5rem;
+  background-color: color-mix(in oklch, var(--muted) 30%, transparent);
+  border-bottom: 1px solid var(--border);
+}
+
+.headerContent {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.75rem;
+  letter-spacing: -0.025em;
+}
+
+.description {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--muted-foreground);
+}
+
+.form {
+  display: grid;
+  gap: 1.25rem;
+  padding: 1.5rem;
+  overflow-y: auto;
+  max-height: calc(min(90vh, 48rem) - 9rem);
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.gridTwoColumns {
+  display: grid;
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.label {
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: var(--foreground);
+}
+
+.select {
+  height: 2rem;
+  width: 100%;
+  min-width: 0;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--foreground);
+  background-color: transparent;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-lg);
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 50%, transparent);
+}
+
+.select:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+  background-color: color-mix(in oklch, var(--input) 50%, transparent);
+}
+
+.emptyMessage {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--muted-foreground);
+}
+
+.submitError {
+  padding: 0.75rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.25rem;
+  color: rgb(185 28 28);
+  background-color: rgb(254 242 242);
+  border: 1px solid rgb(252 165 165);
+  border-radius: var(--radius-lg);
+}
+
+.footer {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background-color: color-mix(in oklch, var(--muted) 20%, transparent);
+  border-top: 1px solid var(--border);
+}
+
+@media (min-width: 640px) {
+  .gridTwoColumns {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .footer {
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+}
