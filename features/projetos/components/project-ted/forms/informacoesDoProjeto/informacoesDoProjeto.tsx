@@ -21,7 +21,7 @@ import {
 import type { ProjectModelData } from "@/features/projetos/types/ted"
 import type { ResponsavelOption } from "@/features/projetos/types"
 import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
-import { FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
+import { FORM_CHECKBOX_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 import { useAsyncData } from "@/hooks/use-async-data"
 import type { ProjectFormSectionProps } from "../sections-map"
 
@@ -36,6 +36,14 @@ interface DadosInformacoesProjeto {
 
 const STATUS_OPTIONS = STATUS_PROJETO_LIST.map((s) => ({ value: s, label: s }))
 const TIPO_PROJETO_OPTIONS = PROJECT_TYPE_OPTIONS.filter((o) => o.value !== "")
+
+const ITENS_POR_COLUNA = 12
+
+function getItensPreenchidos() {
+  return Object.entries(SESSOES_VISAO_GERAL_TITLE).filter(
+    ([key]) => key !== "TITLE_SESSAO_OBSERVACOES",
+  )
+}
 
 const VAZIO: DadosInformacoesProjeto = {
   tipoProjeto: "TED",
@@ -83,6 +91,10 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
 
   const currentStep = useMemo(() => statusToStepIndex(dados.status), [dados.status])
   const [itensConcluidos] = useState<Set<string>>(new Set())
+  const [itensColunaEsquerda, itensColunaDireita] = useMemo(() => {
+    const itens = getItensPreenchidos()
+    return [itens.slice(0, ITENS_POR_COLUNA), itens.slice(ITENS_POR_COLUNA)]
+  }, [])
 
   const isLocked = readOnlyView || !isEditing
 
@@ -189,20 +201,24 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
 
       <section className={formLayoutStyles.section}>
         <h2 className={formLayoutStyles.title}>Itens Preenchidos</h2>
-        <div className={`${formLayoutStyles.innerCard} grid grid-cols-1 gap-4 md:grid-cols-2`}>
-          {Object.entries(SESSOES_VISAO_GERAL_TITLE)
-            .filter(([key]) => key !== "TITLE_SESSAO_OBSERVACOES")
-            .map(([key, title]) => (
-              <div key={key} className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={itensConcluidos.has(key)}
-                  readOnly
-                  className="h-4 w-4 rounded border-input text-primary focus:ring-primary"
-                />
-                <span className="text-sm text-muted-foreground">{title}</span>
+        <div className={formLayoutStyles.innerCard}>
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+            {[itensColunaEsquerda, itensColunaDireita].map((coluna, colunaIndex) => (
+              <div key={colunaIndex} className="flex min-w-0 flex-col gap-4">
+                {coluna.map(([key, title]) => (
+                  <div key={key} className="flex items-start gap-3">
+                    <input
+                      type="checkbox"
+                      checked={itensConcluidos.has(key)}
+                      readOnly
+                      className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
+                    />
+                    <span className="text-sm text-muted-foreground">{title}</span>
+                  </div>
+                ))}
               </div>
             ))}
+          </div>
         </div>
       </section>
 

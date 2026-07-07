@@ -33,9 +33,22 @@ export type NavMainItem = {
 type NavMainProps = {
   items: NavMainItem[]
   label?: string
+  sectionSpacing?: boolean
 }
 
-export function NavMain({ items, label = "Sistema" }: NavMainProps) {
+export function NavMain({
+  items,
+  label = "Sistema",
+  sectionSpacing = false,
+}: NavMainProps) {
+  const sectionClass = sectionSpacing ? "mb-2 last:mb-0" : undefined
+  const buttonClass = sectionSpacing
+    ? "h-auto min-h-9 py-2 leading-normal"
+    : undefined
+  const subButtonClass = sectionSpacing
+    ? "h-auto min-h-8 py-1.5 leading-normal"
+    : undefined
+
   return (
     <SidebarGroup>
       {label ? <SidebarGroupLabel>{label}</SidebarGroupLabel> : null}
@@ -44,12 +57,14 @@ export function NavMain({ items, label = "Sistema" }: NavMainProps) {
           item.items?.length ? (
             <Collapsible
               key={item.title}
-              defaultOpen={item.isActive}
+              defaultOpen={item.isActive || item.items.some((subItem) => subItem.isActive)}
               className="group/collapsible"
-              render={<SidebarMenuItem />}
+              render={<SidebarMenuItem className={sectionClass} />}
             >
               <CollapsibleTrigger
-                render={<SidebarMenuButton tooltip={item.title} />}
+                render={
+                  <SidebarMenuButton tooltip={item.title} className={buttonClass} />
+                }
               >
                 {item.icon}
                 <span>{item.title}</span>
@@ -61,6 +76,7 @@ export function NavMain({ items, label = "Sistema" }: NavMainProps) {
                     <SidebarMenuSubItem key={subItem.title}>
                       <SidebarMenuSubButton
                         isActive={subItem.isActive}
+                        className={subButtonClass}
                         render={<Link href={subItem.url} />}
                       >
                         <span>{subItem.title}</span>
@@ -71,10 +87,11 @@ export function NavMain({ items, label = "Sistema" }: NavMainProps) {
               </CollapsibleContent>
             </Collapsible>
           ) : (
-            <SidebarMenuItem key={item.title}>
+            <SidebarMenuItem key={item.title} className={sectionClass}>
               <SidebarMenuButton
                 tooltip={item.title}
                 isActive={item.isActive}
+                className={buttonClass}
                 render={<Link href={item.url} />}
               >
                 {item.icon}
