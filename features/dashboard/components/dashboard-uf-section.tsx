@@ -16,16 +16,16 @@ import {
 import { DASHBOARD_PROJECTS_BY_UF } from "../constants/dashboard-uf-data"
 
 const cardClassName =
-  "flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-card p-4 lg:h-full lg:flex-none"
+  "flex min-h-0 flex-1 flex-col rounded-xl border border-border bg-card p-4 lg:h-full lg:min-h-0 lg:flex-none"
 
-const mapCardClassName = "flex min-h-0 flex-1 lg:h-full lg:flex-none"
+const mapCardClassName = "flex min-h-0 flex-1 lg:h-full lg:min-h-0 lg:flex-none"
 
 export function DashboardUfSection() {
   const countsByUf = countByUf(DASHBOARD_PROJECTS_BY_UF)
   const total = Object.values(countsByUf).reduce((sum, count) => sum + count, 0)
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-4">
+    <div className="flex min-h-0 flex-1 flex-col gap-4 overflow-hidden lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-4 lg:[grid-template-rows:minmax(0,1fr)]">
       <article className={cardClassName}>
         <div className="shrink-0">
           <h2 className="text-sm font-semibold">Projetos por UF</h2>
