@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { getSessionUser } from "@/features/login/server/session"
+import { normalizeProjetoTipo } from "../constants/project-types"
 import { canCreateProjeto } from "../utils/projetos-permissions"
 import { createProjeto, listProjetos } from "./projects.repository"
 import { listResponsaveisByTipo } from "./responsaveis.repository"
@@ -81,18 +82,21 @@ export async function handleProjetosRequest(
 
     try {
       const body = (await request.json()) as {
+        tipoProjeto?: string
         nome?: string
         valorTotal?: number
         responsavelInternoId?: string
         responsavelExternoId?: string
       }
 
+      const tipoProjeto = normalizeProjetoTipo(body.tipoProjeto ?? "")
       const nome = body.nome?.trim() ?? ""
       const valorTotal = body.valorTotal
       const responsavelInternoId = body.responsavelInternoId?.trim() ?? ""
       const responsavelExternoId = body.responsavelExternoId?.trim() ?? ""
 
       if (
+        !tipoProjeto ||
         !nome ||
         typeof valorTotal !== "number" ||
         !Number.isFinite(valorTotal) ||
@@ -107,6 +111,7 @@ export async function handleProjetosRequest(
       }
 
       const projeto = await createProjeto({
+        tipoProjeto,
         nome,
         valorTotal,
         responsavelInternoId,

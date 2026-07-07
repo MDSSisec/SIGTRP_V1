@@ -1,9 +1,11 @@
 import { randomUUID } from "node:crypto"
 
 import { getDbPool } from "@/lib/db"
+import type { ProjetoTipo } from "../constants/project-types"
 import { toProjeto, type Projeto, type ProjetoRow } from "../types/projeto"
 
 export type CreateProjetoData = {
+  tipoProjeto: ProjetoTipo
   nome: string
   valorTotal: number
   responsavelInternoId: string
@@ -14,6 +16,7 @@ export type CreateProjetoData = {
 const PROJECT_SELECT = `
   SELECT
     p.id,
+    p.tipo_projeto,
     p.nome,
     p.valor_total,
     p.responsavel_interno_id,
@@ -51,6 +54,7 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
     `
       INSERT INTO "SIGTRP_TB_PROJECTS" (
         id,
+        tipo_projeto,
         nome,
         valor_total,
         responsavel_interno_id,
@@ -59,10 +63,11 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
         criado_em,
         atualizado_em
       )
-      VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
+      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
     `,
     [
       id,
+      data.tipoProjeto,
       data.nome,
       data.valorTotal,
       data.responsavelInternoId,

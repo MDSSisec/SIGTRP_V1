@@ -1,11 +1,21 @@
+import {
+  formatProjetoTipoLabel,
+  normalizeProjetoTipo,
+  PROJETO_TIPOS,
+  type ProjetoTipo,
+} from "../constants/project-types"
+
 export type ProjetoStatus =
   | "Aprovado"
   | "Em análise"
   | "Pendente"
   | "Concluído"
 
+export type { ProjetoTipo }
+
 export type ProjetoRow = {
   id: string
+  tipo_projeto: string
   nome: string
   valor_total: string
   responsavel_interno_id: string
@@ -20,6 +30,7 @@ export type ProjetoRow = {
 
 export type Projeto = {
   id: string
+  tipoProjeto: ProjetoTipo
   nome: string
   valorTotal: number
   responsavelInternoId: string
@@ -42,6 +53,7 @@ export type ResponsavelOption = {
 }
 
 export type NewProjetoFormValues = {
+  tipoProjeto: ProjetoTipo
   nome: string
   valorTotal: number
   responsavelInternoId: string
@@ -52,9 +64,11 @@ export function toProjeto(row: ProjetoRow): Projeto {
   const valorTotal = Number(row.valor_total)
   const responsavelInternoNome = row.responsavel_interno_nome ?? ""
   const responsavelExternoNome = row.responsavel_externo_nome ?? ""
+  const tipoProjeto = normalizeProjetoTipo(row.tipo_projeto) ?? PROJETO_TIPOS.TED
 
   return {
     id: row.id,
+    tipoProjeto,
     nome: row.nome,
     valorTotal: Number.isFinite(valorTotal) ? valorTotal : 0,
     responsavelInternoId: row.responsavel_interno_id,
@@ -67,6 +81,6 @@ export function toProjeto(row: ProjetoRow): Projeto {
     atualizadoEm: row.atualizado_em,
     responsavel: responsavelInternoNome,
     status: "Em análise",
-    tipo: "Projeto",
+    tipo: formatProjetoTipoLabel(tipoProjeto),
   }
 }

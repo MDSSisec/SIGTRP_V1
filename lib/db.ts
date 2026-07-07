@@ -1,6 +1,8 @@
-import { Pool } from "pg"
+import { Pool, type PoolConfig } from "pg"
 
-let pool: Pool | null = null
+const globalForDb = globalThis as typeof globalThis & {
+  sigtrpDbPool?: Pool
+}
 
 function buildSupabaseDatabaseUrl() {
   const projectId = process.env.SUPABASE_PROJECT_ID
@@ -31,14 +33,28 @@ function getConnectionString() {
   }
 
   throw new Error(
-    "Configure DATABASE_URL ou SUPABASE_PROJECT_ID + SUPABASE_DB_PASSWORD no .env.local",
+    "Configure DATABASE_URL ou SUPABASE_PROJECT_ID + SUPABASE_DB_PASSWORD nas variáveis de ambiente.",
   )
 }
 
+function getPoolConfig(): PoolConfig {
+  const connectionString = getConnectionString()
+
+  return {
+    connectionString,
+    max: 1,
+    idleTimeoutMillis: 20_000,
+    connectionTimeoutMillis: 10_000,
+    ssl: connectionString.includes("supabase.com")
+      ? { rejectUnauthorized: false }
+      : undefined,
+  }
+}
+
 export function getDbPool() {
-  if (!pool) {
-    pool = new Pool({ connectionString: getConnectionString() })
+  if (!globalForDb.sigtrpDbPool) {
+    globalForDb.sigtrpDbPool = new Pool(getPoolConfig())
   }
 
-  return pool
+  return globalForDb.sigtrpDbPool
 }

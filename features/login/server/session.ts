@@ -10,6 +10,7 @@ export async function createSession(user: PublicUser) {
   cookieStore.set(SESSION_COOKIE, JSON.stringify(user), {
     httpOnly: true,
     sameSite: "lax",
+    secure: process.env.NODE_ENV === "production",
     path: "/",
   })
 }

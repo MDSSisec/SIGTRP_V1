@@ -1,0 +1,222 @@
+.wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: visible;
+  margin-bottom: var(--spacing-1);
+  padding: var(--spacing-2) 0 var(--spacing-1);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+}
+
+/* Garante que a barra de rolagem apareça quando o conteúdo for mais largo que a tela */
+.wrapper::-webkit-scrollbar {
+  height: var(--spacing-2);
+}
+
+.wrapper::-webkit-scrollbar-track {
+  background: var(--muted);
+  border-radius: var(--spacing-1);
+}
+
+.wrapper::-webkit-scrollbar-thumb {
+  background: var(--muted-foreground);
+  border-radius: var(--spacing-1);
+}
+
+.wrapper::-webkit-scrollbar-thumb:hover {
+  background: var(--foreground);
+}
+
+.container {
+  display: flex;
+  align-items: flex-start;
+  min-width: max-content;
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.stepInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  min-width: 6.5rem;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  border: 2px solid;
+  margin-top: var(--spacing-1);
+  margin-bottom: var(--spacing-2);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  background: #ffffff;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.circle svg {
+  display: block;
+  flex-shrink: 0;
+  transform: translateY(1px);
+}
+
+@media (min-width: 768px) {
+  .stepInner {
+      min-width: 7rem;
+  }
+  .circle {
+      width: 40px;
+      height: 40px;
+      margin-top: var(--spacing-1);
+      margin-bottom: var(--spacing-2);
+  }
+}
+
+.completed {
+  background: var(--primary);
+  color: var(--primary-foreground);
+  border-color: var(--primary);
+}
+
+.active {
+  background: #ffffff;
+  border-color: var(--primary);
+  color: var(--primary);
+  box-shadow: 0 0 0 4px rgba(0, 0, 0, 0.08);
+}
+
+.inactive {
+  border-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  max-width: 6.5rem;
+  word-break: break-word;
+  line-height: var(--line-height-tight);
+}
+
+@media (min-width: 768px) {
+  .label {
+      font-size: var(--font-size-xs);
+      max-width: 7rem;
+  }
+}
+
+.labelActive {
+  color: var(--foreground);
+}
+
+.labelInactive {
+  color: var(--muted-foreground);
+}
+
+.connector {
+  flex: 1;
+  min-width: var(--spacing-4);
+  height: 2px;
+  margin: 1.875rem var(--spacing-1) 0 var(--spacing-1);
+}
+
+.connectorActive {
+  background: var(--primary);
+}
+
+.connectorInactive {
+  background: var(--muted);
+}
+
+.fullWidth {
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  padding: var(--spacing-4);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .fullWidth {
+  background: oklch(0.29 0.006 264);
+  border-color: oklch(0.36 0.006 264);
+}
+
+.trigger {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-2);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border);
+  background: var(--surface-subtle);
+  padding: var(--spacing-2) var(--spacing-3);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.trigger:hover {
+  background: var(--surface-subtle-hover);
+}
+
+.triggerContent {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  min-width: 0;
+  overflow: hidden;
+}
+
+.triggerContent span:first-of-type {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.triggerSubLabel {
+  color: var(--muted-foreground);
+  font-weight: 400;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.triggerIcon {
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+  transition: transform 0.2s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+.motionWrapper {
+  overflow: hidden;
+  padding: var(--spacing-2) 0 var(--spacing-1);
+}

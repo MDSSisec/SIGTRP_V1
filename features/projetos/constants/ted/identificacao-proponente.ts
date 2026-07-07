@@ -1,0 +1,26 @@
+export const IDENTIFICACAO_PROPONENTE_LABELS = {
+  LABEL_NOME: "Nome da entidade proponente",
+  LABEL_CNPJ: "CNPJ",
+  LABEL_DATA_FUNDACAO: "Data de fundação",
+  LABEL_REGISTRO_CNPJ: "Registro CNPJ",
+  LABEL_ENDERECO_COMPLETO: "Endereço completo",
+  LABEL_CEP: "CEP",
+  LABEL_UF: "UF",
+  LABEL_BAIRRO: "Bairro",
+  LABEL_MUNICIPIO: "Município",
+  LABEL_TELEFONE_FAX: "Telefone / Fax",
+  LABEL_EMAIL: "E-mail",
+  LABEL_PAGINA_WEB: "Página web",
+} as const
+
+export const IDENTIFICACAO_PROPONENTE_PLACEHOLDERS = {
+  PLACEHOLDER_NOME: "Informe o nome da entidade",
+  PLACEHOLDER_CNPJ: "00.000.000/0000-00",
+  PLACEHOLDER_REGISTRO_CNPJ: "Informe o registro CNPJ",
+  PLACEHOLDER_ENDERECO_COMPLETO: "Informe o endereço completo",
+  PLACEHOLDER_CEP: "00000-000",
+  PLACEHOLDER_UF: "UF",
+  PLACEHOLDER_TELEFONE_FAX: "(00) 00000-0000",
+  PLACEHOLDER_EMAIL: "email@exemplo.gov.br",
+  PLACEHOLDER_PAGINA_WEB: "https://",
+} as const

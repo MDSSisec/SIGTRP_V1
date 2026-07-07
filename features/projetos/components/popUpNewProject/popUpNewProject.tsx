@@ -6,7 +6,16 @@ import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { PROJETOS_FORM } from "../../constants/project"
+import {
+  formatProjetoTipoLabel,
+  normalizeProjetoTipo,
+  PROJETO_TIPOS,
+} from "../../constants/project-types"
 import type { NewProjetoFormValues, ResponsavelOption } from "../../types"
+import {
+  formatCurrencyInput,
+  parseCurrencyInput,
+} from "../../utils/currency"
 import styles from "./popUpNewProject.module.css"
 
 export type PopUpNewProjectProps = {
@@ -19,6 +28,7 @@ export type PopUpNewProjectProps = {
 }
 
 type FormState = {
+  tipoProjeto: string
   nome: string
   valorTotal: string
   responsavelInternoId: string
@@ -26,16 +36,11 @@ type FormState = {
 }
 
 const INITIAL_FORM: FormState = {
+  tipoProjeto: "",
   nome: "",
   valorTotal: "",
   responsavelInternoId: "",
   responsavelExternoId: "",
-}
-
-function parseValorTotal(value: string) {
-  const normalized = value.trim().replace(",", ".")
-  const parsed = Number(normalized)
-  return Number.isFinite(parsed) ? parsed : null
 }
 
 export function PopUpNewProject({
@@ -71,12 +76,24 @@ export function PopUpNewProject({
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
 
+    if (!formValues.tipoProjeto) {
+      setSubmitError(PROJETOS_FORM.validation.tipoProjeto)
+      return
+    }
+
+    const tipoProjeto = normalizeProjetoTipo(formValues.tipoProjeto)
+
+    if (!tipoProjeto) {
+      setSubmitError(PROJETOS_FORM.validation.tipoProjeto)
+      return
+    }
+
     if (!formValues.nome.trim()) {
       setSubmitError(PROJETOS_FORM.validation.nome)
       return
     }
 
-    const valorTotal = parseValorTotal(formValues.valorTotal)
+    const valorTotal = parseCurrencyInput(formValues.valorTotal)
 
     if (!formValues.valorTotal.trim()) {
       setSubmitError(PROJETOS_FORM.validation.valorTotal)
@@ -100,6 +117,7 @@ export function PopUpNewProject({
 
     try {
       await onSubmit({
+        tipoProjeto,
         nome: formValues.nome.trim(),
         valorTotal,
         responsavelInternoId: formValues.responsavelInternoId,
@@ -174,23 +192,54 @@ export function PopUpNewProject({
               />
             </div>
 
-            <div className={styles.field}>
-              <label className={styles.label} htmlFor="projeto-valor-total">
-                {PROJETOS_FORM.fields.valorTotal}
-              </label>
-              <Input
-                id="projeto-valor-total"
-                type="number"
-                min="0"
-                step="0.01"
-                value={formValues.valorTotal}
-                onChange={(event) =>
-                  handleChange("valorTotal", event.target.value)
-                }
-                placeholder={PROJETOS_FORM.placeholders.valorTotal}
-                disabled={isReadOnly}
-                required
-              />
+            <div className={styles.gridTwoColumns}>
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="projeto-tipo">
+                  {PROJETOS_FORM.fields.tipoProjeto}
+                </label>
+                <select
+                  id="projeto-tipo"
+                  className={styles.select}
+                  value={formValues.tipoProjeto}
+                  onChange={(event) =>
+                    handleChange("tipoProjeto", event.target.value)
+                  }
+                  disabled={isReadOnly}
+                  required
+                >
+                  <option value="">
+                    {PROJETOS_FORM.placeholders.tipoProjeto}
+                  </option>
+                  <option value={PROJETO_TIPOS.TED}>
+                    {formatProjetoTipoLabel(PROJETO_TIPOS.TED)}
+                  </option>
+                  <option value={PROJETO_TIPOS.EMENDA}>
+                    {formatProjetoTipoLabel(PROJETO_TIPOS.EMENDA)}
+                  </option>
+                </select>
+              </div>
+
+              <div className={styles.field}>
+                <label className={styles.label} htmlFor="projeto-valor-total">
+                  {PROJETOS_FORM.fields.valorTotal}
+                </label>
+                <Input
+                  id="projeto-valor-total"
+                  type="text"
+                  inputMode="numeric"
+                  autoComplete="off"
+                  value={formValues.valorTotal}
+                  onChange={(event) =>
+                    handleChange(
+                      "valorTotal",
+                      formatCurrencyInput(event.target.value),
+                    )
+                  }
+                  placeholder={PROJETOS_FORM.placeholders.valorTotal}
+                  disabled={isReadOnly}
+                  required
+                />
+              </div>
             </div>
 
             <div className={styles.gridTwoColumns}>
