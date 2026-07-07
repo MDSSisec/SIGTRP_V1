@@ -1,8 +1,11 @@
 "use client"
 
+import Link from "next/link"
+import { ArrowLeftIcon } from "lucide-react"
 import { useParams, useSearchParams } from "next/navigation"
 import { useEffect, useMemo } from "react"
 
+import { Button } from "@/components/ui/button"
 import { AsyncLoadState } from "@/components/ui/async-load-state"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { CronogramaProvider } from "@/features/projetos/components/project-ted/forms/secao-2-descricao/CronogramaContext/CronogramaContext"
@@ -98,6 +101,18 @@ export function ProjectTEDEditContent() {
       ) : (
         <ProjectDataProvider projectId={projectId} projectData={projectData}>
           <div className={styles.pageWrapper}>
+            <div className="mb-4">
+              <Button
+                nativeButton={false}
+                variant="outline"
+                size="sm"
+                className="bg-background"
+                render={<Link href="/projetos" />}
+              >
+                <ArrowLeftIcon />
+                Voltar para projetos
+              </Button>
+            </div>
             <div className={styles.formContainer}>
               <CronogramaProvider initialData={initialCronograma}>
                 <FormSection projectId={projectId} />
