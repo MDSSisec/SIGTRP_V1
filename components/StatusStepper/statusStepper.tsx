@@ -27,7 +27,7 @@ function StepperContent({
 }) {
   return (
     <div className={styles.wrapper}>
-      <div className={styles.container}>
+      <div className={styles.track}>
         {steps.map((step, index) => {
           const Icon = step.icon;
           const isCompleted = index < currentStep;
@@ -35,30 +35,30 @@ function StepperContent({
 
           return (
             <React.Fragment key={index}>
-              <div className={styles.stepItem}>
-                <div className={styles.stepInner}>
+              <div className={styles.stepColumn}>
+                <div className={styles.iconRow}>
                   <div
                     className={`${styles.circle} ${
                       isCompleted
                         ? styles.completed
                         : isActive
-                        ? styles.active
-                        : styles.inactive
+                          ? styles.active
+                          : styles.inactive
                     }`}
                   >
                     <Icon size={18} />
                   </div>
-                  <span
-                    className={`${styles.label} ${
-                      isCompleted || isActive
-                        ? styles.labelActive
-                        : styles.labelInactive
-                    }`}
-                    title={step.title}
-                  >
-                    {step.title}
-                  </span>
                 </div>
+                <span
+                  className={`${styles.label} ${
+                    isCompleted || isActive
+                      ? styles.labelActive
+                      : styles.labelInactive
+                  }`}
+                  title={step.title}
+                >
+                  {step.title}
+                </span>
               </div>
 
               {index < steps.length - 1 && (
@@ -79,6 +79,39 @@ function StepperContent({
   );
 }
 
+function StepperTrigger({
+  collapsibleLabel,
+  currentStepInfo,
+  CurrentIcon,
+  open,
+}: {
+  collapsibleLabel: string;
+  currentStepInfo?: StatusItem;
+  CurrentIcon?: LucideIcon;
+  open?: boolean;
+}) {
+  return (
+    <>
+      <span className={styles.triggerContent}>
+        {CurrentIcon && (
+          <CurrentIcon size={18} className={styles.triggerIcon} />
+        )}
+        <span>{collapsibleLabel}</span>
+        {currentStepInfo && (
+          <span className={styles.triggerSubLabel}>
+            — {currentStepInfo.title}
+          </span>
+        )}
+      </span>
+
+      <ChevronDown
+        size={18}
+        className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
+      />
+    </>
+  );
+}
+
 export default function StatusStepper({
   steps,
   currentStep,
@@ -95,23 +128,15 @@ export default function StatusStepper({
   }, []);
 
   // Evita hydration mismatch: Radix Collapsible gera IDs diferentes no servidor e no cliente.
-  // No primeiro render (SSR) mostramos conteúdo estático; após mount, o Collapsible.
   if (collapsible && !mounted) {
     return (
       <div className={styles.fullWidth}>
         <div className={styles.trigger} aria-hidden>
-          <span className={styles.triggerContent}>
-            {CurrentIcon && (
-              <CurrentIcon size={18} className={styles.triggerIcon} />
-            )}
-            <span>{collapsibleLabel}</span>
-            {currentStepInfo && (
-              <span className={styles.triggerSubLabel}>
-                — {currentStepInfo.title}
-              </span>
-            )}
-          </span>
-          <ChevronDown size={18} className={styles.chevron} />
+          <StepperTrigger
+            collapsibleLabel={collapsibleLabel}
+            currentStepInfo={currentStepInfo}
+            CurrentIcon={CurrentIcon}
+          />
         </div>
         <div className={styles.motionWrapper}>
           <StepperContent steps={steps} currentStep={currentStep} />
@@ -122,25 +147,17 @@ export default function StatusStepper({
 
   if (collapsible) {
     return (
-      <Collapsible open={open} onOpenChange={setOpen} className={styles.fullWidth}>
+      <Collapsible
+        open={open}
+        onOpenChange={setOpen}
+        className={styles.fullWidth}
+      >
         <CollapsibleTrigger className={styles.trigger}>
-          <span className={styles.triggerContent}>
-            {CurrentIcon && (
-              <CurrentIcon size={18} className={styles.triggerIcon} />
-            )}
-            <span>{collapsibleLabel}</span>
-            {currentStepInfo && (
-              <span className={styles.triggerSubLabel}>
-                — {currentStepInfo.title}
-              </span>
-            )}
-          </span>
-
-          <ChevronDown
-            size={18}
-            className={`${styles.chevron} ${
-              open ? styles.chevronOpen : ""
-            }`}
+          <StepperTrigger
+            collapsibleLabel={collapsibleLabel}
+            currentStepInfo={currentStepInfo}
+            CurrentIcon={CurrentIcon}
+            open={open}
           />
         </CollapsibleTrigger>
 
@@ -153,10 +170,7 @@ export default function StatusStepper({
               transition={{ duration: 0.25, ease: [0.4, 0, 0.2, 1] }}
               className={styles.motionWrapper}
             >
-              <StepperContent
-                steps={steps}
-                currentStep={currentStep}
-              />
+              <StepperContent steps={steps} currentStep={currentStep} />
             </motion.div>
           )}
         </AnimatePresence>

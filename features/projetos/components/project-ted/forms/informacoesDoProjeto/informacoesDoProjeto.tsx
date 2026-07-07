@@ -11,7 +11,7 @@ import {
   type StatusProjeto,
 } from "@/features/projetos/constants/ted/project"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
+import { SESSOES_VISAO_GERAL_TITLE, TITULO_INFORMACOES_PROJETO, DESCRICAO_INFORMACOES_PROJETO } from "@/features/projetos/constants/ted/visao-geral"
 import {
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
@@ -99,7 +99,12 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
   const isLocked = readOnlyView || !isEditing
 
   return (
-    <FormSectionCard>
+    <div className={formLayoutStyles.page}>
+      <div className={formLayoutStyles.pageHeader}>
+        <h2 className={formLayoutStyles.pageTitle}>{TITULO_INFORMACOES_PROJETO}</h2>
+        <p className={formLayoutStyles.subtitle}>{DESCRICAO_INFORMACOES_PROJETO}</p>
+      </div>
+
       {projectId && (
         <StatusStepper
           steps={STATUS_PROJETO_STEPS}
@@ -109,7 +114,8 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
         />
       )}
 
-      <section className={formLayoutStyles.section}>
+      <FormSectionCard>
+        <section className={formLayoutStyles.section}>
         <h2 className={formLayoutStyles.title}>Informações do Projeto</h2>
         <div className={formLayoutStyles.grid2}>
           <div className={formLayoutStyles.fieldGroup}>
@@ -236,6 +242,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
           )}
         </div>
       )}
-    </FormSectionCard>
+      </FormSectionCard>
+    </div>
   )
 }
