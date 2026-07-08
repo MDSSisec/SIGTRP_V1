@@ -30,7 +30,7 @@ export const SESSOES_VISAO_GERAL_TITLE = {
   TITLE_SESSAO_IDENTIFICACAO_PROJETO : "1. Identificação do Projeto",
   TITLE_SESSAO_IDENTIFICACAO_PROPOSTA : "2. Identificação do(a) proponente",
   TITLE_SESSAO_IDENTIFICACAO_REPRESENTANTE_LEGAL : "3. Identificação do representante legal do(a) proponente",
-  TITLE_SESSAO_IDENTIFICACAO_RESPONSAVEL_TECNICO : "4. Identificação do responsável técnico",
+  TITLE_SESSAO_IDENTIFICACAO_RESPONSAVEL_TECNICO : "4. Identificação do responsável técnico pelo projeto",
   TITLE_SESSAO_JUSTIFICATIVA_MOTIVACAO : "5. Justificativa e motivação para celebração do instrumento",
   TITLE_SESSAO_OBJETIVOS : "6. Objetivos",
   TITLE_SESSAO_METAS : "7. Metas",

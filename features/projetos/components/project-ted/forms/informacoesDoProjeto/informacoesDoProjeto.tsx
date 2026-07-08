@@ -1,43 +1,54 @@
 "use client"
 
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
+import { Check, Pencil, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import StatusStepper from "@/components/StatusStepper/statusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
-  PROJECT_TYPE_OPTIONS,
-  STATUS_PROJETO_LIST,
-  type ProjectTipo,
-  type StatusProjeto,
-} from "@/features/projetos/constants/ted/project"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { SESSOES_VISAO_GERAL_TITLE, TITULO_INFORMACOES_PROJETO, DESCRICAO_INFORMACOES_PROJETO } from "@/features/projetos/constants/ted/visao-geral"
+  formatProjetoTipoLabel,
+  normalizeProjetoTipo,
+  PROJETO_TIPOS,
+} from "@/features/projetos/constants/project-types"
+import { useProjectData, useUpdateProjectData } from "@/features/projetos/contexts/project-data-context"
 import {
+  SESSOES_VISAO_GERAL_TITLE,
+  TITULO_INFORMACOES_PROJETO,
+  DESCRICAO_INFORMACOES_PROJETO,
+} from "@/features/projetos/constants/ted/visao-geral"
+import {
+  fetchProjectStages,
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
+  fetchTedIdentificacao,
+  getProjectStepIndex,
   STATUS_PROJETO_STEPS,
-  statusToStepIndex,
+  updateProjetoInformacoes,
 } from "@/features/projetos/services"
+import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { getItensConcluidosFromTedIdentificacao } from "@/features/projetos/utils/ted-preenchimento"
 import type { ProjectModelData } from "@/features/projetos/types/ted"
-import type { ResponsavelOption } from "@/features/projetos/types"
+import type { Projeto, ResponsavelOption } from "@/features/projetos/types"
 import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
-import { FORM_CHECKBOX_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
+import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
+import { canEditProjetoInformacoes } from "@/features/projetos/utils/projetos-permissions"
+import { fetchSessionUser } from "@/features/login/services"
+import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
+import { cn } from "@/lib/utils"
 import type { ProjectFormSectionProps } from "../sections-map"
 
-const classeInputBase = FORM_SELECT_CLASS
+/** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
+const VIEW_MODE_FIELD_CLASS =
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
+
+const ITENS_POR_COLUNA = 12
 
 interface DadosInformacoesProjeto {
-  tipoProjeto: ProjectTipo
-  status: StatusProjeto
+  etapaId: string
   responsavelInternoId: string
   responsavelExternoId: string
 }
-
-const STATUS_OPTIONS = STATUS_PROJETO_LIST.map((s) => ({ value: s, label: s }))
-const TIPO_PROJETO_OPTIONS = PROJECT_TYPE_OPTIONS.filter((o) => o.value !== "")
-
-const ITENS_POR_COLUNA = 12
 
 function getItensPreenchidos() {
   return Object.entries(SESSOES_VISAO_GERAL_TITLE).filter(
@@ -46,8 +57,7 @@ function getItensPreenchidos() {
 }
 
 const VAZIO: DadosInformacoesProjeto = {
-  tipoProjeto: "TED",
-  status: "TRP em Elaboração",
+  etapaId: "",
   responsavelInternoId: "",
   responsavelExternoId: "",
 }
@@ -56,19 +66,54 @@ function getDadosIniciais(projectData: ProjectModelData | null): DadosInformacoe
   if (!projectData) return VAZIO
 
   return {
-    tipoProjeto: (projectData.tipo as ProjectTipo) ?? "TED",
-    status: (projectData.status as StatusProjeto) ?? "TRP em Elaboração",
+    etapaId: String(projectData.etapaId ?? ""),
     responsavelInternoId: String(projectData.responsavelInternoId ?? ""),
     responsavelExternoId: String(projectData.responsavelExternoId ?? ""),
   }
 }
 
+function getTipoProjetoLabel(projectData: ProjectModelData | null): string {
+  const tipo =
+    normalizeProjetoTipo(String(projectData?.tipo ?? "")) ?? PROJETO_TIPOS.TED
+  return formatProjetoTipoLabel(tipo)
+}
+
+function mapProjetoToContextPatch(projeto: Projeto): Partial<ProjectModelData> {
+  return {
+    tipo: projeto.tipoProjeto,
+    status: projeto.etapaNome,
+    etapaId: projeto.etapaId,
+    etapaOrdem: projeto.etapaOrdem,
+    responsavel: projeto.responsavelInternoNome,
+    responsavelInternoId: projeto.responsavelInternoId,
+    responsavelExternoId: projeto.responsavelExternoId,
+  }
+}
+
 export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSectionProps) {
   const projectData = useProjectData()
+  const updateProjectData = useUpdateProjectData()
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [dados, setDados] = useState<DadosInformacoesProjeto>(() =>
     getDadosIniciais(projectData),
   )
+
+  const { data: sessionUser } = useAsyncData(fetchSessionUser, {
+    initialData: null as PublicUser | null,
+    errorMessage: "Não foi possível carregar o usuário.",
+  })
+
+  const canEditInfo = useMemo(
+    () => Boolean(sessionUser && canEditProjetoInformacoes(sessionUser)),
+    [sessionUser],
+  )
+
+  const { data: etapas } = useAsyncData(fetchProjectStages, {
+    initialData: [],
+    errorMessage: "Não foi possível carregar as etapas do projeto.",
+  })
 
   const { data: responsaveisInternos } = useAsyncData(fetchResponsaveisInternos, {
     initialData: [] as ResponsavelOption[],
@@ -80,23 +125,89 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
     errorMessage: "Não foi possível carregar os responsáveis externos.",
   })
 
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao, reload: reloadIdentificacao } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage: "Não foi possível carregar o preenchimento das seções.",
+    loadOnMount: Boolean(projectId),
+  })
+
+  useEffect(() => {
+    if (projectId) void reloadIdentificacao()
+  }, [projectId, reloadIdentificacao])
+
   useEffect(() => {
     setDados(getDadosIniciais(projectData))
   }, [projectData])
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target
+    setSaveError(null)
     setDados((prev) => ({ ...prev, [name]: value }))
   }
 
-  const currentStep = useMemo(() => statusToStepIndex(dados.status), [dados.status])
-  const [itensConcluidos] = useState<Set<string>>(new Set())
+  const handleSave = async () => {
+    if (!projectId) return
+
+    if (!dados.responsavelInternoId || !dados.responsavelExternoId) {
+      setSaveError("Selecione os responsáveis interno e externo.")
+      return
+    }
+
+    if (canEditInfo && !dados.etapaId) {
+      setSaveError("Selecione o status do projeto.")
+      return
+    }
+
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      const projeto = await updateProjetoInformacoes(projectId, {
+        responsavelInternoId: dados.responsavelInternoId,
+        responsavelExternoId: dados.responsavelExternoId,
+        ...(canEditInfo ? { etapaId: dados.etapaId } : {}),
+      })
+
+      updateProjectData(mapProjetoToContextPatch(projeto))
+      setIsEditing(false)
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar as informações do projeto.",
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const currentStep = useMemo(
+    () => getProjectStepIndex(projectData ?? {}),
+    [projectData],
+  )
+
+  const tipoProjetoLabel = useMemo(
+    () => getTipoProjetoLabel(projectData),
+    [projectData],
+  )
+
+  const itensConcluidos = useMemo(
+    () => getItensConcluidosFromTedIdentificacao(identificacao),
+    [identificacao],
+  )
   const [itensColunaEsquerda, itensColunaDireita] = useMemo(() => {
     const itens = getItensPreenchidos()
     return [itens.slice(0, ITENS_POR_COLUNA), itens.slice(ITENS_POR_COLUNA)]
   }, [])
 
-  const isLocked = readOnlyView || !isEditing
+  const isInfoLocked = readOnlyView || !isEditing || !canEditInfo
+  const isResponsaveisLocked = readOnlyView || !isEditing
+  const isViewMode = !isEditing
 
   return (
     <div className={formLayoutStyles.page}>
@@ -116,132 +227,162 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
 
       <FormSectionCard>
         <section className={formLayoutStyles.section}>
-        <h2 className={formLayoutStyles.title}>Informações do Projeto</h2>
-        <div className={formLayoutStyles.grid2}>
-          <div className={formLayoutStyles.fieldGroup}>
-            <Label htmlFor="tipoProjeto" className={formLayoutStyles.label}>
-              Tipo do projeto
-            </Label>
-            <select
-              id="tipoProjeto"
-              name="tipoProjeto"
-              value={dados.tipoProjeto}
-              onChange={handleChange}
-              className={classeInputBase}
-              disabled={isLocked}
-            >
-              {TIPO_PROJETO_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={formLayoutStyles.fieldGroup}>
-            <Label htmlFor="status" className={formLayoutStyles.label}>
-              Status
-            </Label>
-            <select
-              id="status"
-              name="status"
-              value={dados.status}
-              onChange={handleChange}
-              className={classeInputBase}
-              disabled={isLocked}
-            >
-              {STATUS_OPTIONS.map((opt) => (
-                <option key={opt.value} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section className={formLayoutStyles.section}>
-        <h2 className={formLayoutStyles.title}>Responsáveis</h2>
-        <div className={formLayoutStyles.grid2}>
-          <div className={formLayoutStyles.fieldGroup}>
-            <Label htmlFor="responsavelInternoId" className={formLayoutStyles.label}>
-              Usuário interno
-            </Label>
-            <select
-              id="responsavelInternoId"
-              name="responsavelInternoId"
-              value={dados.responsavelInternoId}
-              onChange={handleChange}
-              className={classeInputBase}
-              disabled={isLocked}
-            >
-              <option value="">Selecione...</option>
-              {responsaveisInternos.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className={formLayoutStyles.fieldGroup}>
-            <Label htmlFor="responsavelExternoId" className={formLayoutStyles.label}>
-              Usuário externo
-            </Label>
-            <select
-              id="responsavelExternoId"
-              name="responsavelExternoId"
-              value={dados.responsavelExternoId}
-              onChange={handleChange}
-              className={classeInputBase}
-              disabled={isLocked}
-            >
-              <option value="">Selecione...</option>
-              {responsaveisExternos.map((u) => (
-                <option key={u.id} value={u.id}>
-                  {u.nome}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-      </section>
-
-      <section className={formLayoutStyles.section}>
-        <h2 className={formLayoutStyles.title}>Itens Preenchidos</h2>
-        <div className={formLayoutStyles.innerCard}>
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-            {[itensColunaEsquerda, itensColunaDireita].map((coluna, colunaIndex) => (
-              <div key={colunaIndex} className="flex min-w-0 flex-col gap-4">
-                {coluna.map(([key, title]) => (
-                  <div key={key} className="flex items-start gap-3">
-                    <input
-                      type="checkbox"
-                      checked={itensConcluidos.has(key)}
-                      readOnly
-                      className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
-                    />
-                    <span className="text-sm text-muted-foreground">{title}</span>
-                  </div>
+          <h2 className={formLayoutStyles.title}>Informações do Projeto</h2>
+          {!canEditInfo && !readOnlyView ? (
+            <p className="text-sm text-muted-foreground">
+              Apenas administradores ou gestores internos do MDS podem alterar o status do projeto.
+            </p>
+          ) : null}
+          <div className={formLayoutStyles.grid2}>
+            <div className={formLayoutStyles.fieldGroup}>
+              <Label htmlFor="tipoProjeto" className={formLayoutStyles.label}>
+                Tipo do projeto
+              </Label>
+              <input
+                id="tipoProjeto"
+                type="text"
+                value={tipoProjetoLabel}
+                readOnly
+                tabIndex={-1}
+                className={cn(FORM_INPUT_CLASS, VIEW_MODE_FIELD_CLASS)}
+              />
+            </div>
+            <div className={formLayoutStyles.fieldGroup}>
+              <Label htmlFor="etapaId" className={formLayoutStyles.label}>
+                Status
+              </Label>
+              <select
+                id="etapaId"
+                name="etapaId"
+                value={dados.etapaId}
+                onChange={handleChange}
+                className={cn(
+                  FORM_SELECT_CLASS,
+                  isViewMode && VIEW_MODE_FIELD_CLASS,
+                )}
+                disabled={isInfoLocked}
+              >
+                <option value="">Selecione...</option>
+                {etapas.map((etapa) => (
+                  <option key={etapa.id} value={etapa.id}>
+                    {etapa.nome}
+                  </option>
                 ))}
-              </div>
-            ))}
+              </select>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {!readOnlyView && (
-        <div className={formLayoutStyles.actions}>
-          {!isEditing ? (
-            <GenericButton variant="editar" onClick={() => setIsEditing(true)} />
-          ) : (
-            <>
-              <GenericButton variant="outline" onClick={() => setIsEditing(false)}>
-                Cancelar
+        <section className={formLayoutStyles.section}>
+          <h2 className={formLayoutStyles.title}>Responsáveis</h2>
+          <div className={formLayoutStyles.grid2}>
+            <div className={formLayoutStyles.fieldGroup}>
+              <Label htmlFor="responsavelInternoId" className={formLayoutStyles.label}>
+                Usuário interno
+              </Label>
+              <select
+                id="responsavelInternoId"
+                name="responsavelInternoId"
+                value={dados.responsavelInternoId}
+                onChange={handleChange}
+                className={cn(
+                  FORM_SELECT_CLASS,
+                  isViewMode && VIEW_MODE_FIELD_CLASS,
+                )}
+                disabled={isResponsaveisLocked}
+              >
+                <option value="">Selecione...</option>
+                {responsaveisInternos.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className={formLayoutStyles.fieldGroup}>
+              <Label htmlFor="responsavelExternoId" className={formLayoutStyles.label}>
+                Usuário externo
+              </Label>
+              <select
+                id="responsavelExternoId"
+                name="responsavelExternoId"
+                value={dados.responsavelExternoId}
+                onChange={handleChange}
+                className={cn(
+                  FORM_SELECT_CLASS,
+                  isViewMode && VIEW_MODE_FIELD_CLASS,
+                )}
+                disabled={isResponsaveisLocked}
+              >
+                <option value="">Selecione...</option>
+                {responsaveisExternos.map((u) => (
+                  <option key={u.id} value={u.id}>
+                    {u.nome}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+        </section>
+
+        <section className={formLayoutStyles.section}>
+          <h2 className={formLayoutStyles.title}>Itens Preenchidos</h2>
+          <div className={formLayoutStyles.innerCard}>
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+              {[itensColunaEsquerda, itensColunaDireita].map((coluna, colunaIndex) => (
+                <div key={colunaIndex} className="flex min-w-0 flex-col gap-4">
+                  {coluna.map(([key, title]) => (
+                    <div key={key} className="flex items-start gap-3">
+                      <input
+                        type="checkbox"
+                        checked={itensConcluidos.has(key)}
+                        readOnly
+                        className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
+                      />
+                      <span className="text-sm text-muted-foreground">{title}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {!readOnlyView && (
+          <div className={formLayoutStyles.actions}>
+            {saveError ? (
+              <p className="mr-auto text-sm text-destructive">{saveError}</p>
+            ) : null}
+            {!isEditing ? (
+              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+                Editar
               </GenericButton>
-              <GenericButton variant="salvar" onClick={() => setIsEditing(false)} />
-            </>
-          )}
-        </div>
-      )}
+            ) : (
+              <>
+                <GenericButton
+                  variant="outline"
+                  icon={X}
+                  disabled={isSaving}
+                  onClick={() => {
+                    setDados(getDadosIniciais(projectData))
+                    setSaveError(null)
+                    setIsEditing(false)
+                  }}
+                >
+                  Cancelar
+                </GenericButton>
+                <GenericButton
+                  variant="salvar"
+                  icon={Check}
+                  disabled={isSaving}
+                  onClick={() => void handleSave()}
+                >
+                  {isSaving ? "Salvando..." : "Salvar"}
+                </GenericButton>
+              </>
+            )}
+          </div>
+        )}
       </FormSectionCard>
     </div>
   )

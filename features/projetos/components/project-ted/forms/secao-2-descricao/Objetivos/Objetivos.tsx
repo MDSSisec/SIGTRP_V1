@@ -81,7 +81,7 @@ function FormularioObjetivos({ onChange, projectId }: PropsFormularioObjetivos) 
             value={dadosFormulario.objetivoGeral}
             onChange={aoAlterarGeral}
             rows={4}
-            placeholder="Descreva o objetivo geral do projeto..."
+            placeholder="Descreva o objetivo geral do projeto."
             className={styles.textarea}
           />
         </div>

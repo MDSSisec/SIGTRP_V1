@@ -1,5 +1,6 @@
 "use client"
 
+import * as React from "react"
 import Link from "next/link"
 import {
   Collapsible,
@@ -55,37 +56,13 @@ export function NavMain({
       <SidebarMenu>
         {items.map((item) =>
           item.items?.length ? (
-            <Collapsible
+            <NavMainCollapsibleItem
               key={item.title}
-              defaultOpen={item.isActive || item.items.some((subItem) => subItem.isActive)}
-              className="group/collapsible"
-              render={<SidebarMenuItem className={sectionClass} />}
-            >
-              <CollapsibleTrigger
-                render={
-                  <SidebarMenuButton tooltip={item.title} className={buttonClass} />
-                }
-              >
-                {item.icon}
-                <span>{item.title}</span>
-                <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
-              </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton
-                        isActive={subItem.isActive}
-                        className={subButtonClass}
-                        render={<Link href={subItem.url} />}
-                      >
-                        <span>{subItem.title}</span>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </Collapsible>
+              item={item}
+              sectionClass={sectionClass}
+              buttonClass={buttonClass}
+              subButtonClass={subButtonClass}
+            />
           ) : (
             <SidebarMenuItem key={item.title} className={sectionClass}>
               <SidebarMenuButton
@@ -102,5 +79,61 @@ export function NavMain({
         )}
       </SidebarMenu>
     </SidebarGroup>
+  )
+}
+
+type NavMainCollapsibleItemProps = {
+  item: NavMainItem
+  sectionClass?: string
+  buttonClass?: string
+  subButtonClass?: string
+}
+
+function NavMainCollapsibleItem({
+  item,
+  sectionClass,
+  buttonClass,
+  subButtonClass,
+}: NavMainCollapsibleItemProps) {
+  const shouldBeOpen =
+    item.isActive || (item.items?.some((subItem) => subItem.isActive) ?? false)
+
+  const [open, setOpen] = React.useState(shouldBeOpen)
+
+  // Abre automaticamente quando um subitem passa a estar ativo (mudança de rota)
+  React.useEffect(() => {
+    if (shouldBeOpen) setOpen(true)
+  }, [shouldBeOpen])
+
+  return (
+    <Collapsible
+      open={open}
+      onOpenChange={setOpen}
+      className="group/collapsible"
+      render={<SidebarMenuItem className={sectionClass} />}
+    >
+      <CollapsibleTrigger
+        render={<SidebarMenuButton tooltip={item.title} className={buttonClass} />}
+      >
+        {item.icon}
+        <span>{item.title}</span>
+        <ChevronRightIcon className="ml-auto transition-transform duration-200 group-data-open/collapsible:rotate-90" />
+      </CollapsibleTrigger>
+      <CollapsibleContent>
+        <SidebarMenuSub>
+          {item.items?.map((subItem) => (
+            <SidebarMenuSubItem key={subItem.title}>
+              <SidebarMenuSubButton
+                isActive={subItem.isActive}
+                className={subButtonClass}
+                render={<Link href={subItem.url} />}
+              >
+                <span>{subItem.title}</span>
+              </SidebarMenuSubButton>
+            </SidebarMenuSubItem>
+          ))}
+        </SidebarMenuSub>
+      </CollapsibleContent>
+    </Collapsible>
   )
 }

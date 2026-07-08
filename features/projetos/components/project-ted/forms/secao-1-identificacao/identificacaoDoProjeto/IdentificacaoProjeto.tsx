@@ -1,35 +1,39 @@
 "use client"
 
+import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
 import styles from "./IdentificacaoProjeto.module.css"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { IDENTIFICACAO_PROJETO_DESCRIPTIONS, IDENTIFICACAO_PROJETO_LABELS, IDENTIFICACAO_PROJETO_PLACEHOLDERS } from "@/features/projetos/constants/ted/identificacao-projeto"
+import {
+  useProjectData,
+  useUpdateProjectData,
+} from "@/features/projetos/contexts/project-data-context"
+import {
+  IDENTIFICACAO_PROJETO_DESCRIPTIONS,
+  IDENTIFICACAO_PROJETO_LABELS,
+  IDENTIFICACAO_PROJETO_PLACEHOLDERS,
+} from "@/features/projetos/constants/ted/identificacao-projeto"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import {
+  fetchTedIdentificacao,
+  saveTedIdentificacaoProjeto,
+} from "@/features/projetos/services"
+import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { useAsyncData } from "@/hooks/use-async-data"
+import { cn } from "@/lib/utils"
+import type { ProjectFormSectionProps } from "../../sections-map"
+
+/** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
+const VIEW_MODE_FIELD_CLASS =
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
 
 interface DadosIdentificacaoProjeto {
   nomeProjeto: string
   localExecucao: string
   duracao: string
   resumoProjeto: string
-}
-
-interface PropsFormularioIdentificacaoProjeto {
-  onChange?: (dados: DadosIdentificacaoProjeto) => void
-  projectId?: string
-}
-
-function getInicialIdentificacao(projectData: ReturnType<typeof useProjectData>): DadosIdentificacaoProjeto {
-  const p = projectData?.identificacao?.projeto
-  if (!p) return { nomeProjeto: "", localExecucao: "", duracao: "", resumoProjeto: "" }
-  return {
-    nomeProjeto: p.nome ?? "",
-    localExecucao: p.local_execucao ?? "",
-    duracao: p.duracao ?? "",
-    resumoProjeto: p.resumo ?? "",
-  }
 }
 
 const VAZIO: DadosIdentificacaoProjeto = {
@@ -39,30 +43,103 @@ const VAZIO: DadosIdentificacaoProjeto = {
   resumoProjeto: "",
 }
 
-function FormularioIdentificacaoProjeto({
-  onChange,
-  projectId,
-}: PropsFormularioIdentificacaoProjeto) {
-  const projectData = useProjectData()
+function mapIdentificacaoToForm(
+  identificacao: TedIdentificacao | null,
+  nomeProjeto: string,
+): DadosIdentificacaoProjeto {
+  if (!identificacao) return { ...VAZIO, nomeProjeto }
 
-  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoProjeto>(() =>
-    projectData ? getInicialIdentificacao(projectData) : VAZIO
-  )
+  return {
+    nomeProjeto,
+    localExecucao: identificacao.localExecucao ?? "",
+    duracao: identificacao.duracao ?? "",
+    resumoProjeto: identificacao.resumoProjeto ?? "",
+  }
+}
+
+function FormularioIdentificacaoProjeto({
+  projectId,
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const projectData = useProjectData()
+  const updateProjectData = useUpdateProjectData()
+  const nomeProjeto = projectData?.nome ?? ""
+
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoProjeto>(VAZIO)
+
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage: "Não foi possível carregar a identificação do projeto.",
+    loadOnMount: Boolean(projectId),
+  })
 
   useEffect(() => {
-    if (projectData) {
-      setDadosFormulario(getInicialIdentificacao(projectData))
-    }
-  }, [projectData])
+    if (projectId) void reload()
+  }, [projectId, reload])
+
+  useEffect(() => {
+    setDadosFormulario(mapIdentificacaoToForm(identificacao, nomeProjeto))
+  }, [identificacao, nomeProjeto])
 
   const aoAlterar = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target
-    const dadosAtualizados = { ...dadosFormulario, [name]: value }
-    setDadosFormulario(dadosAtualizados)
-    onChange?.(dadosAtualizados)
+    setSaveError(null)
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }))
   }
+
+  const handleSave = async () => {
+    if (!projectId) return
+
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      const salvo = await saveTedIdentificacaoProjeto(projectId, {
+        localExecucao: dadosFormulario.localExecucao,
+        duracao: dadosFormulario.duracao,
+        resumoProjeto: dadosFormulario.resumoProjeto,
+      })
+
+      if (salvo) {
+        setDadosFormulario(mapIdentificacaoToForm(salvo, nomeProjeto))
+        updateProjectData({
+          identificacao: {
+            ...projectData?.identificacao,
+            projeto: {
+              nome: nomeProjeto,
+              local_execucao: salvo.localExecucao ?? "",
+              duracao: salvo.duracao ?? "",
+              resumo: salvo.resumoProjeto ?? "",
+            },
+          },
+        })
+      }
+
+      setIsEditing(false)
+      await reload()
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar a identificação do projeto.",
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isLocked = readOnlyView || !isEditing
+  const isViewMode = !isEditing
 
   return (
     <div className={styles.container}>
@@ -75,16 +152,15 @@ function FormularioIdentificacaoProjeto({
           <div className={styles.fieldGroup}>
             <Label htmlFor="nomeProjeto" className={styles.label}>
               {IDENTIFICACAO_PROJETO_LABELS.LABEL_NOME_PROJETO}
-              <span className={styles.required} />
             </Label>
             <Input
               id="nomeProjeto"
               name="nomeProjeto"
               placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_NOME_PROJETO}
               value={dadosFormulario.nomeProjeto}
-              onChange={aoAlterar}
-              className={styles.input}
-              required
+              className={cn(styles.input, VIEW_MODE_FIELD_CLASS)}
+              readOnly
+              disabled
             />
           </div>
 
@@ -92,7 +168,6 @@ function FormularioIdentificacaoProjeto({
             <div className={styles.fieldGroup}>
               <Label htmlFor="localExecucao" className={styles.label}>
                 {IDENTIFICACAO_PROJETO_LABELS.LABEL_LOCAL_EXECUCAO}
-                <span className={styles.required} />
               </Label>
               <Input
                 id="localExecucao"
@@ -100,14 +175,14 @@ function FormularioIdentificacaoProjeto({
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_LOCAL_EXECUCAO}
                 value={dadosFormulario.localExecucao}
                 onChange={aoAlterar}
-                className={styles.input}
+                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)}
+                disabled={isLocked}
               />
             </div>
 
             <div className={styles.fieldGroup}>
               <Label htmlFor="duracao" className={styles.label}>
                 {IDENTIFICACAO_PROJETO_LABELS.LABEL_DURACAO}
-                <span className={styles.required} />
               </Label>
               <Input
                 id="duracao"
@@ -115,7 +190,8 @@ function FormularioIdentificacaoProjeto({
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_DURACAO}
                 value={dadosFormulario.duracao}
                 onChange={aoAlterar}
-                className={styles.input}
+                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)}
+                disabled={isLocked}
               />
             </div>
           </div>
@@ -130,7 +206,6 @@ function FormularioIdentificacaoProjeto({
         <div className={styles.fieldGroup}>
           <Label htmlFor="resumoProjeto" className={styles.label}>
             {IDENTIFICACAO_PROJETO_DESCRIPTIONS.DESCRIPTION_RESUMO_PROJETO}
-            <span className={styles.required} />
           </Label>
           <textarea
             id="resumoProjeto"
@@ -139,15 +214,47 @@ function FormularioIdentificacaoProjeto({
             value={dadosFormulario.resumoProjeto}
             onChange={aoAlterar}
             rows={6}
-            className={styles.textarea}
+            className={cn(styles.textarea, isViewMode && VIEW_MODE_FIELD_CLASS)}
+            disabled={isLocked}
           />
         </div>
       </section>
 
-      <div className={styles.actions}>
-        <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
-      </div>
+      {!readOnlyView && (
+        <div className={styles.actions}>
+          {saveError ? (
+            <p className="mr-auto text-sm text-destructive">{saveError}</p>
+          ) : null}
+          {!isEditing ? (
+            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+              Editar
+            </GenericButton>
+          ) : (
+            <>
+              <GenericButton
+                variant="outline"
+                icon={X}
+                disabled={isSaving}
+                onClick={() => {
+                  setDadosFormulario(mapIdentificacaoToForm(identificacao, nomeProjeto))
+                  setSaveError(null)
+                  setIsEditing(false)
+                }}
+              >
+                Cancelar
+              </GenericButton>
+              <GenericButton
+                variant="salvar"
+                icon={Check}
+                disabled={isSaving}
+                onClick={() => void handleSave()}
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
+              </GenericButton>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

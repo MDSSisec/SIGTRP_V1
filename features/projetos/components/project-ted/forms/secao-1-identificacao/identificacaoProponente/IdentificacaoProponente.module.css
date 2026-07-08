@@ -50,8 +50,20 @@
     min-width: 0;
 }
 
+.input:disabled {
+    background: #ffffff !important;
+    opacity: 1;
+    color: var(--foreground);
+}
+
 :global(.dark) .input {
     background: oklch(0.22 0.006 264) !important;
+}
+
+:global(.dark) .input:disabled {
+    background: oklch(0.22 0.006 264) !important;
+    opacity: 1;
+    color: var(--foreground);
 }
 
 .input:focus,

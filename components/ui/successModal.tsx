@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircleIcon } from "lucide-react";
+import { CheckCircleIcon, TriangleAlertIcon } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 
@@ -9,7 +9,11 @@ type SuccessModalProps = {
   title: string;
   description: string;
   confirmText?: string;
+  cancelText?: string;
+  variant?: "success" | "confirm";
+  isLoading?: boolean;
   onConfirm: () => void;
+  onCancel?: () => void;
 };
 
 export function SuccessModal({
@@ -17,15 +21,22 @@ export function SuccessModal({
   title,
   description,
   confirmText = "OK",
+  cancelText = "Cancelar",
+  variant = "success",
+  isLoading = false,
   onConfirm,
+  onCancel,
 }: SuccessModalProps) {
   if (!open) return null;
+
+  const isConfirm = variant === "confirm";
+  const Icon = isConfirm ? TriangleAlertIcon : CheckCircleIcon;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 p-4 backdrop-blur-sm"
       role="presentation"
-      onMouseDown={onConfirm}
+      onMouseDown={isConfirm ? onCancel : onConfirm}
     >
       <div
         aria-modal="true"
@@ -33,8 +44,14 @@ export function SuccessModal({
         role="dialog"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="mx-auto flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
-          <CheckCircleIcon className="size-7" />
+        <div
+          className={`mx-auto flex size-12 items-center justify-center rounded-full ${
+            isConfirm
+              ? "bg-destructive/10 text-destructive"
+              : "bg-primary/10 text-primary"
+          }`}
+        >
+          <Icon className="size-7" />
         </div>
 
         <div className="mt-4 space-y-2">
@@ -46,9 +63,28 @@ export function SuccessModal({
           </p>
         </div>
 
-        <div className="mt-6 flex justify-center">
-          <Button type="button" onClick={onConfirm}>
-            {confirmText}
+        <div
+          className={`mt-6 flex justify-center gap-2 ${
+            isConfirm ? "flex-col-reverse sm:flex-row" : ""
+          }`}
+        >
+          {isConfirm && onCancel ? (
+            <Button
+              type="button"
+              variant="outline"
+              onClick={onCancel}
+              disabled={isLoading}
+            >
+              {cancelText}
+            </Button>
+          ) : null}
+          <Button
+            type="button"
+            variant={isConfirm ? "destructive" : "default"}
+            onClick={onConfirm}
+            disabled={isLoading}
+          >
+            {isLoading ? "Aguarde..." : confirmText}
           </Button>
         </div>
       </div>

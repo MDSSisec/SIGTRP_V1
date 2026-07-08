@@ -1,14 +1,21 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import styles from "./IdentificacaoResponsavelTecnico.module.css"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 import { IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS, IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS } from "@/features/projetos/constants/ted/identificacao-responsavel-tecnico"
 import { COMUNS_LABELS } from "@/features/projetos/constants/ted/communs"
+import {
+  fetchTedIdentificacao,
+  saveTedIdentificacaoResponsavelTecnico,
+} from "@/features/projetos/services"
+import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { useAsyncData } from "@/hooks/use-async-data"
+import type { ProjectFormSectionProps } from "../../sections-map"
 
 interface DadosIdentificacaoResponsavelTecnico {
   nome: string
@@ -16,11 +23,6 @@ interface DadosIdentificacaoResponsavelTecnico {
   telefone: string
   celular: string
   email: string
-}
-
-interface PropsFormularioIdentificacaoResponsavelTecnico {
-  onChange?: (dados: DadosIdentificacaoResponsavelTecnico) => void
-  projectId?: string
 }
 
 const VAZIO_RT: DadosIdentificacaoResponsavelTecnico = {
@@ -51,54 +53,98 @@ function emailValido(email: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
-function getInicialResponsavelTecnico(projectData: ReturnType<typeof useProjectData>): DadosIdentificacaoResponsavelTecnico {
-  const arr = projectData?.identificacao?.responsaveis_tecnicos
-  const r = arr?.length ? arr[0] : undefined
-
-  if (!r) return VAZIO_RT
+function mapIdentificacaoToForm(
+  identificacao: TedIdentificacao | null,
+): DadosIdentificacaoResponsavelTecnico {
+  if (!identificacao) return VAZIO_RT
 
   return {
-    nome: r.nome ?? "",
-    cargo: r.cargo ?? "",
-    telefone: r.telefone ?? "",
-    celular: r.telefone ?? "",
-    email: r.email ?? "",
+    nome: identificacao.responsavelTecnicoNome ?? "",
+    cargo: identificacao.responsavelTecnicoCargo ?? "",
+    telefone: identificacao.responsavelTecnicoTelefone
+      ? formatTelefoneFixo(identificacao.responsavelTecnicoTelefone)
+      : "",
+    celular: identificacao.responsavelTecnicoCelular
+      ? formatTelefone(identificacao.responsavelTecnicoCelular)
+      : "",
+    email: identificacao.responsavelTecnicoEmail ?? "",
   }
 }
 
 function FormularioIdentificacaoResponsavelTecnico({
-  onChange,
   projectId,
-}: PropsFormularioIdentificacaoResponsavelTecnico) {
-  const projectData = useProjectData()
-
-  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoResponsavelTecnico>(() =>
-    projectId === "2" && projectData ? getInicialResponsavelTecnico(projectData) : VAZIO_RT
-  )
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoResponsavelTecnico>(VAZIO_RT)
 
   // Controla se o campo email já foi tocado (para só mostrar erro após interação)
   const [emailTocado, setEmailTocado] = useState(false)
 
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage: "Não foi possível carregar o responsável técnico.",
+    loadOnMount: Boolean(projectId),
+  })
+
   useEffect(() => {
-    if (projectId === "2" && projectData) {
-      setDadosFormulario(getInicialResponsavelTecnico(projectData))
-    }
-  }, [projectId, projectData])
+    if (projectId) void reload()
+  }, [projectId, reload])
+
+  useEffect(() => {
+    setDadosFormulario(mapIdentificacaoToForm(identificacao))
+  }, [identificacao])
 
   const aoAlterar = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target
-    
+    setSaveError(null)
+
     if (name === COMUNS_LABELS.LABEL_CELULAR) {
       value = formatTelefone(value)
     } else if (name === "telefone") {
       value = formatTelefoneFixo(value)
     }
 
-    const dadosAtualizados = { ...dadosFormulario, [name]: value }
-    setDadosFormulario(dadosAtualizados)
-    onChange?.(dadosAtualizados)
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }))
   }
 
+  const handleSave = async () => {
+    if (!projectId) return
+
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      const salvo = await saveTedIdentificacaoResponsavelTecnico(projectId, {
+        responsavelTecnicoNome: dadosFormulario.nome,
+        responsavelTecnicoCargo: dadosFormulario.cargo,
+        responsavelTecnicoTelefone: dadosFormulario.telefone,
+        responsavelTecnicoCelular: dadosFormulario.celular,
+        responsavelTecnicoEmail: dadosFormulario.email,
+      })
+
+      setDadosFormulario(mapIdentificacaoToForm(salvo))
+      setIsEditing(false)
+      await reload()
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o responsável técnico.",
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isLocked = readOnlyView || !isEditing
   const emailInvalido = emailTocado && dadosFormulario.email.length > 0 && !emailValido(dadosFormulario.email)
 
   return (
@@ -111,8 +157,7 @@ function FormularioIdentificacaoResponsavelTecnico({
         <div className={styles.formGrid}>
           <div className={styles.fieldGroup}>
             <Label htmlFor="nome" className={styles.label}>
-              {COMUNS_LABELS.LABEL_NAME}
-              <span className={styles.required}></span>
+              {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_NOME}
             </Label>
             <Input
               id="nome"
@@ -121,13 +166,13 @@ function FormularioIdentificacaoResponsavelTecnico({
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_NOME}
               className={styles.input}
+              disabled={isLocked}
             />
           </div>
 
           <div className={styles.fieldGroup}>
             <Label htmlFor="cargo" className={styles.label}>
               {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_CARGO}
-              <span className={styles.required}></span>
             </Label>
             <Input
               id="cargo"
@@ -136,6 +181,7 @@ function FormularioIdentificacaoResponsavelTecnico({
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_CARGO}
               className={styles.input}
+              disabled={isLocked}
             />
           </div>
 
@@ -150,6 +196,7 @@ function FormularioIdentificacaoResponsavelTecnico({
                 placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_TELEFONE}
                 className={styles.input}
                 maxLength={14}
+                disabled={isLocked}
               />
             </div>
 
@@ -163,25 +210,25 @@ function FormularioIdentificacaoResponsavelTecnico({
                 placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_CELULAR}
                 className={styles.input}
                 maxLength={15}
+                disabled={isLocked}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
             <Label htmlFor="email" className={styles.label}>
-              {COMUNS_LABELS.LABEL_EMAIL}
-              <span className={styles.required}></span>
+              {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_EMAIL}
             </Label>
             <Input
               id="email"
-              name={COMUNS_LABELS.LABEL_EMAIL}
+              name={IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_EMAIL}
               type="email"
               value={dadosFormulario.email}
               onChange={aoAlterar}
               onBlur={() => setEmailTocado(true)}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_EMAIL}
               className={`${styles.input} ${emailInvalido ? styles.inputError : ""}`}
-              required
+              disabled={isLocked}
             />
             {emailInvalido && (
               <span className={styles.errorMessage}>
@@ -192,10 +239,41 @@ function FormularioIdentificacaoResponsavelTecnico({
         </div>
       </section>
 
-      <div className={styles.actions}>
-        <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
-      </div>
+      {!readOnlyView && (
+        <div className={styles.actions}>
+          {saveError ? (
+            <p className="mr-auto text-sm text-destructive">{saveError}</p>
+          ) : null}
+          {!isEditing ? (
+            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+              Editar
+            </GenericButton>
+          ) : (
+            <>
+              <GenericButton
+                variant="outline"
+                icon={X}
+                disabled={isSaving}
+                onClick={() => {
+                  setDadosFormulario(mapIdentificacaoToForm(identificacao))
+                  setSaveError(null)
+                  setIsEditing(false)
+                }}
+              >
+                Cancelar
+              </GenericButton>
+              <GenericButton
+                variant="salvar"
+                icon={Check}
+                disabled={isSaving}
+                onClick={() => void handleSave()}
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
+              </GenericButton>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

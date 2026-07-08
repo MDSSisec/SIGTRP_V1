@@ -1,5 +1,7 @@
 import {
   STATUS_PROJETO_STEPS,
+  etapaOrdemToStepIndex,
+  getProjectStepIndex,
   statusToStepIndex,
 } from "../constants/ted/project"
 import type {
@@ -9,7 +11,7 @@ import type {
 import { parseValorModelo } from "../utils/ted-model"
 
 export type { CronogramaDataMapped, ProjectModelData } from "../types/ted"
-export { STATUS_PROJETO_STEPS, statusToStepIndex } from "../constants/ted/project"
+export { STATUS_PROJETO_STEPS, etapaOrdemToStepIndex, getProjectStepIndex, statusToStepIndex } from "../constants/ted/project"
 
 export function mapModeloCronogramaToForm(
   etapasCronograma: ProjectModelData["etapas_cronograma"],

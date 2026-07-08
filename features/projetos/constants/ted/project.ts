@@ -52,3 +52,21 @@ export function statusToStepIndex(status: StatusProjeto | string) {
   const index = STATUS_PROJETO_LIST.indexOf(status as StatusProjeto)
   return index >= 0 ? index : 0
 }
+
+/** Converte ordem da etapa no banco (1–10) para índice do StatusStepper (0–9). */
+export function etapaOrdemToStepIndex(ordem: number | null | undefined) {
+  if (!ordem || ordem < 1) return 0
+  return Math.min(ordem - 1, STATUS_PROJETO_LIST.length - 1)
+}
+
+/** Prioriza etapa_ordem do banco; fallback pelo nome do status. */
+export function getProjectStepIndex(data: {
+  etapaOrdem?: number | null
+  status?: string
+}) {
+  if (data.etapaOrdem != null && data.etapaOrdem >= 1) {
+    return etapaOrdemToStepIndex(data.etapaOrdem)
+  }
+
+  return statusToStepIndex(data.status ?? "TRP em Elaboração")
+}

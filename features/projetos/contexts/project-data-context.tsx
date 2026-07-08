@@ -4,9 +4,15 @@ import * as React from "react"
 
 import type { ProjectModelData } from "../types/ted"
 
-type ProjectDataContextValue = ProjectModelData | null
+type ProjectDataContextValue = {
+  projectData: ProjectModelData | null
+  updateProjectData: (patch: Partial<ProjectModelData>) => void
+}
 
-const ProjectDataContext = React.createContext<ProjectDataContextValue>(null)
+const ProjectDataContext = React.createContext<ProjectDataContextValue>({
+  projectData: null,
+  updateProjectData: () => {},
+})
 
 type ProjectDataProviderProps = {
   projectId: string
@@ -15,16 +21,35 @@ type ProjectDataProviderProps = {
 }
 
 export function ProjectDataProvider({
-  projectData,
+  projectData: initialProjectData,
   children,
 }: ProjectDataProviderProps) {
+  const [projectData, setProjectData] = React.useState(initialProjectData)
+
+  React.useEffect(() => {
+    setProjectData(initialProjectData)
+  }, [initialProjectData])
+
+  const updateProjectData = React.useCallback((patch: Partial<ProjectModelData>) => {
+    setProjectData((current) => (current ? { ...current, ...patch } : current))
+  }, [])
+
+  const value = React.useMemo(
+    () => ({ projectData, updateProjectData }),
+    [projectData, updateProjectData],
+  )
+
   return (
-    <ProjectDataContext.Provider value={projectData}>
+    <ProjectDataContext.Provider value={value}>
       {children}
     </ProjectDataContext.Provider>
   )
 }
 
 export function useProjectData() {
-  return React.useContext(ProjectDataContext)
+  return React.useContext(ProjectDataContext).projectData
+}
+
+export function useUpdateProjectData() {
+  return React.useContext(ProjectDataContext).updateProjectData
 }

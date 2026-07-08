@@ -1,15 +1,36 @@
 "use client"
 
+import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import styles from "./IdentificacaoProponente.module.css"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import {
+  fetchEstados,
+  fetchMunicipiosByUf,
+  fetchTedIdentificacao,
+  saveTedIdentificacaoProponente,
+  type IbgeEstado,
+  type IbgeMunicipio,
+} from "@/features/projetos/services"
+import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { useAsyncData } from "@/hooks/use-async-data"
+import { cn } from "@/lib/utils"
 import { 
   IDENTIFICACAO_PROPONENTE_LABELS, 
   IDENTIFICACAO_PROPONENTE_PLACEHOLDERS
 } from "@/features/projetos/constants/ted/identificacao-proponente"
+import type { ProjectFormSectionProps } from "../../sections-map"
+
+/** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
+const VIEW_MODE_FIELD_CLASS =
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
+
+const SELECT_CLASS_NAME =
+  "h-8 w-full min-w-0 rounded-lg border border-input bg-transparent px-2.5 py-1 text-base transition-colors outline-none " +
+  "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 " +
+  "disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50 md:text-sm dark:bg-input/30"
 
 interface DadosIdentificacaoProponente {
   nome: string
@@ -19,16 +40,13 @@ interface DadosIdentificacaoProponente {
   enderecoCompleto: string
   bairro: string
   municipio: string
+  municipioIbge: number | null
   cep: string
   uf: string
+  ufIbge: number | null
   telefoneFax: string
   email: string
   paginaWeb: string
-}
-
-interface PropsFormularioIdentificacaoProponente {
-  onChange?: (dados: DadosIdentificacaoProponente) => void
-  projectId?: string
 }
 
 const VAZIO_Proponente: DadosIdentificacaoProponente = {
@@ -39,20 +57,13 @@ const VAZIO_Proponente: DadosIdentificacaoProponente = {
   enderecoCompleto: "",
   bairro: "",
   municipio: "",
+  municipioIbge: null,
   cep: "",
   uf: "",
+  ufIbge: null,
   telefoneFax: "",
   email: "",
   paginaWeb: "",
-}
-
-function dataBrParaInput(d: string | undefined): string {
-  if (!d) return ""
-  const parts = d.trim().split(/[/-]/)
-  if (parts.length !== 3) return d
-  const [a, b, c] = parts
-  if (a.length === 4) return d
-  return `${c}-${b.padStart(2, "0")}-${a.padStart(2, "0")}`
 }
 
 function formatCNPJ(value: string) {
@@ -80,51 +91,130 @@ function formatCEP(value: string) {
     .slice(0, 9)
 }
 
-function getInicialProponente(projectData: ReturnType<typeof useProjectData>): DadosIdentificacaoProponente {
-  const e = projectData?.identificacao?.entidade_proponente
-  if (!e) return VAZIO_Proponente
-
-  const end = e.endereco
-  const contato = e.contato
-  const email = contato?.emails?.length ? contato.emails[0] ?? "" : ""
+function mapIdentificacaoToForm(
+  identificacao: TedIdentificacao | null,
+): DadosIdentificacaoProponente {
+  if (!identificacao) return VAZIO_Proponente
 
   return {
-    nome: e.nome ?? "",
-    cnpj: e.cnpj ?? "",
-    dataFundacao: dataBrParaInput(e.data_fundacao) || (e.data_fundacao ?? ""),
-    registroCnpj: e.registro_cnpj ?? "",
-    enderecoCompleto: end?.logradouro ?? "",
-    bairro: end?.bairro ?? "",
-    municipio: end?.municipio ?? "",
-    cep: end?.cep ?? "",
-    uf: end?.uf ?? "",
-    telefoneFax: contato?.telefone ?? "",
-    email,
-    paginaWeb: contato?.site ?? "",
+    nome: identificacao.proponenteNome ?? "",
+    cnpj: identificacao.proponenteCnpj ? formatCNPJ(identificacao.proponenteCnpj) : "",
+    dataFundacao: identificacao.proponenteDataFundacao ?? "",
+    registroCnpj: identificacao.proponenteRegistroCnpj ?? "",
+    enderecoCompleto: identificacao.proponenteEndereco ?? "",
+    bairro: identificacao.proponenteBairro ?? "",
+    municipio: "",
+    municipioIbge: identificacao.proponenteMunicipioIbge,
+    cep: identificacao.proponenteCep ? formatCEP(identificacao.proponenteCep) : "",
+    uf: "",
+    ufIbge: identificacao.proponenteUfIbge,
+    telefoneFax: identificacao.proponenteTelefone
+      ? formatTelefone(identificacao.proponenteTelefone)
+      : "",
+    email: identificacao.proponenteEmail ?? "",
+    paginaWeb: identificacao.proponentePaginaWeb ?? "",
   }
 }
 
 function FormularioIdentificacaoProponente({
-  onChange,
   projectId,
-}: PropsFormularioIdentificacaoProponente) {
-  const projectData = useProjectData()
-
-  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoProponente>(() =>
-    projectId === "2" && projectData ? getInicialProponente(projectData) : VAZIO_Proponente
-  )
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoProponente>(VAZIO_Proponente)
 
   const [cepStatus, setCepStatus] = useState<"idle" | "loading" | "success" | "error">("idle")
+
+  const [estados, setEstados] = useState<IbgeEstado[]>([])
+  const [municipios, setMunicipios] = useState<IbgeMunicipio[]>([])
+  const [carregandoMunicipios, setCarregandoMunicipios] = useState(false)
 
   // AbortController para cancelar requisições anteriores (evita race condition)
   const abortControllerRef = useRef<AbortController | null>(null)
   const cepTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage: "Não foi possível carregar o proponente.",
+    loadOnMount: Boolean(projectId),
+  })
+
   useEffect(() => {
-    if (projectId === "2" && projectData) {
-      setDadosFormulario(getInicialProponente(projectData))
+    if (projectId) void reload()
+  }, [projectId, reload])
+
+  useEffect(() => {
+    setDadosFormulario(mapIdentificacaoToForm(identificacao))
+  }, [identificacao])
+
+  // Carrega a lista de UFs do IBGE uma única vez
+  useEffect(() => {
+    const controller = new AbortController()
+
+    fetchEstados(controller.signal)
+      .then(setEstados)
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === "AbortError") return
+        setEstados([])
+      })
+
+    return () => controller.abort()
+  }, [])
+
+  // Deriva a sigla da UF a partir do código IBGE salvo (dispara a carga de municípios)
+  useEffect(() => {
+    if (!estados.length) return
+
+    setDadosFormulario((prev) => {
+      if (prev.ufIbge == null || prev.uf) return prev
+      const estado = estados.find((e) => e.id === prev.ufIbge)
+      return estado ? { ...prev, uf: estado.sigla } : prev
+    })
+  }, [estados])
+
+  // Preenche o nome do município a partir do código IBGE salvo
+  useEffect(() => {
+    if (!municipios.length) return
+
+    setDadosFormulario((prev) => {
+      if (prev.municipioIbge == null || prev.municipio) return prev
+      const municipio = municipios.find((m) => m.id === prev.municipioIbge)
+      return municipio ? { ...prev, municipio: municipio.nome } : prev
+    })
+  }, [municipios])
+
+  // Carrega os municípios sempre que a UF selecionada muda
+  useEffect(() => {
+    const uf = dadosFormulario.uf.trim().toUpperCase()
+
+    if (!uf) {
+      setMunicipios([])
+      return
     }
-  }, [projectId, projectData])
+
+    const controller = new AbortController()
+    setCarregandoMunicipios(true)
+
+    fetchMunicipiosByUf(uf, controller.signal)
+      .then((lista) => {
+        setMunicipios(lista)
+        setCarregandoMunicipios(false)
+      })
+      .catch((err: unknown) => {
+        if (err instanceof Error && err.name === "AbortError") return
+        setMunicipios([])
+        setCarregandoMunicipios(false)
+      })
+
+    return () => controller.abort()
+  }, [dadosFormulario.uf])
 
   const buscarCep = useCallback(async (cep: string) => {
     const digits = cep.replace(/\D/g, "")
@@ -153,16 +243,20 @@ function FormularioIdentificacaoProponente({
         return
       }
 
-      setDadosFormulario(prev => {
-        const atualizado: DadosIdentificacaoProponente = {
+      setDadosFormulario((prev) => {
+        const ufSigla = data.uf || prev.uf
+        const estadoEncontrado = estados.find((estado) => estado.sigla === ufSigla)
+        const municipioIbge = data.ibge ? Number(data.ibge) : prev.municipioIbge
+
+        return {
           ...prev,
           bairro: data.bairro || prev.bairro,
           municipio: data.localidade || prev.municipio,
-          uf: data.uf || prev.uf,
+          municipioIbge: Number.isFinite(municipioIbge) ? municipioIbge : prev.municipioIbge,
+          uf: ufSigla,
+          ufIbge: estadoEncontrado?.id ?? prev.ufIbge,
           enderecoCompleto: prev.enderecoCompleto || data.logradouro || "",
         }
-        onChange?.(atualizado)
-        return atualizado
       })
 
       setCepStatus("success")
@@ -171,10 +265,12 @@ function FormularioIdentificacaoProponente({
       if (err instanceof Error && err.name === "AbortError") return
       setCepStatus("error")
     }
-  }, [onChange])
+  }, [estados])
 
   // Debounce: aguarda 600ms após parar de digitar para chamar a API
   useEffect(() => {
+    if (!isEditing) return
+
     const digits = dadosFormulario.cep.replace(/\D/g, "")
 
     if (digits.length < 8) {
@@ -191,11 +287,12 @@ function FormularioIdentificacaoProponente({
     return () => {
       if (cepTimerRef.current) clearTimeout(cepTimerRef.current)
     }
-  }, [dadosFormulario.cep, buscarCep])
+  }, [dadosFormulario.cep, buscarCep, isEditing])
 
   const aoAlterar = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target
-    if (name === "cnpj" || name === "registroCnpj") {
+    setSaveError(null)
+    if (name === "cnpj") {
       value = formatCNPJ(value)
     } else if (name === "telefoneFax") {
       value = formatTelefone(value)
@@ -203,10 +300,82 @@ function FormularioIdentificacaoProponente({
       value = formatCEP(value)
       setCepStatus("idle") // Reseta status ao editar o campo
     }
-    const dadosAtualizados = { ...dadosFormulario, [name]: value }
-    setDadosFormulario(dadosAtualizados)
-    onChange?.(dadosAtualizados)
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }))
   }
+
+  const aoAlterarSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const { name, value } = e.target
+    setSaveError(null)
+
+    if (name === "uf") {
+      const estadoEncontrado = estados.find((estado) => String(estado.id) === value)
+      setDadosFormulario((prev) => ({
+        ...prev,
+        uf: estadoEncontrado?.sigla ?? "",
+        ufIbge: estadoEncontrado?.id ?? null,
+        municipio: "",
+        municipioIbge: null,
+      }))
+      return
+    }
+
+    if (name === "municipio") {
+      const municipioEncontrado = municipios.find((m) => String(m.id) === value)
+      setDadosFormulario((prev) => ({
+        ...prev,
+        municipio: municipioEncontrado?.nome ?? "",
+        municipioIbge: municipioEncontrado?.id ?? null,
+      }))
+      return
+    }
+
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }))
+  }
+
+  const handleSave = async () => {
+    if (!projectId) return
+
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      const salvo = await saveTedIdentificacaoProponente(projectId, {
+        proponenteNome: dadosFormulario.nome,
+        proponenteCnpj: dadosFormulario.cnpj,
+        proponenteDataFundacao: dadosFormulario.dataFundacao,
+        proponenteRegistroCnpj: dadosFormulario.registroCnpj,
+        proponenteEndereco: dadosFormulario.enderecoCompleto,
+        proponenteBairro: dadosFormulario.bairro,
+        proponenteUfIbge: dadosFormulario.ufIbge,
+        proponenteMunicipioIbge: dadosFormulario.municipioIbge,
+        proponenteCep: dadosFormulario.cep,
+        proponenteTelefone: dadosFormulario.telefoneFax,
+        proponenteEmail: dadosFormulario.email,
+        proponentePaginaWeb: dadosFormulario.paginaWeb,
+      })
+
+      setDadosFormulario(mapIdentificacaoToForm(salvo))
+      setIsEditing(false)
+      await reload()
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o proponente.",
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isLocked = readOnlyView || !isEditing
+  const isViewMode = !isEditing
+  const fieldClassName = cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)
+  const selectClassName = cn(
+    SELECT_CLASS_NAME,
+    styles.input,
+    isViewMode && VIEW_MODE_FIELD_CLASS,
+  )
 
   const cepFeedback: Record<string, { texto: string; cor: string }> = {
     loading: { texto: "Buscando CEP...", cor: "gray" },
@@ -220,26 +389,25 @@ function FormularioIdentificacaoProponente({
         <h2 className={styles.title}>2. Identificação do(a) Proponente</h2>
 
         <div className={styles.formGrid}>
-          <div className={styles.fieldGroup}>
-            <Label htmlFor="nome" className={styles.label}>
-              {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_NOME}
-              <span className={styles.required}></span>
-            </Label>
-            <Input
-              id="nome"
-              name="nome"
-              value={dadosFormulario.nome}
-              onChange={aoAlterar}
-              placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_NOME}
-              className={styles.input}
-            />
-          </div>
-
           <div className={styles.grid2}>
+            <div className={styles.fieldGroup}>
+              <Label htmlFor="nome" className={styles.label}>
+                {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_NOME}
+              </Label>
+              <Input
+                id="nome"
+                name="nome"
+                value={dadosFormulario.nome}
+                onChange={aoAlterar}
+                placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_NOME}
+                className={fieldClassName}
+                disabled={isLocked}
+              />
+            </div>
+
             <div className={styles.fieldGroup}>
               <Label htmlFor="cnpj" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_CNPJ}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="cnpj"
@@ -247,15 +415,17 @@ function FormularioIdentificacaoProponente({
                 value={dadosFormulario.cnpj}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CNPJ}
-                className={styles.input}
+                className={fieldClassName}
                 maxLength={18}
+                disabled={isLocked}
               />
             </div>
+          </div>
 
+          <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
               <Label htmlFor="dataFundacao" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_DATA_FUNDACAO}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="dataFundacao"
@@ -263,31 +433,30 @@ function FormularioIdentificacaoProponente({
                 type="date"
                 value={dadosFormulario.dataFundacao}
                 onChange={aoAlterar}
-                className={styles.input}
+                className={fieldClassName}
+                disabled={isLocked}
+              />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <Label htmlFor="registroCnpj" className={styles.label}>
+                {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_REGISTRO_CNPJ}
+              </Label>
+              <Input
+                id="registroCnpj"
+                name="registroCnpj"
+                type="date"
+                value={dadosFormulario.registroCnpj}
+                onChange={aoAlterar}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="registroCnpj" className={styles.label}>
-              {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_REGISTRO_CNPJ}
-              <span className={styles.required}></span>
-            </Label>
-            <Input
-              id="registroCnpj"
-              name="registroCnpj"
-              value={dadosFormulario.registroCnpj}
-              onChange={aoAlterar}
-              placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_REGISTRO_CNPJ}
-              className={styles.input}
-              maxLength={18}
-            />
-          </div>
-
-          <div className={styles.fieldGroup}>
             <Label htmlFor="enderecoCompleto" className={styles.label}>
               {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_ENDERECO_COMPLETO}
-              <span className={styles.required}></span>
             </Label>
             <Input
               id="enderecoCompleto"
@@ -295,7 +464,8 @@ function FormularioIdentificacaoProponente({
               value={dadosFormulario.enderecoCompleto}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_ENDERECO_COMPLETO}
-              className={styles.input}
+              className={fieldClassName}
+              disabled={isLocked}
             />
           </div>
 
@@ -303,7 +473,6 @@ function FormularioIdentificacaoProponente({
             <div className={styles.fieldGroup}>
               <Label htmlFor="cep" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_CEP}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="cep"
@@ -311,8 +480,9 @@ function FormularioIdentificacaoProponente({
                 value={dadosFormulario.cep}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CEP}
-                className={styles.input}
+                className={fieldClassName}
                 maxLength={9}
+                disabled={isLocked}
               />
               {cepStatus !== "idle" && (
                 <span style={{ fontSize: "12px", marginTop: "4px", display: "block", color: cepFeedback[cepStatus].cor }}>
@@ -324,17 +494,22 @@ function FormularioIdentificacaoProponente({
             <div className={styles.fieldGroup}>
               <Label htmlFor="uf" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_UF}
-                <span className={styles.required}></span>
               </Label>
-              <Input
+              <select
                 id="uf"
                 name="uf"
-                value={dadosFormulario.uf}
-                onChange={aoAlterar}
-                placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_UF}
-                maxLength={2}
-                className={styles.input}
-              />
+                value={dadosFormulario.ufIbge ?? ""}
+                onChange={aoAlterarSelect}
+                className={selectClassName}
+                disabled={isLocked}
+              >
+                <option value="">Selecione a UF...</option>
+                {estados.map((estado) => (
+                  <option key={estado.id} value={estado.id}>
+                    {estado.sigla} - {estado.nome}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -342,29 +517,42 @@ function FormularioIdentificacaoProponente({
             <div className={styles.fieldGroup}>
               <Label htmlFor="bairro" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_BAIRRO}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="bairro"
                 name="bairro"
                 value={dadosFormulario.bairro}
                 onChange={aoAlterar}
-                className={styles.input}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
 
             <div className={styles.fieldGroup}>
               <Label htmlFor="municipio" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_MUNICIPIO}
-                <span className={styles.required}></span>
               </Label>
-              <Input
+              <select
                 id="municipio"
                 name="municipio"
-                value={dadosFormulario.municipio}
-                onChange={aoAlterar}
-                className={styles.input}
-              />
+                value={dadosFormulario.municipioIbge ?? ""}
+                onChange={aoAlterarSelect}
+                className={selectClassName}
+                disabled={isLocked || !dadosFormulario.uf || carregandoMunicipios}
+              >
+                <option value="">
+                  {!dadosFormulario.uf
+                    ? "Selecione a UF primeiro"
+                    : carregandoMunicipios
+                      ? "Carregando municípios..."
+                      : "Selecione o município..."}
+                </option>
+                {municipios.map((municipio) => (
+                  <option key={municipio.id} value={municipio.id}>
+                    {municipio.nome}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 
@@ -372,7 +560,6 @@ function FormularioIdentificacaoProponente({
             <div className={styles.fieldGroup}>
               <Label htmlFor="telefoneFax" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_TELEFONE_FAX}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="telefoneFax"
@@ -380,15 +567,15 @@ function FormularioIdentificacaoProponente({
                 value={dadosFormulario.telefoneFax}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_TELEFONE_FAX}
-                className={styles.input}
+                className={fieldClassName}
                 maxLength={15}
+                disabled={isLocked}
               />
             </div>
 
             <div className={styles.fieldGroup}>
               <Label htmlFor="email" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_EMAIL}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="email"
@@ -397,8 +584,8 @@ function FormularioIdentificacaoProponente({
                 value={dadosFormulario.email}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_EMAIL}
-                className={styles.input}
-                required
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
           </div>
@@ -406,7 +593,6 @@ function FormularioIdentificacaoProponente({
           <div className={styles.fieldGroup}>
             <Label htmlFor="paginaWeb" className={styles.label}>
               {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_PAGINA_WEB}
-              <span className={styles.required}></span>
             </Label>
             <Input
               id="paginaWeb"
@@ -414,16 +600,48 @@ function FormularioIdentificacaoProponente({
               value={dadosFormulario.paginaWeb}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_PAGINA_WEB}
-              className={styles.input}
+              className={fieldClassName}
+              disabled={isLocked}
             />
           </div>
         </div>
       </section>
 
-      <div className={styles.actions}>
-        <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
-      </div>
+      {!readOnlyView && (
+        <div className={styles.actions}>
+          {saveError ? (
+            <p className="mr-auto text-sm text-destructive">{saveError}</p>
+          ) : null}
+          {!isEditing ? (
+            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+              Editar
+            </GenericButton>
+          ) : (
+            <>
+              <GenericButton
+                variant="outline"
+                icon={X}
+                disabled={isSaving}
+                onClick={() => {
+                  setDadosFormulario(mapIdentificacaoToForm(identificacao))
+                  setSaveError(null)
+                  setIsEditing(false)
+                }}
+              >
+                Cancelar
+              </GenericButton>
+              <GenericButton
+                variant="salvar"
+                icon={Check}
+                disabled={isSaving}
+                onClick={() => void handleSave()}
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
+              </GenericButton>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

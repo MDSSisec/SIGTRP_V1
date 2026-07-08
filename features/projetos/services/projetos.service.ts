@@ -36,6 +36,40 @@ export async function createProjeto(data: NewProjetoFormValues) {
   return result.projeto
 }
 
+export async function deleteProjeto(id: string) {
+  const response = await fetch(`/api/projetos/${id}`, {
+    method: "DELETE",
+  })
+
+  await parseApiResponse<{ success: boolean }>(response)
+}
+
+export type UpdateProjetoInformacoesInput = {
+  etapaId?: string
+  responsavelInternoId: string
+  responsavelExternoId: string
+}
+
+type UpdateProjetoResponse = {
+  projeto: Projeto
+}
+
+export async function updateProjetoInformacoes(
+  id: string,
+  data: UpdateProjetoInformacoesInput,
+) {
+  const response = await fetch(`/api/projetos/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+
+  const result = await parseApiResponse<UpdateProjetoResponse>(response)
+  return result.projeto
+}
+
 export async function fetchResponsaveisInternos() {
   const response = await fetch("/api/projetos/responsaveis/internos")
   const data = await parseApiResponse<ResponsaveisResponse>(response)
@@ -46,4 +80,20 @@ export async function fetchResponsaveisExternos() {
   const response = await fetch("/api/projetos/responsaveis/externos")
   const data = await parseApiResponse<ResponsaveisResponse>(response)
   return data.responsaveis
+}
+
+export type ProjectStage = {
+  id: string
+  ordem: number
+  nome: string
+}
+
+type ProjectStagesResponse = {
+  etapas: ProjectStage[]
+}
+
+export async function fetchProjectStages() {
+  const response = await fetch("/api/projetos/etapas")
+  const data = await parseApiResponse<ProjectStagesResponse>(response)
+  return data.etapas
 }

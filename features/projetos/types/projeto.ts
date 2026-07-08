@@ -21,11 +21,14 @@ export type ProjetoRow = {
   responsavel_interno_id: string
   responsavel_externo_id: string
   criado_por_id: string
+  etapa_id?: string | null
   criado_em: string
   atualizado_em: string
   responsavel_interno_nome?: string
   responsavel_externo_nome?: string
   criado_por_nome?: string
+  etapa_nome?: string | null
+  etapa_ordem?: number | null
 }
 
 export type Projeto = {
@@ -44,6 +47,9 @@ export type Projeto = {
   responsavel: string
   status: ProjetoStatus
   tipo: string
+  etapaId: string | null
+  etapaNome: string
+  etapaOrdem: number | null
 }
 
 export type ResponsavelOption = {
@@ -82,5 +88,8 @@ export function toProjeto(row: ProjetoRow): Projeto {
     responsavel: responsavelInternoNome,
     status: "Em análise",
     tipo: formatProjetoTipoLabel(tipoProjeto),
+    etapaId: row.etapa_id ?? null,
+    etapaNome: row.etapa_nome ?? "TRP em Elaboração",
+    etapaOrdem: row.etapa_ordem ?? null,
   }
 }

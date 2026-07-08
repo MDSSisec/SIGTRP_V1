@@ -52,8 +52,22 @@
   min-width: 0;
 }
 
+.input:disabled,
+.textarea:disabled {
+  background: #ffffff !important;
+  opacity: 1;
+  color: var(--foreground);
+}
+
 :global(.dark) .input {
   background: oklch(0.22 0.006 264) !important;
+}
+
+:global(.dark) .input:disabled,
+:global(.dark) .textarea:disabled {
+  background: oklch(0.22 0.006 264) !important;
+  opacity: 1;
+  color: var(--foreground);
 }
 
 .grid2 {

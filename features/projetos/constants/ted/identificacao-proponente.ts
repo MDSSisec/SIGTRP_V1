@@ -1,22 +1,21 @@
 export const IDENTIFICACAO_PROPONENTE_LABELS = {
-  LABEL_NOME: "Nome da entidade proponente",
+  LABEL_NOME: "Nome",
   LABEL_CNPJ: "CNPJ",
-  LABEL_DATA_FUNDACAO: "Data de fundação",
-  LABEL_REGISTRO_CNPJ: "Registro CNPJ",
-  LABEL_ENDERECO_COMPLETO: "Endereço completo",
+  LABEL_DATA_FUNDACAO: "Data da Fundação",
+  LABEL_REGISTRO_CNPJ: "Data do Registro CNPJ",
+  LABEL_ENDERECO_COMPLETO: "Endereço Completo",
   LABEL_CEP: "CEP",
   LABEL_UF: "UF",
   LABEL_BAIRRO: "Bairro",
   LABEL_MUNICIPIO: "Município",
   LABEL_TELEFONE_FAX: "Telefone / Fax",
   LABEL_EMAIL: "E-mail",
-  LABEL_PAGINA_WEB: "Página web",
+  LABEL_PAGINA_WEB: "Página web (site)",
 } as const
 
 export const IDENTIFICACAO_PROPONENTE_PLACEHOLDERS = {
   PLACEHOLDER_NOME: "Informe o nome da entidade",
   PLACEHOLDER_CNPJ: "00.000.000/0000-00",
-  PLACEHOLDER_REGISTRO_CNPJ: "Informe o registro CNPJ",
   PLACEHOLDER_ENDERECO_COMPLETO: "Informe o endereço completo",
   PLACEHOLDER_CEP: "00000-000",
   PLACEHOLDER_UF: "UF",

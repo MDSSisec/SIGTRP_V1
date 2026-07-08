@@ -17,7 +17,7 @@ import type { ProjectFormSectionProps } from "../sections-map"
 import { COMUNS_TITLES } from "@/features/projetos/constants/ted/communs"
 import type { StatusProjeto } from "@/features/projetos/constants/ted/project"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { STATUS_PROJETO_STEPS, statusToStepIndex } from "@/features/projetos/services/project-ted.service"
+import { STATUS_PROJETO_STEPS, getProjectStepIndex } from "@/features/projetos/services/project-ted.service"
 import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
 import { VisaoGeralPDF } from "./visaoGeralPDF"
 
@@ -100,7 +100,10 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
     }
   }, [projectData, status])
 
-  const currentStep = useMemo(() => statusToStepIndex(status), [status])
+  const currentStep = useMemo(
+    () => getProjectStepIndex(projectData ?? { status }),
+    [projectData, status],
+  )
 
   const handleExportPDF = async () => {
     if (!projetoResumo || !projectId) return

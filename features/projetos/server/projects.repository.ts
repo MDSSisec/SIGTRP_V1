@@ -22,15 +22,19 @@ const PROJECT_SELECT = `
     p.responsavel_interno_id,
     p.responsavel_externo_id,
     p.criado_por_id,
+    p.etapa_id,
     p.criado_em,
     p.atualizado_em,
     ui.nome AS responsavel_interno_nome,
     ue.nome AS responsavel_externo_nome,
-    uc.nome AS criado_por_nome
+    uc.nome AS criado_por_nome,
+    et.nome AS etapa_nome,
+    et.ordem AS etapa_ordem
   FROM "SIGTRP_TB_PROJECTS" p
   LEFT JOIN "SIGTRP_TB_USERS" ui ON ui.id = p.responsavel_interno_id
   LEFT JOIN "SIGTRP_TB_USERS" ue ON ue.id = p.responsavel_externo_id
   LEFT JOIN "SIGTRP_TB_USERS" uc ON uc.id = p.criado_por_id
+  LEFT JOIN "SIGTRP_TB_PROJECT_STAGES" et ON et.id = p.etapa_id
 `
 
 export async function listProjetos(): Promise<Projeto[]> {
@@ -60,10 +64,15 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
         responsavel_interno_id,
         responsavel_externo_id,
         criado_por_id,
+        etapa_id,
         criado_em,
         atualizado_em
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, NOW(), NOW())
+      VALUES (
+        $1, $2, $3, $4, $5, $6, $7,
+        (SELECT id FROM "SIGTRP_TB_PROJECT_STAGES" ORDER BY ordem ASC LIMIT 1),
+        NOW(), NOW()
+      )
     `,
     [
       id,
@@ -92,4 +101,109 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
   }
 
   return toProjeto(row)
+}
+
+export type UpdateProjetoInformacoesData = {
+  etapaId?: string
+  responsavelInternoId: string
+  responsavelExternoId: string
+}
+
+export async function getProjetoById(id: string): Promise<Projeto | null> {
+  const pool = getDbPool()
+
+  const result = await pool.query<ProjetoRow>(
+    `
+      ${PROJECT_SELECT}
+      WHERE p.id = $1
+      LIMIT 1
+    `,
+    [id],
+  )
+
+  const row = result.rows[0]
+  return row ? toProjeto(row) : null
+}
+
+export async function updateProjetoInformacoes(
+  id: string,
+  data: UpdateProjetoInformacoesData,
+  options: { alteradoPorId: string; includeInfoFields: boolean },
+): Promise<Projeto> {
+  const pool = getDbPool()
+  const current = await getProjetoById(id)
+
+  if (!current) {
+    throw new Error("Projeto não encontrado.")
+  }
+
+  const etapaId =
+    options.includeInfoFields && data.etapaId
+      ? data.etapaId
+      : current.etapaId
+
+  if (!etapaId) {
+    throw new Error("Etapa do projeto inválida.")
+  }
+
+  const etapaChanged =
+    options.includeInfoFields &&
+    Boolean(data.etapaId) &&
+    data.etapaId !== current.etapaId
+
+  await pool.query(
+    `
+      UPDATE "SIGTRP_TB_PROJECTS"
+      SET
+        etapa_id = $2,
+        responsavel_interno_id = $3,
+        responsavel_externo_id = $4,
+        atualizado_em = NOW()
+      WHERE id = $1
+    `,
+    [
+      id,
+      etapaId,
+      data.responsavelInternoId,
+      data.responsavelExternoId,
+    ],
+  )
+
+  if (etapaChanged) {
+    await pool.query(
+      `
+        INSERT INTO "SIGTRP_TB_PROJECT_STAGE_HISTORY" (
+          projeto_id,
+          etapa_id,
+          alterado_por_id
+        )
+        VALUES ($1, $2, $3)
+      `,
+      [id, etapaId, options.alteradoPorId],
+    )
+  }
+
+  const updated = await getProjetoById(id)
+
+  if (!updated) {
+    throw new Error("Não foi possível atualizar o projeto.")
+  }
+
+  return updated
+}
+
+export async function deleteProjeto(id: string): Promise<void> {
+  const pool = getDbPool()
+
+  const result = await pool.query(
+    `
+      DELETE FROM "SIGTRP_TB_PROJECTS"
+      WHERE id = $1
+    `,
+    [id],
+  )
+
+  if (result.rowCount === 0) {
+    throw new Error("Projeto não encontrado.")
+  }
 }

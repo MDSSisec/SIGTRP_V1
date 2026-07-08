@@ -1,17 +1,32 @@
 "use client"
 
-import React, { useEffect, useState } from "react"
+import React, { useCallback, useEffect, useState } from "react"
+import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import styles from "./IdentificacaoRepresentanteLegal.module.css"
-import { IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS, IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS } from "@/features/projetos/constants/ted/identificacao-representante-legal"
+import {
+  IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS,
+  IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS,
+} from "@/features/projetos/constants/ted/identificacao-representante-legal"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
+import {
+  fetchTedIdentificacao,
+  saveTedIdentificacaoRepresentante,
+} from "@/features/projetos/services"
+import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { useAsyncData } from "@/hooks/use-async-data"
+import { cn } from "@/lib/utils"
+import type { ProjectFormSectionProps } from "../../sections-map"
+
+/** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
+const VIEW_MODE_FIELD_CLASS =
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
 
 interface DadosIdentificacaoRepresentanteLegal {
   nome: string
-  matriculaSiape: string
+  cpf: string
   profissao: string
   cargo: string
   estadoCivil: string
@@ -19,14 +34,9 @@ interface DadosIdentificacaoRepresentanteLegal {
   email: string
 }
 
-interface PropsFormularioIdentificacaoRepresentanteLegal {
-  onChange?: (dados: DadosIdentificacaoRepresentanteLegal) => void
-  projectId?: string
-}
-
 const VAZIO_REP: DadosIdentificacaoRepresentanteLegal = {
   nome: "",
-  matriculaSiape: "",
+  cpf: "",
   profissao: "",
   cargo: "",
   estadoCivil: "",
@@ -34,11 +44,13 @@ const VAZIO_REP: DadosIdentificacaoRepresentanteLegal = {
   email: "",
 }
 
-function formatMatriculaSiape(value: string) {
+function formatCpf(value: string) {
   return value
     .replace(/\D/g, "")
-    .replace(/^(\d{6})(\d)/, "$1-$2")
-    .slice(0, 8)
+    .replace(/^(\d{3})(\d)/, "$1.$2")
+    .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
+    .replace(/\.(\d{3})(\d)/, ".$1-$2")
+    .slice(0, 14)
 }
 
 function formatTelefone(value: string) {
@@ -49,55 +61,122 @@ function formatTelefone(value: string) {
     .slice(0, 15)
 }
 
-function getInicialRepresentanteLegal(projectData: ReturnType<typeof useProjectData>): DadosIdentificacaoRepresentanteLegal {
-  const r = projectData?.identificacao?.representante_legal
-  if (!r) return VAZIO_REP
+function mapIdentificacaoToForm(
+  identificacao: TedIdentificacao | null,
+): DadosIdentificacaoRepresentanteLegal {
+  if (!identificacao) return VAZIO_REP
 
   return {
-    nome: r.nome ?? "",
-    matriculaSiape: r.matricula ?? "",
-    profissao: "",
-    cargo: r.cargo ?? "",
-    estadoCivil: r.estado_civil ?? "",
-    telefone: r.telefone ?? "",
-    email: r.email ?? "",
+    nome: identificacao.representanteNome ?? "",
+    cpf: identificacao.representanteCpf
+      ? formatCpf(identificacao.representanteCpf)
+      : "",
+    profissao: identificacao.representanteProfissao ?? "",
+    cargo: identificacao.representanteCargo ?? "",
+    estadoCivil: identificacao.representanteEstadoCivil ?? "",
+    telefone: identificacao.representanteTelefone
+      ? formatTelefone(identificacao.representanteTelefone)
+      : "",
+    email: identificacao.representanteEmail ?? "",
   }
 }
 
 function FormularioIdentificacaoRepresentanteLegal({
-  onChange,
   projectId,
-}: PropsFormularioIdentificacaoRepresentanteLegal) {
-  const projectData = useProjectData()
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
+  const [dadosFormulario, setDadosFormulario] =
+    useState<DadosIdentificacaoRepresentanteLegal>(VAZIO_REP)
 
-  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoRepresentanteLegal>(() =>
-    projectId === "2" && projectData ? getInicialRepresentanteLegal(projectData) : VAZIO_REP
-  )
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage: "Não foi possível carregar o representante legal.",
+    loadOnMount: Boolean(projectId),
+  })
 
   useEffect(() => {
-    if (projectId === "2" && projectData) {
-      setDadosFormulario(getInicialRepresentanteLegal(projectData))
-    }
-  }, [projectId, projectData])
+    if (projectId) void reload()
+  }, [projectId, reload])
+
+  useEffect(() => {
+    setDadosFormulario(mapIdentificacaoToForm(identificacao))
+  }, [identificacao])
 
   const aoAlterar = (e: React.ChangeEvent<HTMLInputElement>) => {
     let { name, value } = e.target
-    
-    if (name === "matriculaSiape") {
-      value = formatMatriculaSiape(value)
+    setSaveError(null)
+
+    if (name === "cpf") {
+      value = formatCpf(value)
     } else if (name === "telefone") {
       value = formatTelefone(value)
-    } else if (name === "profissao" || name === IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_NOME || name === "cargo" || name === "estadoCivil") {
+    } else if (
+      name === "nome" ||
+      name === "profissao" ||
+      name === "cargo" ||
+      name === "estadoCivil"
+    ) {
       if (/\d/.test(value)) {
-        alert(`O campo ${name === "profissao" ? "Profissão" : name === "cargo" ? "Cargo" : name === "estadoCivil" ? "Estado Civil" : "Nome"} não aceita números.`)
-        return 
+        alert(
+          `O campo ${
+            name === "profissao"
+              ? "Profissão"
+              : name === "cargo"
+                ? "Cargo"
+                : name === "estadoCivil"
+                  ? "Estado Civil"
+                  : "Nome"
+          } não aceita números.`,
+        )
+        return
       }
     }
 
-    const dadosAtualizados = { ...dadosFormulario, [name]: value }
-    setDadosFormulario(dadosAtualizados)
-    onChange?.(dadosAtualizados)
+    setDadosFormulario((prev) => ({ ...prev, [name]: value }))
   }
+
+  const handleSave = async () => {
+    if (!projectId) return
+
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      const salvo = await saveTedIdentificacaoRepresentante(projectId, {
+        representanteNome: dadosFormulario.nome,
+        representanteCpf: dadosFormulario.cpf,
+        representanteProfissao: dadosFormulario.profissao,
+        representanteCargo: dadosFormulario.cargo,
+        representanteEstadoCivil: dadosFormulario.estadoCivil,
+        representanteTelefone: dadosFormulario.telefone,
+        representanteEmail: dadosFormulario.email,
+      })
+
+      setDadosFormulario(mapIdentificacaoToForm(salvo))
+      setIsEditing(false)
+      await reload()
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar o representante legal.",
+      )
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  const isLocked = readOnlyView || !isEditing
+  const isViewMode = !isEditing
+  const fieldClassName = cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)
 
   return (
     <div className={styles.container}>
@@ -107,42 +186,43 @@ function FormularioIdentificacaoRepresentanteLegal({
         </h2>
 
         <div className={styles.formGrid}>
-          <div className={styles.fieldGroup}>
-            <Label htmlFor="nome" className={styles.label}>
-              {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_NOME}
-              <span className={styles.required}></span>
-            </Label>
-            <Input
-              id="nome"
-              name={IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_NOME}
-              value={dadosFormulario.nome}
-              onChange={aoAlterar}
-              placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_NOME}
-              className={styles.input}
-            />
-          </div>
-
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="matriculaSiape" className={styles.label}>
-                {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_MATRICULA_SIAPE}
-                <span className={styles.required}></span>
+              <Label htmlFor="nome" className={styles.label}>
+                {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_NOME}
               </Label>
               <Input
-                id="matriculaSiape"
-                name="matriculaSiape"
-                value={dadosFormulario.matriculaSiape}
+                id="nome"
+                name="nome"
+                value={dadosFormulario.nome}
                 onChange={aoAlterar}
-                placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_MATRICULA_SIAPE}
-                className={styles.input}
-                maxLength={8}
+                placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_NOME}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
 
             <div className={styles.fieldGroup}>
+              <Label htmlFor="cpf" className={styles.label}>
+                {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_CPF}
+              </Label>
+              <Input
+                id="cpf"
+                name="cpf"
+                value={dadosFormulario.cpf}
+                onChange={aoAlterar}
+                placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CPF}
+                className={fieldClassName}
+                maxLength={14}
+                disabled={isLocked}
+              />
+            </div>
+          </div>
+
+          <div className={styles.grid2}>
+            <div className={styles.fieldGroup}>
               <Label htmlFor="profissao" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_PROFISSAO}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="profissao"
@@ -150,16 +230,14 @@ function FormularioIdentificacaoRepresentanteLegal({
                 value={dadosFormulario.profissao}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_PROFISSAO}
-                className={styles.input}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
-          </div>
 
-          <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
               <Label htmlFor="cargo" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_CARGO}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="cargo"
@@ -167,14 +245,16 @@ function FormularioIdentificacaoRepresentanteLegal({
                 value={dadosFormulario.cargo}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CARGO}
-                className={styles.input}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
+          </div>
 
+          <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
               <Label htmlFor="estadoCivil" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_ESTADO_CIVIL}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="estadoCivil"
@@ -182,16 +262,14 @@ function FormularioIdentificacaoRepresentanteLegal({
                 value={dadosFormulario.estadoCivil}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_ESTADO_CIVIL}
-                className={styles.input}
+                className={fieldClassName}
+                disabled={isLocked}
               />
             </div>
-          </div>
 
-          <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
               <Label htmlFor="telefone" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_TELEFONE}
-                <span className={styles.required}></span>
               </Label>
               <Input
                 id="telefone"
@@ -199,34 +277,66 @@ function FormularioIdentificacaoRepresentanteLegal({
                 value={dadosFormulario.telefone}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_TELEFONE}
-                className={styles.input}
+                className={fieldClassName}
                 maxLength={15}
+                disabled={isLocked}
               />
             </div>
+          </div>
 
-            <div className={styles.fieldGroup}>
-              <Label htmlFor="email" className={styles.label}>
-                {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_EMAIL}
-                <span className={styles.required}></span>
-              </Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={dadosFormulario.email}
-                onChange={aoAlterar}
-                placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_EMAIL}
-                className={styles.input}
-              />
-            </div>
+          <div className={styles.fieldGroup}>
+            <Label htmlFor="email" className={styles.label}>
+              {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_EMAIL}
+            </Label>
+            <Input
+              id="email"
+              name="email"
+              type="email"
+              value={dadosFormulario.email}
+              onChange={aoAlterar}
+              placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_EMAIL}
+              className={fieldClassName}
+              disabled={isLocked}
+            />
           </div>
         </div>
       </section>
 
-      <div className={styles.actions}>
-        <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
-      </div>
+      {!readOnlyView && (
+        <div className={styles.actions}>
+          {saveError ? (
+            <p className="mr-auto text-sm text-destructive">{saveError}</p>
+          ) : null}
+          {!isEditing ? (
+            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+              Editar
+            </GenericButton>
+          ) : (
+            <>
+              <GenericButton
+                variant="outline"
+                icon={X}
+                disabled={isSaving}
+                onClick={() => {
+                  setDadosFormulario(mapIdentificacaoToForm(identificacao))
+                  setSaveError(null)
+                  setIsEditing(false)
+                }}
+              >
+                Cancelar
+              </GenericButton>
+              <GenericButton
+                variant="salvar"
+                icon={Check}
+                disabled={isSaving}
+                onClick={() => void handleSave()}
+              >
+                {isSaving ? "Salvando..." : "Salvar"}
+              </GenericButton>
+            </>
+          )}
+        </div>
+      )}
     </div>
   )
 }

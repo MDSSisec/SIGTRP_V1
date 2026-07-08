@@ -15,6 +15,7 @@ import { PopUpNewProject } from "../components/popUpNewProject"
 import { ProjetosTable } from "../components/projetos-table"
 import {
   createProjeto,
+  deleteProjeto,
   fetchProjetos,
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
@@ -138,6 +139,11 @@ export function ProjetosScreen() {
     }
   }
 
+  async function handleDeleteProjeto(id: string) {
+    await deleteProjeto(id)
+    await loadProjetos()
+  }
+
   const pageHeader = (
     <PageHeader
       title="Projetos"
@@ -175,7 +181,11 @@ export function ProjetosScreen() {
               />
             </div>
           </MenuBar>
-          <ProjetosTable projetos={projetosFiltrados} />
+          <ProjetosTable
+            projetos={projetosFiltrados}
+            canDelete={canCreate}
+            onDelete={handleDeleteProjeto}
+          />
         </div>
       </AsyncLoadState>
 

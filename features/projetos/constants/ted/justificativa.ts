@@ -1,5 +1,5 @@
 export const JUSTIFICATIVA_TITLE = {
-  TITLE_JUSTIFICATIVA_MOTIVACAO: "Justificativa e motivação",
+  TITLE_JUSTIFICATIVA_MOTIVACAO: "Justificativa e Motivação para Celebração do Instrumento",
 } as const
 
 export const JUSTIFICATIVA_ID = {
@@ -22,7 +22,7 @@ export const JUSTIFICATIVA_NOME = {
 export const JUSTIFICATIVA_LABELS = {
   LABEL_CARACTERIZACAO: "Caracterização dos interesses recíprocos",
   LABEL_PUBLICO_ALVO: "Público-alvo",
-  LABEL_PROBLEMA: "Problema",
+  LABEL_PROBLEMA: "Problema a ser resolvido",
   LABEL_RESULTADOS_ESPERADOS: "Resultados esperados",
   LABEL_RELACAO_PROPOSTA: "Relação da proposta com o programa",
   LABEL_RELACAO_PROPOSTA_OBJETIVOS_DIRETRIZES:
@@ -31,12 +31,12 @@ export const JUSTIFICATIVA_LABELS = {
 
 export const JUSTIFICATIVA_PLACEHOLDER = {
   PLACE_HOLDER_INTERESSES_RECIPROCOS:
-    "Descreva a caracterização dos interesses recíprocos",
-  PLACE_HOLDER_PUBLICO_ALVO: "Descreva o público-alvo",
-  PLACE_HOLDER_PROBLEMA_PROPOSTA: "Descreva o problema",
-  PLACE_HOLDER_RESULTADOS_ESPERADOS: "Descreva os resultados esperados",
+    "Descreva a caracterização dos interesses recíprocos. (Verificar a descrição da Ação 20GG)",
+  PLACE_HOLDER_PUBLICO_ALVO: "Descreva o público-alvo.",
+  PLACE_HOLDER_PROBLEMA_PROPOSTA: "Descreva o problema a ser resolvido.",
+  PLACE_HOLDER_RESULTADOS_ESPERADOS: "Descreva os resultados esperados.",
   PLACE_HOLDER_RELACAO_PROPOSTA:
-    "Descreva a relação da proposta com o programa",
+    "Descreva a relação da proposta com o programa.",
   PLACE_HOLDER_RELACAO_PROPOSTA_OBJETIVOS_DIRETRIZES:
-    "Descreva a relação da proposta com o programa",
+    "Descreva a relação da proposta com o programa.",
 } as const

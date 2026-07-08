@@ -1,7 +1,11 @@
+"use client"
+
+import { useState } from "react"
 import { EyeIcon, PencilIcon, Trash2Icon } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { SuccessModal } from "@/components/ui/successModal"
 import {
   Table,
   TableBody,
@@ -17,103 +21,175 @@ import { ProjetoStatusBadge } from "./statusBadge/status-badge"
 
 type ProjetosTableProps = {
   projetos: Projeto[]
+  canDelete?: boolean
+  onDelete?: (id: string) => Promise<void>
 }
 
-export function ProjetosTable({ projetos }: ProjetosTableProps) {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Nome do Projeto</TableHead>
-          <TableHead>Responsável</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Tipo</TableHead>
-          <TableHead className="text-right">Ações</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {projetos.map((projeto) => {
-          const editPath = getProjetoEditPath(projeto.id, projeto.tipoProjeto)
-          const canEditTed = projeto.tipoProjeto === PROJETO_TIPOS.TED && editPath
+export function ProjetosTable({
+  projetos,
+  canDelete = false,
+  onDelete,
+}: ProjetosTableProps) {
+  const [projetoToDelete, setProjetoToDelete] = useState<Projeto | null>(null)
+  const [showSuccess, setShowSuccess] = useState(false)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
-          return (
-          <TableRow key={projeto.id}>
-            <TableCell className="font-medium">{projeto.nome}</TableCell>
-            <TableCell>{projeto.responsavel}</TableCell>
-            <TableCell>
-              <ProjetoStatusBadge status={projeto.status} />
-            </TableCell>
-            <TableCell>{projeto.tipo}</TableCell>
-            <TableCell>
-              <div className="flex items-center justify-end gap-1">
-                {canEditTed ? (
-                  <Button
-                    nativeButton={false}
-                    variant="outline"
-                    size="icon-sm"
-                    className="bg-background"
-                    aria-label={`Ver projeto ${projeto.nome}`}
-                    render={
-                      <Link
-                        href={editPath}
-                        aria-label={`Ver projeto ${projeto.nome}`}
-                      />
-                    }
-                  >
-                    <EyeIcon />
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    className="bg-background"
-                    aria-label={`Ver projeto ${projeto.nome}`}
-                    disabled
-                  >
-                    <EyeIcon />
-                  </Button>
-                )}
-                {canEditTed ? (
-                  <Button
-                    nativeButton={false}
-                    variant="outline"
-                    size="icon-sm"
-                    className="bg-background"
-                    aria-label={`Editar projeto ${projeto.nome}`}
-                    render={
-                      <Link
-                        href={editPath}
-                        aria-label={`Editar projeto ${projeto.nome}`}
-                      />
-                    }
-                  >
-                    <PencilIcon />
-                  </Button>
-                ) : (
-                  <Button
-                    variant="outline"
-                    size="icon-sm"
-                    className="bg-background"
-                    aria-label={`Editar projeto ${projeto.nome}`}
-                    disabled
-                    title="Edição disponível apenas para projetos TED"
-                  >
-                    <PencilIcon />
-                  </Button>
-                )}
-                <Button
-                  size="icon-sm"
-                  className="border-0 bg-destructive/10 text-destructive hover:bg-destructive/20"
-                  aria-label={`Excluir projeto ${projeto.nome}`}
-                >
-                  <Trash2Icon />
-                </Button>
-              </div>
-            </TableCell>
+  async function handleConfirmDelete() {
+    if (!projetoToDelete || !onDelete) return
+
+    setIsDeleting(true)
+    setDeleteError(null)
+
+    try {
+      await onDelete(projetoToDelete.id)
+      setProjetoToDelete(null)
+      setShowSuccess(true)
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o projeto.",
+      )
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  function handleCloseConfirm() {
+    if (isDeleting) return
+    setProjetoToDelete(null)
+    setDeleteError(null)
+  }
+
+  return (
+    <>
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Nome do Projeto</TableHead>
+            <TableHead>Responsável</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Tipo</TableHead>
+            <TableHead className="text-right">Ações</TableHead>
           </TableRow>
-          )
-        })}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {projetos.map((projeto) => {
+            const editPath = getProjetoEditPath(projeto.id, projeto.tipoProjeto)
+            const canEditTed =
+              projeto.tipoProjeto === PROJETO_TIPOS.TED && editPath
+
+            return (
+              <TableRow key={projeto.id}>
+                <TableCell className="font-medium">{projeto.nome}</TableCell>
+                <TableCell>{projeto.responsavel}</TableCell>
+                <TableCell>
+                  <ProjetoStatusBadge status={projeto.status} />
+                </TableCell>
+                <TableCell>{projeto.tipo}</TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-end gap-1">
+                    {/* {canEditTed ? (
+                      <Button
+                        nativeButton={false}
+                        variant="outline"
+                        size="icon-sm"
+                        className="bg-background"
+                        aria-label={`Ver projeto ${projeto.nome}`}
+                        render={
+                          <Link
+                            href={editPath}
+                            aria-label={`Ver projeto ${projeto.nome}`}
+                          />
+                        }
+                      >
+                        <EyeIcon />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="icon-sm"
+                        className="bg-background"
+                        aria-label={`Ver projeto ${projeto.nome}`}
+                        disabled
+                      >
+                        <EyeIcon />
+                      </Button>
+                    )} */}
+                    {canEditTed ? (
+                      <Button
+                        nativeButton={false}
+                        variant="outline"
+                        size="icon-sm"
+                        className="bg-background"
+                        aria-label={`Editar projeto ${projeto.nome}`}
+                        render={
+                          <Link
+                            href={editPath}
+                            aria-label={`Editar projeto ${projeto.nome}`}
+                          />
+                        }
+                      >
+                        <PencilIcon />
+                      </Button>
+                    ) : (
+                      <Button
+                        variant="outline"
+                        size="icon-sm"
+                        className="bg-background"
+                        aria-label={`Editar projeto ${projeto.nome}`}
+                        disabled
+                        title="Edição disponível apenas para projetos TED"
+                      >
+                        <PencilIcon />
+                      </Button>
+                    )}
+                    <Button
+                      type="button"
+                      size="icon-sm"
+                      className="border-0 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                      aria-label={`Excluir projeto ${projeto.nome}`}
+                      disabled={!canDelete || !onDelete}
+                      title={
+                        canDelete
+                          ? `Excluir projeto ${projeto.nome}`
+                          : "Sem permissão para excluir projetos"
+                      }
+                      onClick={() => setProjetoToDelete(projeto)}
+                    >
+                      <Trash2Icon />
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            )
+          })}
+        </TableBody>
+      </Table>
+
+      <SuccessModal
+        open={Boolean(projetoToDelete)}
+        variant="confirm"
+        title="Excluir projeto?"
+        description={
+          deleteError
+            ? deleteError
+            : `Tem certeza que deseja excluir o projeto "${projetoToDelete?.nome}"? Esta ação não pode ser desfeita e removerá todas as informações vinculadas a ele.`
+        }
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDelete}
+        onCancel={handleCloseConfirm}
+      />
+
+      <SuccessModal
+        open={showSuccess}
+        title="Projeto excluído"
+        description="O projeto e todas as informações vinculadas foram removidos com sucesso."
+        onConfirm={() => setShowSuccess(false)}
+      />
+    </>
   )
 }
