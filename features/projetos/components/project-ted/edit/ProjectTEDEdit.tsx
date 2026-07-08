@@ -14,9 +14,11 @@ import {
   DEFAULT_FORM_SECTION,
   PROJECT_FORM_SECTIONS,
 } from "@/features/projetos/components/project-ted/forms"
+import { SecaoReviewHeaderActions } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
 import { PROJETO_TIPOS } from "@/features/projetos/constants/project-types"
 import { useBreadcrumb } from "@/features/projetos/contexts/breadcrumb-context"
 import { ProjectDataProvider } from "@/features/projetos/contexts/project-data-context"
+import { TedReviewProvider } from "@/features/projetos/contexts/ted-review-context"
 import { fetchProjetos } from "@/features/projetos/services"
 import {
   mapModeloCronogramaToForm,
@@ -102,25 +104,28 @@ export function ProjectTEDEditContent() {
         </p>
       ) : (
         <ProjectDataProvider projectId={projectId} projectData={projectData}>
-          <div className={styles.pageWrapper}>
-            <div className="mb-4">
-              <Button
-                nativeButton={false}
-                variant="outline"
-                size="sm"
-                className="bg-background"
-                render={<Link href="/projetos" />}
-              >
-                <ArrowLeftIcon />
-                Voltar para projetos
-              </Button>
+          <TedReviewProvider projetoId={projectId} secaoSlug={secao}>
+            <div className={styles.pageWrapper}>
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <Button
+                  nativeButton={false}
+                  variant="outline"
+                  size="sm"
+                  className="bg-background"
+                  render={<Link href="/projetos" />}
+                >
+                  <ArrowLeftIcon />
+                  Voltar para projetos
+                </Button>
+                <SecaoReviewHeaderActions />
+              </div>
+              <div className={styles.formContainer}>
+                <CronogramaProvider initialData={initialCronograma}>
+                  <FormSection projectId={projectId} />
+                </CronogramaProvider>
+              </div>
             </div>
-            <div className={styles.formContainer}>
-              <CronogramaProvider initialData={initialCronograma}>
-                <FormSection projectId={projectId} />
-              </CronogramaProvider>
-            </div>
-          </div>
+          </TedReviewProvider>
         </ProjectDataProvider>
       )}
     </AsyncLoadState>

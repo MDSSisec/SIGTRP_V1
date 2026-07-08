@@ -5,6 +5,7 @@ import { EyeIcon, PencilIcon, Trash2Icon } from "lucide-react"
 import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
+import { ConfirmeModal } from "@/components/ui/confirmeModal"
 import { SuccessModal } from "@/components/ui/successModal"
 import {
   Table,
@@ -168,9 +169,8 @@ export function ProjetosTable({
         </TableBody>
       </Table>
 
-      <SuccessModal
+      <ConfirmeModal
         open={Boolean(projetoToDelete)}
-        variant="confirm"
         title="Excluir projeto?"
         description={
           deleteError

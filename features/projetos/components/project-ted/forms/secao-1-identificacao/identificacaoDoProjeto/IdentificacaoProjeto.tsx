@@ -2,7 +2,6 @@
 
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import React, { useCallback, useEffect, useState } from "react"
 import styles from "./IdentificacaoProjeto.module.css"
 import {
@@ -23,6 +22,12 @@ import {
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { cn } from "@/lib/utils"
+import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import {
+  CampoReviewLabel,
+  SecaoReviewBanner,
+  useCampoAtencaoClass,
+} from "@/features/projetos/components/project-ted/shared/secao-review-actions"
 import type { ProjectFormSectionProps } from "../../sections-map"
 
 /** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
@@ -64,6 +69,12 @@ function FormularioIdentificacaoProjeto({
   const projectData = useProjectData()
   const updateProjectData = useUpdateProjectData()
   const nomeProjeto = projectData?.nome ?? ""
+  const reviewCtx = useTedReview()
+  const canManageReview = Boolean(reviewCtx?.canManage)
+  const review = reviewCtx?.review ?? null
+  const localExecucaoAtencao = useCampoAtencaoClass("localExecucao")
+  const duracaoAtencao = useCampoAtencaoClass("duracao")
+  const resumoAtencao = useCampoAtencaoClass("resumoProjeto")
 
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
@@ -138,11 +149,16 @@ function FormularioIdentificacaoProjeto({
     }
   }
 
-  const isLocked = readOnlyView || !isEditing
-  const isViewMode = !isEditing
+  const isBlockedForUser = Boolean(review?.bloqueada) && !canManageReview
+  const isLocked = readOnlyView || !isEditing || isBlockedForUser
+  const isViewMode = !isEditing || isBlockedForUser
+  const marking = Boolean(reviewCtx?.isMarkingAtencao)
+  const canStartEditing = !readOnlyView && !isBlockedForUser && !marking
 
   return (
     <div className={styles.container}>
+      <SecaoReviewBanner />
+
       <section className={styles.section}>
         <h2 className={styles.title}>
           {SESSOES_VISAO_GERAL_TITLE.TITLE_SESSAO_IDENTIFICACAO_PROJETO}
@@ -150,9 +166,9 @@ function FormularioIdentificacaoProjeto({
 
         <div className={styles.formGrid}>
           <div className={styles.fieldGroup}>
-            <Label htmlFor="nomeProjeto" className={styles.label}>
+            <CampoReviewLabel htmlFor="nomeProjeto" className={styles.label}>
               {IDENTIFICACAO_PROJETO_LABELS.LABEL_NOME_PROJETO}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="nomeProjeto"
               name="nomeProjeto"
@@ -166,31 +182,47 @@ function FormularioIdentificacaoProjeto({
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="localExecucao" className={styles.label}>
+              <CampoReviewLabel
+                htmlFor="localExecucao"
+                campoKey="localExecucao"
+                className={styles.label}
+              >
                 {IDENTIFICACAO_PROJETO_LABELS.LABEL_LOCAL_EXECUCAO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="localExecucao"
                 name="localExecucao"
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_LOCAL_EXECUCAO}
                 value={dadosFormulario.localExecucao}
                 onChange={aoAlterar}
-                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)}
+                className={cn(
+                  styles.input,
+                  isViewMode && VIEW_MODE_FIELD_CLASS,
+                  localExecucaoAtencao,
+                )}
                 disabled={isLocked}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="duracao" className={styles.label}>
+              <CampoReviewLabel
+                htmlFor="duracao"
+                campoKey="duracao"
+                className={styles.label}
+              >
                 {IDENTIFICACAO_PROJETO_LABELS.LABEL_DURACAO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="duracao"
                 name="duracao"
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_DURACAO}
                 value={dadosFormulario.duracao}
                 onChange={aoAlterar}
-                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)}
+                className={cn(
+                  styles.input,
+                  isViewMode && VIEW_MODE_FIELD_CLASS,
+                  duracaoAtencao,
+                )}
                 disabled={isLocked}
               />
             </div>
@@ -204,9 +236,13 @@ function FormularioIdentificacaoProjeto({
         </h2>
 
         <div className={styles.fieldGroup}>
-          <Label htmlFor="resumoProjeto" className={styles.label}>
+          <CampoReviewLabel
+            htmlFor="resumoProjeto"
+            campoKey="resumoProjeto"
+            className={styles.label}
+          >
             {IDENTIFICACAO_PROJETO_DESCRIPTIONS.DESCRIPTION_RESUMO_PROJETO}
-          </Label>
+          </CampoReviewLabel>
           <textarea
             id="resumoProjeto"
             name="resumoProjeto"
@@ -214,7 +250,11 @@ function FormularioIdentificacaoProjeto({
             value={dadosFormulario.resumoProjeto}
             onChange={aoAlterar}
             rows={6}
-            className={cn(styles.textarea, isViewMode && VIEW_MODE_FIELD_CLASS)}
+            className={cn(
+              styles.textarea,
+              isViewMode && VIEW_MODE_FIELD_CLASS,
+              resumoAtencao,
+            )}
             disabled={isLocked}
           />
         </div>
@@ -226,9 +266,11 @@ function FormularioIdentificacaoProjeto({
             <p className="mr-auto text-sm text-destructive">{saveError}</p>
           ) : null}
           {!isEditing ? (
-            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
-              Editar
-            </GenericButton>
+            canStartEditing ? (
+              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+                Editar
+              </GenericButton>
+            ) : null
           ) : (
             <>
               <GenericButton

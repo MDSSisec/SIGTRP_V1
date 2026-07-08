@@ -28,3 +28,8 @@ export {
   saveTedIdentificacaoRepresentante,
   saveTedIdentificacaoResponsavelTecnico,
 } from "./ted-identificacao.service"
+export {
+  fetchTedSecaoReviews,
+  saveTedSecaoReview,
+  syncTedCampoReviews,
+} from "./ted-secao-review.service"

@@ -37,14 +37,19 @@ const PROJECT_SELECT = `
   LEFT JOIN "SIGTRP_TB_PROJECT_STAGES" et ON et.id = p.etapa_id
 `
 
-export async function listProjetos(): Promise<Projeto[]> {
+export async function listProjetos(
+  options?: { responsavelExternoId?: string },
+): Promise<Projeto[]> {
   const pool = getDbPool()
+  const responsavelExternoId = options?.responsavelExternoId?.trim()
 
   const result = await pool.query<ProjetoRow>(
     `
       ${PROJECT_SELECT}
+      ${responsavelExternoId ? "WHERE p.responsavel_externo_id = $1" : ""}
       ORDER BY p.criado_em DESC
     `,
+    responsavelExternoId ? [responsavelExternoId] : [],
   )
 
   return result.rows.map(toProjeto)

@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useCallback, useEffect, useMemo, useState } from "react"
-import { Check, Pencil, X } from "lucide-react"
+import { AlertTriangle, Check, Lock, Pencil, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import StatusStepper from "@/components/StatusStepper/statusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
@@ -26,12 +26,14 @@ import {
   updateProjetoInformacoes,
 } from "@/features/projetos/services"
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projetos/types/ted-secao-review"
 import { getItensConcluidosFromTedIdentificacao } from "@/features/projetos/utils/ted-preenchimento"
 import type { ProjectModelData } from "@/features/projetos/types/ted"
 import type { Projeto, ResponsavelOption } from "@/features/projetos/types"
 import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
 import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 import { canEditProjetoInformacoes } from "@/features/projetos/utils/projetos-permissions"
+import { useTedSecaoReviews } from "@/features/projetos/hooks/use-ted-secao-reviews"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
@@ -139,6 +141,8 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
   useEffect(() => {
     if (projectId) void reloadIdentificacao()
   }, [projectId, reloadIdentificacao])
+
+  const { getReview, secaoTemAtencao } = useTedSecaoReviews(projectId)
 
   useEffect(() => {
     setDados(getDadosIniciais(projectData))
@@ -331,24 +335,56 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               {[itensColunaEsquerda, itensColunaDireita].map((coluna, colunaIndex) => (
                 <div key={colunaIndex} className="flex min-w-0 flex-col gap-4">
-                  {coluna.map(([key, title]) => (
-                    <div key={key} className="flex items-start gap-3">
-                      <input
-                        type="checkbox"
-                        checked={itensConcluidos.has(key)}
-                        readOnly
-                        className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
-                      />
-                      <span className="text-sm text-muted-foreground">{title}</span>
-                    </div>
-                  ))}
+                  {coluna.map(([key, title]) => {
+                    const preenchido = itensConcluidos.has(key)
+                    const slug = TITLE_KEY_TO_SECAO_SLUG[key]
+                    const review = slug ? getReview(slug) : null
+                    const precisaAtencao = slug
+                      ? secaoTemAtencao(slug)
+                      : false
+                    const bloqueada = Boolean(review?.bloqueada)
+
+                    return (
+                      <div key={key} className="flex items-start gap-3">
+                        <input
+                          type="checkbox"
+                          checked={preenchido}
+                          readOnly
+                          className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
+                        />
+                        <span
+                          className={cn(
+                            "flex min-w-0 flex-1 items-start gap-1.5 text-sm",
+                            precisaAtencao
+                              ? "font-medium text-destructive"
+                              : "text-muted-foreground",
+                          )}
+                          title={
+                            precisaAtencao
+                              ? review?.comentario ?? "Precisa de atenção"
+                              : bloqueada
+                                ? "Seção bloqueada"
+                                : undefined
+                          }
+                        >
+                          <span className="min-w-0">{title}</span>
+                          {precisaAtencao ? (
+                            <AlertTriangle className="mt-0.5 size-3.5 shrink-0" />
+                          ) : null}
+                          {bloqueada ? (
+                            <Lock className="mt-0.5 size-3.5 shrink-0 text-amber-600" />
+                          ) : null}
+                        </span>
+                      </div>
+                    )
+                  })}
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {!readOnlyView && (
+        {!readOnlyView && canEditInfo && (
           <div className={formLayoutStyles.actions}>
             {saveError ? (
               <p className="mr-auto text-sm text-destructive">{saveError}</p>

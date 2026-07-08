@@ -3,7 +3,6 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import styles from "./IdentificacaoRepresentanteLegal.module.css"
 import {
@@ -18,9 +17,13 @@ import {
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { cn } from "@/lib/utils"
+import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import {
+  CampoReviewLabel,
+  SecaoReviewBanner,
+} from "@/features/projetos/components/project-ted/shared/secao-review-actions"
 import type { ProjectFormSectionProps } from "../../sections-map"
 
-/** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
 const VIEW_MODE_FIELD_CLASS =
   "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
 
@@ -85,6 +88,10 @@ function FormularioIdentificacaoRepresentanteLegal({
   projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
+  const reviewCtx = useTedReview()
+  const canManageReview = Boolean(reviewCtx?.canManage)
+  const review = reviewCtx?.review ?? null
+
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -174,12 +181,26 @@ function FormularioIdentificacaoRepresentanteLegal({
     }
   }
 
-  const isLocked = readOnlyView || !isEditing
-  const isViewMode = !isEditing
-  const fieldClassName = cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)
+  const isBlockedForUser = Boolean(review?.bloqueada) && !canManageReview
+  const isLocked = readOnlyView || !isEditing || isBlockedForUser
+  const isViewMode = !isEditing || isBlockedForUser
+  const marking = Boolean(reviewCtx?.isMarkingAtencao)
+  const canStartEditing =
+    !readOnlyView && !isBlockedForUser && !marking
+  const fieldDisabled = isLocked
+
+  const fieldClass = (campoKey: string) =>
+    cn(
+      styles.input,
+      isViewMode && VIEW_MODE_FIELD_CLASS,
+      reviewCtx?.isCampoAtencao(campoKey) &&
+        "!border-destructive !ring-2 !ring-destructive/30 bg-destructive/5",
+    )
 
   return (
     <div className={styles.container}>
+      <SecaoReviewBanner />
+
       <section className={styles.section}>
         <h2 className={styles.title}>
           {SESSOES_VISAO_GERAL_TITLE.TITLE_SESSAO_IDENTIFICACAO_REPRESENTANTE_LEGAL}
@@ -188,106 +209,106 @@ function FormularioIdentificacaoRepresentanteLegal({
         <div className={styles.formGrid}>
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="nome" className={styles.label}>
+              <CampoReviewLabel htmlFor="nome" campoKey="nome" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_NOME}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="nome"
                 name="nome"
                 value={dadosFormulario.nome}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_NOME}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("nome")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="cpf" className={styles.label}>
+              <CampoReviewLabel htmlFor="cpf" campoKey="cpf" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_CPF}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="cpf"
                 name="cpf"
                 value={dadosFormulario.cpf}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CPF}
-                className={fieldClassName}
+                className={fieldClass("cpf")}
                 maxLength={14}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="profissao" className={styles.label}>
+              <CampoReviewLabel htmlFor="profissao" campoKey="profissao" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_PROFISSAO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="profissao"
                 name="profissao"
                 value={dadosFormulario.profissao}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_PROFISSAO}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("profissao")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="cargo" className={styles.label}>
+              <CampoReviewLabel htmlFor="cargo" campoKey="cargo" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_CARGO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="cargo"
                 name="cargo"
                 value={dadosFormulario.cargo}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CARGO}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("cargo")}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="estadoCivil" className={styles.label}>
+              <CampoReviewLabel htmlFor="estadoCivil" campoKey="estadoCivil" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_ESTADO_CIVIL}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="estadoCivil"
                 name="estadoCivil"
                 value={dadosFormulario.estadoCivil}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_ESTADO_CIVIL}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("estadoCivil")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="telefone" className={styles.label}>
+              <CampoReviewLabel htmlFor="telefone" campoKey="telefone" className={styles.label}>
                 {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_TELEFONE}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="telefone"
                 name="telefone"
                 value={dadosFormulario.telefone}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_TELEFONE}
-                className={fieldClassName}
+                className={fieldClass("telefone")}
                 maxLength={15}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="email" className={styles.label}>
+            <CampoReviewLabel htmlFor="email" campoKey="email" className={styles.label}>
               {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_EMAIL}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="email"
               name="email"
@@ -295,8 +316,8 @@ function FormularioIdentificacaoRepresentanteLegal({
               value={dadosFormulario.email}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_EMAIL}
-              className={fieldClassName}
-              disabled={isLocked}
+              className={fieldClass("email")}
+              disabled={fieldDisabled}
             />
           </div>
         </div>
@@ -308,9 +329,11 @@ function FormularioIdentificacaoRepresentanteLegal({
             <p className="mr-auto text-sm text-destructive">{saveError}</p>
           ) : null}
           {!isEditing ? (
-            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
-              Editar
-            </GenericButton>
+            canStartEditing ? (
+              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+                Editar
+              </GenericButton>
+            ) : null
           ) : (
             <>
               <GenericButton

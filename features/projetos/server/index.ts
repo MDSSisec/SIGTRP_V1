@@ -18,6 +18,19 @@ import {
   upsertTedIdentificacaoRepresentante,
   upsertTedIdentificacaoResponsavelTecnico,
 } from "./ted-identificacao.repository"
+import {
+  isTedSecaoBloqueada,
+  listTedSecaoReviewsByProjetoId,
+  upsertTedSecaoReview,
+} from "./ted-secao-review.repository"
+import {
+  listTedCampoReviewsByProjetoId,
+  syncTedCampoReviews,
+} from "./ted-campo-review.repository"
+import {
+  IDENTIFICACAO_BLOCO_TO_SECAO_SLUG,
+  type TedSecaoRevisaoStatus,
+} from "../types/ted-secao-review"
 
 function forbiddenCreateProjetoResponse() {
   return NextResponse.json(
@@ -120,6 +133,180 @@ export async function handleProjetosRequest(
   if (
     resource &&
     rest[0] === "ted" &&
+    rest[1] === "secoes-review" &&
+    rest.length === 2 &&
+    request.method === "GET"
+  ) {
+    try {
+      const projetoId = resource.trim()
+
+      if (!projetoId) {
+        return NextResponse.json(
+          { error: "ID do projeto inválido." },
+          { status: 400 },
+        )
+      }
+
+      const reviews = await listTedSecaoReviewsByProjetoId(projetoId)
+      const campos = await listTedCampoReviewsByProjetoId(projetoId)
+      return NextResponse.json({ reviews, campos })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar as revisões das seções."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (
+    resource &&
+    rest[0] === "ted" &&
+    rest[1] === "secoes-review" &&
+    rest.length === 2 &&
+    request.method === "PATCH"
+  ) {
+    try {
+      if (!canEditProjetoInformacoes(sessionUser)) {
+        return NextResponse.json(
+          {
+            error:
+              "Apenas administradores ou gestores internos do MDS podem bloquear ou marcar atenção nas seções.",
+          },
+          { status: 403 },
+        )
+      }
+
+      const projetoId = resource.trim()
+
+      if (!projetoId) {
+        return NextResponse.json(
+          { error: "ID do projeto inválido." },
+          { status: 400 },
+        )
+      }
+
+      const body = (await request.json()) as {
+        secaoSlug?: string
+        bloqueada?: boolean
+        statusRevisao?: TedSecaoRevisaoStatus
+        comentario?: string | null
+      }
+
+      const secaoSlug = body.secaoSlug?.trim() ?? ""
+
+      if (!secaoSlug) {
+        return NextResponse.json(
+          { error: "Informe a seção (secaoSlug)." },
+          { status: 400 },
+        )
+      }
+
+      // Se marcar atenção via seção, desbloqueia automaticamente
+      const bloqueada =
+        body.statusRevisao === "precisa_atencao"
+          ? false
+          : Boolean(body.bloqueada)
+
+      const review = await upsertTedSecaoReview(
+        projetoId,
+        {
+          secaoSlug,
+          bloqueada,
+          statusRevisao: body.statusRevisao ?? "ok",
+          comentario: body.comentario,
+        },
+        sessionUser.id,
+      )
+
+      return NextResponse.json({ review })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar a revisão da seção."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (
+    resource &&
+    rest[0] === "ted" &&
+    rest[1] === "campos-review" &&
+    rest.length === 2 &&
+    request.method === "PATCH"
+  ) {
+    try {
+      if (!canEditProjetoInformacoes(sessionUser)) {
+        return NextResponse.json(
+          {
+            error:
+              "Apenas administradores ou gestores internos do MDS podem marcar campos.",
+          },
+          { status: 403 },
+        )
+      }
+
+      const projetoId = resource.trim()
+
+      if (!projetoId) {
+        return NextResponse.json(
+          { error: "ID do projeto inválido." },
+          { status: 400 },
+        )
+      }
+
+      const body = (await request.json()) as {
+        secaoSlug?: string
+        campoKeys?: string[]
+        comentario?: string | null
+      }
+
+      const secaoSlug = body.secaoSlug?.trim() ?? ""
+      const campoKeys = Array.isArray(body.campoKeys) ? body.campoKeys : []
+
+      if (!secaoSlug) {
+        return NextResponse.json(
+          { error: "Informe a seção (secaoSlug)." },
+          { status: 400 },
+        )
+      }
+
+      if (campoKeys.length > 0 && !body.comentario?.trim()) {
+        return NextResponse.json(
+          {
+            error:
+              "Informe um comentário ao marcar campos como precisa de atenção.",
+          },
+          { status: 400 },
+        )
+      }
+
+      const campos = await syncTedCampoReviews(
+        projetoId,
+        secaoSlug,
+        campoKeys,
+        sessionUser.id,
+        body.comentario,
+      )
+      const reviews = await listTedSecaoReviewsByProjetoId(projetoId)
+
+      return NextResponse.json({ campos, reviews })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar as marcações dos campos."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (
+    resource &&
+    rest[0] === "ted" &&
     rest[1] === "identificacao" &&
     rest.length === 3 &&
     request.method === "PATCH"
@@ -135,6 +322,28 @@ export async function handleProjetosRequest(
       }
 
       const bloco = rest[2]
+      const secaoSlug = IDENTIFICACAO_BLOCO_TO_SECAO_SLUG[bloco]
+
+      if (!secaoSlug) {
+        return NextResponse.json(
+          { error: "Bloco de identificação inválido." },
+          { status: 404 },
+        )
+      }
+
+      const canManageReview = canEditProjetoInformacoes(sessionUser)
+      const bloqueada = await isTedSecaoBloqueada(projetoId, secaoSlug)
+
+      if (bloqueada && !canManageReview) {
+        return NextResponse.json(
+          {
+            error:
+              "Esta seção foi bloqueada pelo gestor interno do MDS e não pode ser alterada.",
+          },
+          { status: 403 },
+        )
+      }
+
       const body = await request.json()
 
       let identificacao
@@ -175,7 +384,10 @@ export async function handleProjetosRequest(
 
   if (rest.length === 0 && request.method === "GET") {
     try {
-      const projetos = await listProjetos()
+      const isExterno = sessionUser.tipo.trim().toLowerCase() === "externo"
+      const projetos = await listProjetos(
+        isExterno ? { responsavelExternoId: sessionUser.id } : undefined,
+      )
       return NextResponse.json({ projetos })
     } catch (error) {
       const message =

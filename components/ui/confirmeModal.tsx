@@ -1,20 +1,22 @@
-"use client";
+"use client"
 
-import { Button } from "@/components/ui/button";
+import { TriangleAlertIcon } from "lucide-react"
 
-type ConfirmeModalVariant = "default" | "destructive";
+import { Button } from "@/components/ui/button"
+
+type ConfirmeModalVariant = "default" | "destructive"
 
 type ConfirmeModalProps = {
-  open: boolean;
-  title: string;
-  description: string;
-  confirmText?: string;
-  cancelText?: string;
-  variant?: ConfirmeModalVariant;
-  isLoading?: boolean;
-  onConfirm: () => void | Promise<void>;
-  onCancel: () => void;
-};
+  open: boolean
+  title: string
+  description: string
+  confirmText?: string
+  cancelText?: string
+  variant?: ConfirmeModalVariant
+  isLoading?: boolean
+  onConfirm: () => void | Promise<void>
+  onCancel: () => void
+}
 
 export function ConfirmeModal({
   open,
@@ -22,12 +24,14 @@ export function ConfirmeModal({
   description,
   confirmText = "Confirmar",
   cancelText = "Cancelar",
-  variant = "default",
+  variant = "destructive",
   isLoading = false,
   onConfirm,
   onCancel,
 }: ConfirmeModalProps) {
-  if (!open) return null;
+  if (!open) return null
+
+  const isDestructive = variant === "destructive"
 
   return (
     <div
@@ -37,20 +41,28 @@ export function ConfirmeModal({
     >
       <div
         aria-modal="true"
-        className="w-full max-w-md rounded-xl border border-border bg-card p-6 shadow-lg"
+        className="w-full max-w-md rounded-xl border border-border bg-card p-6 text-center shadow-lg"
         role="dialog"
         onMouseDown={(event) => event.stopPropagation()}
       >
-        <div className="space-y-2">
-          <h2 className="text-lg font-semibold text-card-foreground">
-            {title}
-          </h2>
+        <div
+          className={`mx-auto flex size-12 items-center justify-center rounded-full ${
+            isDestructive
+              ? "bg-destructive/10 text-destructive"
+              : "bg-primary/10 text-primary"
+          }`}
+        >
+          <TriangleAlertIcon className="size-7" />
+        </div>
+
+        <div className="mt-4 space-y-2">
+          <h2 className="text-lg font-semibold text-card-foreground">{title}</h2>
           <p className="text-sm leading-relaxed text-muted-foreground">
             {description}
           </p>
         </div>
 
-        <div className="mt-6 flex justify-end gap-2">
+        <div className="mt-6 flex flex-col-reverse justify-center gap-2 sm:flex-row">
           <Button
             type="button"
             variant="outline"
@@ -61,14 +73,14 @@ export function ConfirmeModal({
           </Button>
           <Button
             type="button"
-            variant={variant === "destructive" ? "destructive" : "default"}
+            variant={isDestructive ? "destructive" : "default"}
             onClick={() => void onConfirm()}
             disabled={isLoading}
           >
-            {isLoading ? "Processando..." : confirmText}
+            {isLoading ? "Aguarde..." : confirmText}
           </Button>
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -3,11 +3,13 @@
 import React, { useCallback, useEffect, useState } from "react"
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import styles from "./IdentificacaoResponsavelTecnico.module.css"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
-import { IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS, IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS } from "@/features/projetos/constants/ted/identificacao-responsavel-tecnico"
+import {
+  IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS,
+  IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS,
+} from "@/features/projetos/constants/ted/identificacao-responsavel-tecnico"
 import { COMUNS_LABELS } from "@/features/projetos/constants/ted/communs"
 import {
   fetchTedIdentificacao,
@@ -15,7 +17,16 @@ import {
 } from "@/features/projetos/services"
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
+import { cn } from "@/lib/utils"
+import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import {
+  CampoReviewLabel,
+  SecaoReviewBanner,
+} from "@/features/projetos/components/project-ted/shared/secao-review-actions"
 import type { ProjectFormSectionProps } from "../../sections-map"
+
+const VIEW_MODE_FIELD_CLASS =
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
 
 interface DadosIdentificacaoResponsavelTecnico {
   nome: string
@@ -75,12 +86,15 @@ function FormularioIdentificacaoResponsavelTecnico({
   projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
+  const reviewCtx = useTedReview()
+  const canManageReview = Boolean(reviewCtx?.canManage)
+  const review = reviewCtx?.review ?? null
+
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
-  const [dadosFormulario, setDadosFormulario] = useState<DadosIdentificacaoResponsavelTecnico>(VAZIO_RT)
-
-  // Controla se o campo email já foi tocado (para só mostrar erro após interação)
+  const [dadosFormulario, setDadosFormulario] =
+    useState<DadosIdentificacaoResponsavelTecnico>(VAZIO_RT)
   const [emailTocado, setEmailTocado] = useState(false)
 
   const loadIdentificacao = useCallback(async () => {
@@ -106,10 +120,13 @@ function FormularioIdentificacaoResponsavelTecnico({
     let { name, value } = e.target
     setSaveError(null)
 
-    if (name === COMUNS_LABELS.LABEL_CELULAR) {
+    if (name === COMUNS_LABELS.LABEL_CELULAR || name === "celular") {
       value = formatTelefone(value)
+      name = "celular"
     } else if (name === "telefone") {
       value = formatTelefoneFixo(value)
+    } else if (name === COMUNS_LABELS.LABEL_EMAIL || name === "email") {
+      name = "email"
     }
 
     setDadosFormulario((prev) => ({ ...prev, [name]: value }))
@@ -144,11 +161,31 @@ function FormularioIdentificacaoResponsavelTecnico({
     }
   }
 
-  const isLocked = readOnlyView || !isEditing
-  const emailInvalido = emailTocado && dadosFormulario.email.length > 0 && !emailValido(dadosFormulario.email)
+  const isBlockedForUser = Boolean(review?.bloqueada) && !canManageReview
+  const isLocked = readOnlyView || !isEditing || isBlockedForUser
+  const isViewMode = !isEditing || isBlockedForUser
+  const marking = Boolean(reviewCtx?.isMarkingAtencao)
+  const canStartEditing =
+    !readOnlyView && !isBlockedForUser && !marking
+  const fieldDisabled = isLocked
+  const emailInvalido =
+    emailTocado &&
+    dadosFormulario.email.length > 0 &&
+    !emailValido(dadosFormulario.email)
+
+  const fieldClass = (campoKey: string, extra = "") =>
+    cn(
+      styles.input,
+      isViewMode && VIEW_MODE_FIELD_CLASS,
+      reviewCtx?.isCampoAtencao(campoKey) &&
+        "!border-destructive !ring-2 !ring-destructive/30 bg-destructive/5",
+      extra,
+    )
 
   return (
     <div className={styles.container}>
+      <SecaoReviewBanner />
+
       <section className={styles.section}>
         <h2 className={styles.title}>
           {SESSOES_VISAO_GERAL_TITLE.TITLE_SESSAO_IDENTIFICACAO_RESPONSAVEL_TECNICO}
@@ -156,79 +193,86 @@ function FormularioIdentificacaoResponsavelTecnico({
 
         <div className={styles.formGrid}>
           <div className={styles.fieldGroup}>
-            <Label htmlFor="nome" className={styles.label}>
+            <CampoReviewLabel htmlFor="nome" campoKey="nome" className={styles.label}>
               {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_NOME}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="nome"
               name="nome"
               value={dadosFormulario.nome}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_NOME}
-              className={styles.input}
-              disabled={isLocked}
+              className={fieldClass("nome")}
+              disabled={fieldDisabled}
             />
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="cargo" className={styles.label}>
+            <CampoReviewLabel htmlFor="cargo" campoKey="cargo" className={styles.label}>
               {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_CARGO}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="cargo"
               name="cargo"
               value={dadosFormulario.cargo}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_CARGO}
-              className={styles.input}
-              disabled={isLocked}
+              className={fieldClass("cargo")}
+              disabled={fieldDisabled}
             />
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="telefone" className={styles.label}>{COMUNS_LABELS.LABEL_NUMERO_DE_TELEFONE}</Label>
+              <CampoReviewLabel htmlFor="telefone" campoKey="telefone" className={styles.label}>
+                {COMUNS_LABELS.LABEL_NUMERO_DE_TELEFONE}
+              </CampoReviewLabel>
               <Input
                 id="telefone"
                 name="telefone"
                 value={dadosFormulario.telefone}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_TELEFONE}
-                className={styles.input}
+                className={fieldClass("telefone")}
                 maxLength={14}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="celular" className={styles.label}>{COMUNS_LABELS.LABEL_NUMERO_DE_CELULAR}</Label>
+              <CampoReviewLabel htmlFor="celular" campoKey="celular" className={styles.label}>
+                {COMUNS_LABELS.LABEL_NUMERO_DE_CELULAR}
+              </CampoReviewLabel>
               <Input
                 id="celular"
-                name={COMUNS_LABELS.LABEL_CELULAR}
+                name="celular"
                 value={dadosFormulario.celular}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_CELULAR}
-                className={styles.input}
+                className={fieldClass("celular")}
                 maxLength={15}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="email" className={styles.label}>
+            <CampoReviewLabel htmlFor="email" campoKey="email" className={styles.label}>
               {IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_EMAIL}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="email"
-              name={IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS.LABEL_EMAIL}
+              name="email"
               type="email"
               value={dadosFormulario.email}
               onChange={aoAlterar}
               onBlur={() => setEmailTocado(true)}
               placeholder={IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_EMAIL}
-              className={`${styles.input} ${emailInvalido ? styles.inputError : ""}`}
-              disabled={isLocked}
+              className={fieldClass(
+                "email",
+                emailInvalido ? styles.inputError : "",
+              )}
+              disabled={fieldDisabled}
             />
             {emailInvalido && (
               <span className={styles.errorMessage}>
@@ -245,9 +289,11 @@ function FormularioIdentificacaoResponsavelTecnico({
             <p className="mr-auto text-sm text-destructive">{saveError}</p>
           ) : null}
           {!isEditing ? (
-            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
-              Editar
-            </GenericButton>
+            canStartEditing ? (
+              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+                Editar
+              </GenericButton>
+            ) : null
           ) : (
             <>
               <GenericButton

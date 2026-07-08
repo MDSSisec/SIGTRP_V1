@@ -2,7 +2,6 @@
 
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import React, { useCallback, useEffect, useRef, useState } from "react"
 import styles from "./IdentificacaoProponente.module.css"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
@@ -21,6 +20,11 @@ import {
   IDENTIFICACAO_PROPONENTE_LABELS, 
   IDENTIFICACAO_PROPONENTE_PLACEHOLDERS
 } from "@/features/projetos/constants/ted/identificacao-proponente"
+import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import {
+  CampoReviewLabel,
+  SecaoReviewBanner,
+} from "@/features/projetos/components/project-ted/shared/secao-review-actions"
 import type { ProjectFormSectionProps } from "../../sections-map"
 
 /** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
@@ -120,6 +124,10 @@ function FormularioIdentificacaoProponente({
   projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
+  const reviewCtx = useTedReview()
+  const canManageReview = Boolean(reviewCtx?.canManage)
+  const review = reviewCtx?.review ?? null
+
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -368,14 +376,20 @@ function FormularioIdentificacaoProponente({
     }
   }
 
-  const isLocked = readOnlyView || !isEditing
-  const isViewMode = !isEditing
-  const fieldClassName = cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS)
-  const selectClassName = cn(
-    SELECT_CLASS_NAME,
-    styles.input,
-    isViewMode && VIEW_MODE_FIELD_CLASS,
-  )
+  const isBlockedForUser = Boolean(review?.bloqueada) && !canManageReview
+  const isLocked = readOnlyView || !isEditing || isBlockedForUser
+  const isViewMode = !isEditing || isBlockedForUser
+  const canStartEditing = !readOnlyView && !isBlockedForUser && !reviewCtx?.isMarkingAtencao
+  const marking = Boolean(reviewCtx?.isMarkingAtencao)
+  const fieldDisabled = isLocked
+
+  const fieldClass = (campoKey: string) =>
+    cn(
+      styles.input,
+      isViewMode && VIEW_MODE_FIELD_CLASS,
+      reviewCtx?.isCampoAtencao(campoKey) &&
+        "!border-destructive !ring-2 !ring-destructive/30 bg-destructive/5",
+    )
 
   const cepFeedback: Record<string, { texto: string; cor: string }> = {
     loading: { texto: "Buscando CEP...", cor: "gray" },
@@ -385,104 +399,106 @@ function FormularioIdentificacaoProponente({
 
   return (
     <div className={styles.container}>
+      <SecaoReviewBanner />
+
       <section className={styles.section}>
         <h2 className={styles.title}>2. Identificação do(a) Proponente</h2>
 
         <div className={styles.formGrid}>
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="nome" className={styles.label}>
+              <CampoReviewLabel htmlFor="nome" campoKey="nome" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_NOME}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="nome"
                 name="nome"
                 value={dadosFormulario.nome}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_NOME}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("nome")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="cnpj" className={styles.label}>
+              <CampoReviewLabel htmlFor="cnpj" campoKey="cnpj" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_CNPJ}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="cnpj"
                 name="cnpj"
                 value={dadosFormulario.cnpj}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CNPJ}
-                className={fieldClassName}
+                className={fieldClass("cnpj")}
                 maxLength={18}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="dataFundacao" className={styles.label}>
+              <CampoReviewLabel htmlFor="dataFundacao" campoKey="dataFundacao" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_DATA_FUNDACAO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="dataFundacao"
                 name="dataFundacao"
                 type="date"
                 value={dadosFormulario.dataFundacao}
                 onChange={aoAlterar}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("dataFundacao")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="registroCnpj" className={styles.label}>
+              <CampoReviewLabel htmlFor="registroCnpj" campoKey="registroCnpj" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_REGISTRO_CNPJ}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="registroCnpj"
                 name="registroCnpj"
                 type="date"
                 value={dadosFormulario.registroCnpj}
                 onChange={aoAlterar}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("registroCnpj")}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="enderecoCompleto" className={styles.label}>
+            <CampoReviewLabel htmlFor="enderecoCompleto" campoKey="enderecoCompleto" className={styles.label}>
               {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_ENDERECO_COMPLETO}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="enderecoCompleto"
               name="enderecoCompleto"
               value={dadosFormulario.enderecoCompleto}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_ENDERECO_COMPLETO}
-              className={fieldClassName}
-              disabled={isLocked}
+              className={fieldClass("enderecoCompleto")}
+              disabled={fieldDisabled}
             />
           </div>
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="cep" className={styles.label}>
+              <CampoReviewLabel htmlFor="cep" campoKey="cep" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_CEP}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="cep"
                 name="cep"
                 value={dadosFormulario.cep}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CEP}
-                className={fieldClassName}
+                className={fieldClass("cep")}
                 maxLength={9}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
               {cepStatus !== "idle" && (
                 <span style={{ fontSize: "12px", marginTop: "4px", display: "block", color: cepFeedback[cepStatus].cor }}>
@@ -492,16 +508,16 @@ function FormularioIdentificacaoProponente({
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="uf" className={styles.label}>
+              <CampoReviewLabel htmlFor="uf" campoKey="ufIbge" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_UF}
-              </Label>
+              </CampoReviewLabel>
               <select
                 id="uf"
                 name="uf"
                 value={dadosFormulario.ufIbge ?? ""}
                 onChange={aoAlterarSelect}
-                className={selectClassName}
-                disabled={isLocked}
+                className={cn(SELECT_CLASS_NAME, fieldClass("ufIbge"))}
+                disabled={fieldDisabled}
               >
                 <option value="">Selecione a UF...</option>
                 {estados.map((estado) => (
@@ -515,30 +531,30 @@ function FormularioIdentificacaoProponente({
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="bairro" className={styles.label}>
+              <CampoReviewLabel htmlFor="bairro" campoKey="bairro" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_BAIRRO}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="bairro"
                 name="bairro"
                 value={dadosFormulario.bairro}
                 onChange={aoAlterar}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("bairro")}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="municipio" className={styles.label}>
+              <CampoReviewLabel htmlFor="municipio" campoKey="municipioIbge" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_MUNICIPIO}
-              </Label>
+              </CampoReviewLabel>
               <select
                 id="municipio"
                 name="municipio"
                 value={dadosFormulario.municipioIbge ?? ""}
                 onChange={aoAlterarSelect}
-                className={selectClassName}
-                disabled={isLocked || !dadosFormulario.uf || carregandoMunicipios}
+                className={cn(SELECT_CLASS_NAME, fieldClass("municipioIbge"))}
+                disabled={fieldDisabled || !dadosFormulario.uf || carregandoMunicipios}
               >
                 <option value="">
                   {!dadosFormulario.uf
@@ -558,25 +574,25 @@ function FormularioIdentificacaoProponente({
 
           <div className={styles.grid2}>
             <div className={styles.fieldGroup}>
-              <Label htmlFor="telefoneFax" className={styles.label}>
+              <CampoReviewLabel htmlFor="telefoneFax" campoKey="telefoneFax" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_TELEFONE_FAX}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="telefoneFax"
                 name="telefoneFax"
                 value={dadosFormulario.telefoneFax}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_TELEFONE_FAX}
-                className={fieldClassName}
+                className={fieldClass("telefoneFax")}
                 maxLength={15}
-                disabled={isLocked}
+                disabled={fieldDisabled}
               />
             </div>
 
             <div className={styles.fieldGroup}>
-              <Label htmlFor="email" className={styles.label}>
+              <CampoReviewLabel htmlFor="email" campoKey="email" className={styles.label}>
                 {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_EMAIL}
-              </Label>
+              </CampoReviewLabel>
               <Input
                 id="email"
                 name="email"
@@ -584,24 +600,24 @@ function FormularioIdentificacaoProponente({
                 value={dadosFormulario.email}
                 onChange={aoAlterar}
                 placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_EMAIL}
-                className={fieldClassName}
-                disabled={isLocked}
+                className={fieldClass("email")}
+                disabled={fieldDisabled}
               />
             </div>
           </div>
 
           <div className={styles.fieldGroup}>
-            <Label htmlFor="paginaWeb" className={styles.label}>
+            <CampoReviewLabel htmlFor="paginaWeb" campoKey="paginaWeb" className={styles.label}>
               {IDENTIFICACAO_PROPONENTE_LABELS.LABEL_PAGINA_WEB}
-            </Label>
+            </CampoReviewLabel>
             <Input
               id="paginaWeb"
               name="paginaWeb"
               value={dadosFormulario.paginaWeb}
               onChange={aoAlterar}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_PAGINA_WEB}
-              className={fieldClassName}
-              disabled={isLocked}
+              className={fieldClass("paginaWeb")}
+              disabled={fieldDisabled}
             />
           </div>
         </div>
@@ -613,9 +629,11 @@ function FormularioIdentificacaoProponente({
             <p className="mr-auto text-sm text-destructive">{saveError}</p>
           ) : null}
           {!isEditing ? (
-            <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
-              Editar
-            </GenericButton>
+            canStartEditing ? (
+              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+                Editar
+              </GenericButton>
+            ) : null
           ) : (
             <>
               <GenericButton
@@ -642,7 +660,7 @@ function FormularioIdentificacaoProponente({
           )}
         </div>
       )}
-    </div>
+</div>
   )
 }
 

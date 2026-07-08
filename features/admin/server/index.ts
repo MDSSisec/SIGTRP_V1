@@ -3,7 +3,12 @@ import { NextResponse, type NextRequest } from "next/server"
 import { getSessionUser } from "@/features/login/server/session"
 import { listProfiles } from "./profiles.repository"
 import { listRoles } from "./roles.repository"
-import { createUsuario, listUsuarios } from "./usuarios.repository"
+import {
+  createUsuario,
+  deleteUsuario,
+  listUsuarios,
+  updateUsuario,
+} from "./usuarios.repository"
 import { normalizeUsuarioTipo } from "../constants/users"
 
 export async function handleAdminRequest(
@@ -80,6 +85,79 @@ export async function handleAdminRequest(
           : "Não foi possível criar o usuário."
 
       return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (resource === "usuarios" && rest.length === 1 && request.method === "PATCH") {
+    try {
+      const usuarioId = rest[0]?.trim() ?? ""
+      const body = (await request.json()) as {
+        nome?: string
+        email?: string
+        tipo?: string
+        perfilId?: number
+        roles?: number[]
+        senha?: string
+        ativo?: boolean
+      }
+
+      const nome = body.nome?.trim() ?? ""
+      const email = body.email?.trim().toLowerCase() ?? ""
+      const tipo = normalizeUsuarioTipo(body.tipo ?? "")
+      const perfilId = body.perfilId
+      const roles = Array.isArray(body.roles)
+        ? body.roles.filter((role): role is number => typeof role === "number")
+        : []
+      const ativo = body.ativo ?? true
+      const senha = body.senha?.trim() ?? ""
+
+      if (!usuarioId || !nome || !email || !tipo || typeof perfilId !== "number" || !senha) {
+        return NextResponse.json(
+          { error: "Dados do usuário inválidos. Verifique o tipo (interno ou externo)." },
+          { status: 400 },
+        )
+      }
+
+      const usuario = await updateUsuario(usuarioId, {
+        nome,
+        email,
+        tipo,
+        perfilId,
+        roles,
+        senha,
+        ativo,
+      })
+
+      return NextResponse.json({ usuario })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível atualizar o usuário."
+
+      const status = message === "Usuário não encontrado." ? 404 : 500
+      return NextResponse.json({ error: message }, { status })
+    }
+  }
+
+  if (resource === "usuarios" && rest.length === 1 && request.method === "DELETE") {
+    try {
+      const usuarioId = rest[0]?.trim() ?? ""
+
+      if (!usuarioId) {
+        return NextResponse.json({ error: "ID do usuário inválido." }, { status: 400 })
+      }
+
+      await deleteUsuario(usuarioId)
+      return NextResponse.json({ success: true })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o usuário."
+
+      const status = message === "Usuário não encontrado." ? 404 : 500
+      return NextResponse.json({ error: message }, { status })
     }
   }
 

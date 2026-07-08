@@ -4,6 +4,8 @@ import { useMemo, useState } from "react"
 import { EyeIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { ConfirmeModal } from "@/components/ui/confirmeModal"
+import { SuccessModal } from "@/components/ui/successModal"
 import { PageHeader } from "@/components/blocks/sidebar/page-header-action"
 import { Input } from "@/components/ui/input"
 import { MenuBar } from "@/components/ui/menuBar"
@@ -20,7 +22,12 @@ import {
 import { PopUpNewUser } from "../../components/popUpNewUser"
 import { fetchProfiles } from "../../services/profiles.service"
 import { fetchRoles } from "../../services/roles.service"
-import { createUsuario, fetchUsuarios } from "../../services/usuarios.service"
+import {
+  createUsuario,
+  deleteUsuario,
+  fetchUsuarios,
+  updateUsuario,
+} from "../../services/usuarios.service"
 import type { Profile } from "../../types/profile"
 import type { Role } from "../../types/role"
 import type { Usuario, UsuarioFilter } from "../../types/usuario"
@@ -34,6 +41,15 @@ export function AdminUsuariosScreen() {
   const [search, setSearch] = useState("")
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedUsuario, setSelectedUsuario] = useState<Usuario | null>(null)
+  const [popupMode, setPopupMode] = useState<"create" | "edit" | "view">("create")
+  const [usuarioToDelete, setUsuarioToDelete] = useState<Usuario | null>(null)
+  const [isDeleting, setIsDeleting] = useState(false)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
+  const [successFeedback, setSuccessFeedback] = useState<{
+    title: string
+    description: string
+  } | null>(null)
 
   const {
     data: usuarios,
@@ -74,12 +90,75 @@ export function AdminUsuariosScreen() {
     }
   }
 
+  async function handleEditUsuario(
+    data: Parameters<typeof updateUsuario>[1],
+  ) {
+    if (!selectedUsuario) return
+
+    setIsSubmitting(true)
+
+    try {
+      await updateUsuario(selectedUsuario.id, data)
+      await loadUsuarios()
+      setSuccessFeedback({
+        title: "Usuário atualizado",
+        description: "As alterações do usuário foram salvas com sucesso.",
+      })
+    } finally {
+      setIsSubmitting(false)
+    }
+  }
+
+  async function handleConfirmDeleteUsuario() {
+    if (!usuarioToDelete) return
+
+    setIsDeleting(true)
+    setDeleteError(null)
+
+    try {
+      const nomeExcluido = usuarioToDelete.nome
+      await deleteUsuario(usuarioToDelete.id)
+      setUsuarioToDelete(null)
+      await loadUsuarios()
+      setSuccessFeedback({
+        title: "Usuário excluído",
+        description: `O usuário "${nomeExcluido}" foi removido com sucesso.`,
+      })
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível excluir o usuário.",
+      )
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  function openCreatePopup() {
+    setSelectedUsuario(null)
+    setPopupMode("create")
+    setIsPopupOpen(true)
+  }
+
+  function openEditPopup(usuario: Usuario) {
+    setSelectedUsuario(usuario)
+    setPopupMode("edit")
+    setIsPopupOpen(true)
+  }
+
+  function openViewPopup(usuario: Usuario) {
+    setSelectedUsuario(usuario)
+    setPopupMode("view")
+    setIsPopupOpen(true)
+  }
+
   const pageHeader = (
     <PageHeader
       title="Usuários"
       subtitle="Gerencie os usuários do sistema."
       action={
-        <Button type="button" onClick={() => setIsPopupOpen(true)}>
+        <Button type="button" onClick={openCreatePopup}>
           <PlusIcon />
           Criar Usuário
         </Button>
@@ -134,15 +213,8 @@ export function AdminUsuariosScreen() {
                         variant="outline"
                         size="icon-sm"
                         className="bg-background"
-                        aria-label={`Ver ${usuario.nome}`}
-                      >
-                        <EyeIcon />
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="icon-sm"
-                        className="bg-background"
                         aria-label={`Editar ${usuario.nome}`}
+                        onClick={() => openEditPopup(usuario)}
                       >
                         <PencilIcon />
                       </Button>
@@ -150,6 +222,10 @@ export function AdminUsuariosScreen() {
                         size="icon-sm"
                         className="border-0 bg-destructive/10 text-destructive hover:bg-destructive/20"
                         aria-label={`Excluir ${usuario.nome}`}
+                        onClick={() => {
+                          setDeleteError(null)
+                          setUsuarioToDelete(usuario)
+                        }}
                       >
                         <Trash2Icon />
                       </Button>
@@ -162,11 +238,43 @@ export function AdminUsuariosScreen() {
         </div>
       </AsyncLoadState>
 
+      <ConfirmeModal
+        open={Boolean(usuarioToDelete)}
+        title="Excluir usuário?"
+        description={
+          deleteError
+            ? deleteError
+            : `Tem certeza que deseja excluir o usuário "${usuarioToDelete?.nome}"? Esta ação não pode ser desfeita.`
+        }
+        confirmText="Excluir"
+        cancelText="Cancelar"
+        isLoading={isDeleting}
+        onConfirm={handleConfirmDeleteUsuario}
+        onCancel={() => {
+          if (isDeleting) return
+          setUsuarioToDelete(null)
+          setDeleteError(null)
+        }}
+      />
+
+      <SuccessModal
+        open={Boolean(successFeedback)}
+        title={successFeedback?.title ?? ""}
+        description={successFeedback?.description ?? ""}
+        onConfirm={() => setSuccessFeedback(null)}
+      />
+
       <PopUpNewUser
         open={isPopupOpen}
-        onClose={() => setIsPopupOpen(false)}
-        onSubmit={handleCreateUsuario}
+        onClose={() => {
+          setIsPopupOpen(false)
+          setSelectedUsuario(null)
+          setPopupMode("create")
+        }}
+        onSubmit={popupMode === "edit" ? handleEditUsuario : handleCreateUsuario}
         isSubmitting={isSubmitting}
+        initialValues={selectedUsuario}
+        mode={popupMode}
         profiles={profiles}
         roles={roles}
       />
