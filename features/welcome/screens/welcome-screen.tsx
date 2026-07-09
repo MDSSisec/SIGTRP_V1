@@ -16,7 +16,7 @@ export function WelcomeScreen() {
 
       <div className="relative flex min-h-svh flex-col">
         <main className="mx-auto flex w-full max-w-7xl flex-1 items-center px-6 py-10 md:px-10 lg:px-16">
-          <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,1.25fr)_420px] lg:items-center lg:gap-16">
+          <div className="grid w-full gap-12 lg:grid-cols-[minmax(0,1.2fr)_minmax(400px,440px)] lg:items-center lg:gap-16">
             <WelcomeHero />
             <LoginForm className="w-full lg:justify-self-end" />
           </div>

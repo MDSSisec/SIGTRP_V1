@@ -4,6 +4,7 @@ import React from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { useCronograma } from "../CronogramaContext/CronogramaContext"
 import styles from "./Metas.module.css"
 import { METAS_PLACEHOLDER, METAS_TITLE } from "@/features/projetos/constants/ted/metas"
@@ -69,7 +70,10 @@ function FormularioMetas({ onChange }: PropsFormularioMetas) {
 
       <div className={styles.actions}>
         <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
+        <GenericButton
+          variant="salvar"
+          onClick={() => notifyFormSaveSuccess("Metas salvas com sucesso!")}
+        />
       </div>
     </div>
   )

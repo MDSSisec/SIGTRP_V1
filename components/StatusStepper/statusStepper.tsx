@@ -16,6 +16,7 @@ type StatusStepperProps = {
   currentStep: number;
   collapsible?: boolean;
   collapsibleLabel?: string;
+  forceExpanded?: boolean;
 };
 
 function StepperContent({
@@ -84,11 +85,13 @@ function StepperTrigger({
   currentStepInfo,
   CurrentIcon,
   open,
+  hideChevron,
 }: {
   collapsibleLabel: string;
   currentStepInfo?: StatusItem;
   CurrentIcon?: LucideIcon;
   open?: boolean;
+  hideChevron?: boolean;
 }) {
   return (
     <>
@@ -104,10 +107,12 @@ function StepperTrigger({
         )}
       </span>
 
-      <ChevronDown
-        size={18}
-        className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
-      />
+      {!hideChevron && (
+        <ChevronDown
+          size={18}
+          className={`${styles.chevron} ${open ? styles.chevronOpen : ""}`}
+        />
+      )}
     </>
   );
 }
@@ -117,11 +122,13 @@ export default function StatusStepper({
   currentStep,
   collapsible = false,
   collapsibleLabel = "Status do projeto",
+  forceExpanded = false,
 }: StatusStepperProps) {
   const [open, setOpen] = useState(true);
   const [mounted, setMounted] = useState(false);
   const currentStepInfo = steps[currentStep];
   const CurrentIcon = currentStepInfo?.icon;
+  const isOpen = forceExpanded || open;
 
   useEffect(() => {
     setMounted(true);
@@ -145,10 +152,29 @@ export default function StatusStepper({
     );
   }
 
+  if (collapsible && forceExpanded) {
+    return (
+      <div className={styles.fullWidth}>
+        <div className={styles.trigger}>
+          <StepperTrigger
+            collapsibleLabel={collapsibleLabel}
+            currentStepInfo={currentStepInfo}
+            CurrentIcon={CurrentIcon}
+            open
+            hideChevron
+          />
+        </div>
+        <div className={styles.motionWrapper}>
+          <StepperContent steps={steps} currentStep={currentStep} />
+        </div>
+      </div>
+    );
+  }
+
   if (collapsible) {
     return (
       <Collapsible
-        open={open}
+        open={isOpen}
         onOpenChange={setOpen}
         className={styles.fullWidth}
       >
@@ -157,12 +183,12 @@ export default function StatusStepper({
             collapsibleLabel={collapsibleLabel}
             currentStepInfo={currentStepInfo}
             CurrentIcon={CurrentIcon}
-            open={open}
+            open={isOpen}
           />
         </CollapsibleTrigger>
 
         <AnimatePresence initial={false}>
-          {open && (
+          {isOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}

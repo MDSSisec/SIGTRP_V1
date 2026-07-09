@@ -5,10 +5,12 @@ export { BRAZIL_UFS, type BrazilUf } from "./brazil-ufs";
 export {
   countByUf,
   countEntidadesByUf,
+  getMapHeatPalette,
   getMaxUfCount,
   getSortedUfCounts,
   getUfHeatFill,
   type EntidadeUfSource,
+  type MapHeatPalette,
   type UfSource,
 } from "./brazilEntidadesMap.utils";
 export { type BrazilMapVariant } from "./constants";

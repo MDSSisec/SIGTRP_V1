@@ -51,16 +51,16 @@ export function WelcomeHero() {
         <p className="text-[26px] leading-tight font-medium text-slate-700 md:text-[32px]">
           Sistema Interno de Gestao de
           <br />
-          <span className="font-semibold text-[#1c56a6]">
-            TEDs e Emendas Parlamentares
+          <span className="font-semibold whitespace-nowrap text-[#1c56a6]">
+            TEDs, Convênios e Emendas Parlamentares
           </span>
         </p>
 
         <div className="h-0.5 w-14 rounded-full bg-[#3b82f6]" />
 
         <p className="max-w-lg text-[18px] leading-9 text-slate-600 md:text-[20px]">
-          Controle, acompanhe e gerencie todo o ciclo de execucao de TEDs e
-          Emendas em um unico ambiente.
+          Controle, acompanhe e gerencie todo o ciclo de execução de TEDs,
+          Convênios e Emendas em um único ambiente.
         </p>
       </div>
 

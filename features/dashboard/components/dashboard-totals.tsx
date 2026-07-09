@@ -10,31 +10,31 @@ import { Total } from "@/components/ui/total"
 const totals = [
   {
     label: "Total de projetos",
-    value: 20,
+    value: 115,
     icon: <LayoutGridIcon />,
     description: "Quantidade total de projetos cadastrados no sistema.",
   },
   {
     label: "Aprovados",
-    value: 12,
+    value: 68,
     icon: <CircleCheckIcon />,
     description: "Projetos com status aprovado.",
   },
   {
     label: "Em Análise",
-    value: 5,
+    value: 29,
     icon: <SearchIcon />,
     description: "Projetos em processo de análise.",
   },
   {
     label: "Pendências",
-    value: 3,
+    value: 18,
     icon: <ClockIcon />,
     description: "Projetos com pendências a resolver.",
   },
   {
     label: "Concluídos",
-    value: 10,
+    value: 47,
     icon: <CircleCheckIcon />,
     description: "Projetos finalizados com sucesso.",
   },

@@ -4,6 +4,7 @@ import React, { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
 import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 
@@ -73,7 +74,10 @@ export function ServicosAcessados({ projectId: _projectId, onChange }: Props) {
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
+        <GenericButton
+          variant="salvar"
+          onClick={() => notifyFormSaveSuccess("Serviços acessados salvos com sucesso!")}
+        />
       </div>
     </FormSectionCard>
   )

@@ -4,6 +4,7 @@ import React from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { useCronograma } from "../CronogramaContext/CronogramaContext"
 import type { QuadroConteudoProgramatico } from "../etapas-cronograma/types"
 import styles from "./Metodologia.module.css"
@@ -25,7 +26,10 @@ export function Metodologia({ projectId: _projectId }: { projectId?: string }) {
   const footer = (
     <div className={styles.actions}>
       <GenericButton variant="editar" onClick={() => {}} />
-      <GenericButton variant="salvar" onClick={() => {}} />
+      <GenericButton
+        variant="salvar"
+        onClick={() => notifyFormSaveSuccess("Metodologia salva com sucesso!")}
+      />
     </div>
   )
 

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
 import { FORM_INPUT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
@@ -102,7 +103,10 @@ function FormularioResultadosEsperados({
 
       <div className="flex flex-wrap items-center justify-end gap-3">
         <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
+        <GenericButton
+          variant="salvar"
+          onClick={() => notifyFormSaveSuccess("Resultados esperados salvos com sucesso!")}
+        />
       </div>
     </FormSectionCard>
   )

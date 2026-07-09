@@ -5,6 +5,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
 import {
   countByUf,
+  getMapHeatPalette,
   getMaxUfCount,
   getSortedUfCounts,
   getUfHeatFill,
@@ -45,7 +46,7 @@ type BrazilUfDistributionMapProps = {
 
 export function BrazilUfDistributionMap({
   items,
-  variant = "green",
+  variant = "primary",
   labels,
 }: BrazilUfDistributionMapProps) {
   const mapWrapRef = React.useRef<HTMLDivElement>(null);
@@ -64,6 +65,24 @@ export function BrazilUfDistributionMap({
     () => Object.values(countsByUf).reduce((sum, count) => sum + count, 0),
     [countsByUf],
   );
+
+  const [palette, setPalette] = React.useState(() => getMapHeatPalette(variant));
+
+  React.useEffect(() => {
+    const updatePalette = () => {
+      setPalette(getMapHeatPalette(variant));
+    };
+
+    updatePalette();
+
+    const observer = new MutationObserver(updatePalette);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [variant]);
 
   function handleGeographyMouseEnter(
     event: React.MouseEvent<SVGPathElement>,
@@ -117,7 +136,7 @@ export function BrazilUfDistributionMap({
   }
 
   const legendBarClassName =
-    variant === "blue" ? styles.legendBarBlue : styles.legendBarGreen;
+    variant === "green" ? styles.legendBarGreen : styles.legendBarPrimary;
 
   return (
     <div className={styles.layout}>
@@ -174,7 +193,7 @@ export function BrazilUfDistributionMap({
                     <Geography
                       key={geo.rsmKey}
                       geography={geo}
-                      fill={getUfHeatFill(count, maxCount, variant)}
+                      fill={getUfHeatFill(count, maxCount, palette)}
                       stroke="var(--border)"
                       strokeWidth={0.6}
                       onMouseEnter={(event) =>

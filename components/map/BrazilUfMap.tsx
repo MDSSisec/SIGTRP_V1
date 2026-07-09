@@ -5,6 +5,7 @@ import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 
 import {
   countByUf,
+  getMapHeatPalette,
   getMaxUfCount,
   getUfHeatFill,
   type UfSource,
@@ -38,7 +39,7 @@ type BrazilUfMapProps = {
 
 export function BrazilUfMap({
   items,
-  variant = "green",
+  variant = "primary",
   title = "Distribuição por UF",
   description = "Quanto mais escuro o estado, maior a quantidade registrada.",
   countSingular = "registro",
@@ -57,6 +58,24 @@ export function BrazilUfMap({
     () => Object.values(countsByUf).reduce((sum, count) => sum + count, 0),
     [countsByUf],
   );
+
+  const [palette, setPalette] = React.useState(() => getMapHeatPalette(variant));
+
+  React.useEffect(() => {
+    const updatePalette = () => {
+      setPalette(getMapHeatPalette(variant));
+    };
+
+    updatePalette();
+
+    const observer = new MutationObserver(updatePalette);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, [variant]);
 
   function handleGeographyMouseEnter(
     event: React.MouseEvent<SVGPathElement>,
@@ -110,7 +129,7 @@ export function BrazilUfMap({
   }
 
   const legendBarClassName =
-    variant === "blue" ? styles.legendBarBlue : styles.legendBarGreen;
+    variant === "green" ? styles.legendBarGreen : styles.legendBarPrimary;
 
   return (
     <div className={styles.mapCard}>
@@ -149,7 +168,7 @@ export function BrazilUfMap({
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}
-                    fill={getUfHeatFill(count, maxCount, variant)}
+                    fill={getUfHeatFill(count, maxCount, palette)}
                     stroke="var(--border)"
                     strokeWidth={0.6}
                     onMouseEnter={(event) =>

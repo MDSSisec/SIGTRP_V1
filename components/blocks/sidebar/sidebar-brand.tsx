@@ -12,13 +12,13 @@ export function SidebarBrand() {
   return (
     <SidebarMenu>
       <SidebarMenuItem>
-        <SidebarMenuButton size="lg" className="pointer-events-none">
-          <div className="flex shrink-0 items-center justify-center rounded-[4px] bg-sidebar-primary p-[10px] text-sidebar-primary-foreground">
+        <SidebarMenuButton size="lg" className="pointer-events-none rounded-lg">
+          <div className="flex shrink-0 items-center justify-center rounded-lg bg-sidebar-primary p-[10px] text-sidebar-primary-foreground shadow-sm">
             <Building2Icon className="size-4" />
           </div>
           <div className="grid flex-1 text-left text-sm leading-tight">
-            <span className="truncate font-medium">{APP_NAME}</span>
-            <span className="truncate text-xs text-muted-foreground">
+            <span className="truncate font-medium text-sidebar-foreground">{APP_NAME}</span>
+            <span className="truncate text-xs text-sidebar-foreground/60">
               Painel interno
             </span>
           </div>

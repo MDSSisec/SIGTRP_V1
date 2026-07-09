@@ -4,6 +4,10 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import {
+  notifyFormSaveError,
+  notifyFormSaveSuccess,
+} from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import styles from "./IdentificacaoResponsavelTecnico.module.css"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 import {
@@ -44,16 +48,16 @@ const VAZIO_RT: DadosIdentificacaoResponsavelTecnico = {
   email: "",
 }
 
-function formatTelefone(value: string) {
-  return value
+function formatTelefone(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2")
     .slice(0, 15)
 }
 
-function formatTelefoneFixo(value: string) {
-  return value
+function formatTelefoneFixo(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{4})(\d)/, "$1-$2")
@@ -150,11 +154,13 @@ function FormularioIdentificacaoResponsavelTecnico({
       setDadosFormulario(mapIdentificacaoToForm(salvo))
       setIsEditing(false)
       await reload()
+      notifyFormSaveSuccess("Responsável técnico salvo com sucesso!")
     } catch (error) {
       setSaveError(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível salvar o responsável técnico.",
+        notifyFormSaveError(
+          error,
+          "Não foi possível salvar o responsável técnico.",
+        ),
       )
     } finally {
       setIsSaving(false)

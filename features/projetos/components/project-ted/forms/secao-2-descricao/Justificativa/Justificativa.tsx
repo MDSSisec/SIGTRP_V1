@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import styles from "./Justificativa.module.css"
 import {
@@ -165,7 +166,10 @@ export default function FormularioJustificativa({
 
       <div className={styles.actions}>
         <GenericButton variant="editar" onClick={() => {}} />
-        <GenericButton variant="salvar" onClick={() => {}} />
+        <GenericButton
+          variant="salvar"
+          onClick={() => notifyFormSaveSuccess("Justificativa salva com sucesso!")}
+        />
       </div>
     </div>
   )

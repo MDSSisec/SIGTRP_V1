@@ -1,15 +1,16 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import { EyeIcon, PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react"
+import { PencilIcon, PlusIcon, SearchIcon, Trash2Icon } from "lucide-react"
+import { toast } from "sonner"
 
 import { Button } from "@/components/ui/button"
 import { ConfirmeModal } from "@/components/ui/confirmeModal"
-import { SuccessModal } from "@/components/ui/successModal"
 import { PageHeader } from "@/components/blocks/sidebar/page-header-action"
 import { Input } from "@/components/ui/input"
 import { MenuBar } from "@/components/ui/menuBar"
 import { AsyncLoadState } from "@/components/ui/async-load-state"
+import { Spinner } from "@/components/ui/spinner"
 import { useAsyncData } from "@/hooks/use-async-data"
 import {
   Table,
@@ -46,10 +47,6 @@ export function AdminUsuariosScreen() {
   const [usuarioToDelete, setUsuarioToDelete] = useState<Usuario | null>(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
-  const [successFeedback, setSuccessFeedback] = useState<{
-    title: string
-    description: string
-  } | null>(null)
 
   const {
     data: usuarios,
@@ -85,6 +82,14 @@ export function AdminUsuariosScreen() {
     try {
       await createUsuario(data)
       await loadUsuarios()
+      toast.success("Usuário criado com sucesso!")
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível criar o usuário.",
+      )
+      throw error
     } finally {
       setIsSubmitting(false)
     }
@@ -100,10 +105,14 @@ export function AdminUsuariosScreen() {
     try {
       await updateUsuario(selectedUsuario.id, data)
       await loadUsuarios()
-      setSuccessFeedback({
-        title: "Usuário atualizado",
-        description: "As alterações do usuário foram salvas com sucesso.",
-      })
+      toast.success("Usuário atualizado com sucesso!")
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Não foi possível atualizar o usuário.",
+      )
+      throw error
     } finally {
       setIsSubmitting(false)
     }
@@ -120,16 +129,15 @@ export function AdminUsuariosScreen() {
       await deleteUsuario(usuarioToDelete.id)
       setUsuarioToDelete(null)
       await loadUsuarios()
-      setSuccessFeedback({
-        title: "Usuário excluído",
-        description: `O usuário "${nomeExcluido}" foi removido com sucesso.`,
-      })
+      toast.success(`O usuário "${nomeExcluido}" foi excluído com sucesso.`)
     } catch (error) {
-      setDeleteError(
+      const message =
         error instanceof Error
           ? error.message
-          : "Não foi possível excluir o usuário.",
-      )
+          : "Não foi possível excluir o usuário."
+
+      setDeleteError(message)
+      toast.error(message)
     } finally {
       setIsDeleting(false)
     }
@@ -173,6 +181,7 @@ export function AdminUsuariosScreen() {
         isLoading={isLoading}
         error={error}
         loadingLabel="Carregando usuários..."
+        loadingIcon={<Spinner className="size-8 text-primary" />}
       >
         <div className="space-y-4">
           <MenuBar items={menuItems} value={filter} onValueChange={setFilter}>
@@ -255,13 +264,6 @@ export function AdminUsuariosScreen() {
           setUsuarioToDelete(null)
           setDeleteError(null)
         }}
-      />
-
-      <SuccessModal
-        open={Boolean(successFeedback)}
-        title={successFeedback?.title ?? ""}
-        description={successFeedback?.description ?? ""}
-        onConfirm={() => setSuccessFeedback(null)}
       />
 
       <PopUpNewUser

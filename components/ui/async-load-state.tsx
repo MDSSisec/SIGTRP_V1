@@ -9,6 +9,7 @@ type AsyncLoadStateProps = {
   isLoading: boolean
   error: string | null
   loadingLabel?: string
+  loadingIcon?: ReactNode
   errorClassName?: string
   children: ReactNode
 }
@@ -17,11 +18,12 @@ export function AsyncLoadState({
   isLoading,
   error,
   loadingLabel = "Carregando...",
+  loadingIcon,
   errorClassName,
   children,
 }: AsyncLoadStateProps) {
   if (isLoading) {
-    return <Loading label={loadingLabel} />
+    return <Loading label={loadingLabel} icon={loadingIcon} />
   }
 
   if (error) {

@@ -6,6 +6,10 @@ import React, { useCallback, useEffect, useRef, useState } from "react"
 import styles from "./IdentificacaoProponente.module.css"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
+  notifyFormSaveError,
+  notifyFormSaveSuccess,
+} from "@/features/projetos/components/project-ted/shared/form-save-toast"
+import {
   fetchEstados,
   fetchMunicipiosByUf,
   fetchTedIdentificacao,
@@ -70,8 +74,8 @@ const VAZIO_Proponente: DadosIdentificacaoProponente = {
   paginaWeb: "",
 }
 
-function formatCNPJ(value: string) {
-  return value
+function formatCNPJ(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{2})(\d)/, "$1.$2")
     .replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3")
@@ -80,16 +84,16 @@ function formatCNPJ(value: string) {
     .slice(0, 18)
 }
 
-function formatTelefone(value: string) {
-  return value
+function formatTelefone(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2")
     .slice(0, 15)
 }
 
-function formatCEP(value: string) {
-  return value
+function formatCEP(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{5})(\d)/, "$1-$2")
     .slice(0, 9)
@@ -365,11 +369,10 @@ function FormularioIdentificacaoProponente({
       setDadosFormulario(mapIdentificacaoToForm(salvo))
       setIsEditing(false)
       await reload()
+      notifyFormSaveSuccess("Proponente salvo com sucesso!")
     } catch (error) {
       setSaveError(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível salvar o proponente.",
+        notifyFormSaveError(error, "Não foi possível salvar o proponente."),
       )
     } finally {
       setIsSaving(false)

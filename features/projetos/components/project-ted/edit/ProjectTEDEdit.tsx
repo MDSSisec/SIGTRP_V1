@@ -39,6 +39,7 @@ function buildProjectDataFromProjeto(projeto: Projeto): ProjectModelData {
     responsavel: projeto.responsavelInternoNome,
     responsavelInternoId: projeto.responsavelInternoId,
     responsavelExternoId: projeto.responsavelExternoId,
+    valorTotal: projeto.valorTotal,
     identificacao: {
       projeto: {
         nome: projeto.nome,

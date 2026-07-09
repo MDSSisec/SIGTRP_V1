@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { PlusIcon, SearchIcon } from "lucide-react"
+import { toast } from "sonner"
 
 import { PageHeader } from "@/components/blocks/sidebar/page-header-action"
 import { AsyncLoadState } from "@/components/ui/async-load-state"
@@ -126,6 +127,14 @@ export function ProjetosScreen() {
     [projetos, filter, search],
   )
 
+  const emptyTableMessage = useMemo(() => {
+    if (projetos.length === 0) {
+      return "Ainda não há nenhum projeto cadastrado."
+    }
+
+    return "Nenhum projeto encontrado para os filtros aplicados."
+  }, [projetos.length])
+
   async function handleCreateProjeto(
     data: Parameters<typeof createProjeto>[0],
   ) {
@@ -134,14 +143,32 @@ export function ProjetosScreen() {
     try {
       await createProjeto(data)
       await loadProjetos()
+      toast.success("Projeto criado com sucesso!")
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao salvar projeto.",
+      )
+      throw error
     } finally {
       setIsSubmitting(false)
     }
   }
 
   async function handleDeleteProjeto(id: string) {
-    await deleteProjeto(id)
-    await loadProjetos()
+    try {
+      await deleteProjeto(id)
+      await loadProjetos()
+      toast.success("Projeto excluído com sucesso!")
+    } catch (error) {
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Erro ao excluir projeto.",
+      )
+      throw error
+    }
   }
 
   const pageHeader = (
@@ -183,6 +210,7 @@ export function ProjetosScreen() {
           </MenuBar>
           <ProjetosTable
             projetos={projetosFiltrados}
+            emptyMessage={emptyTableMessage}
             canDelete={canCreate}
             onDelete={handleDeleteProjeto}
           />

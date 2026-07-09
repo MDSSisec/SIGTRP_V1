@@ -1,8 +1,7 @@
 "use client"
 
-import React, { useLayoutEffect, useMemo, useRef } from "react"
+import React, { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { FileDown } from "lucide-react"
-import { pdf } from "@react-pdf/renderer"
 import StatusStepper from "@/components/StatusStepper/statusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
@@ -19,7 +18,8 @@ import type { StatusProjeto } from "@/features/projetos/constants/ted/project"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import { STATUS_PROJETO_STEPS, getProjectStepIndex } from "@/features/projetos/services/project-ted.service"
 import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
-import { VisaoGeralPDF } from "./visaoGeralPDF"
+import { exportVisaoGeralToPdf } from "./export-visao-geral-pdf"
+import styles from "./visaoGeralDoProjeto.module.css"
 
 const SECOES_VISAO_GERAL: { slug: string; title: string }[] = [
   { slug: SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_PROJETO, title: SESSOES_VISAO_GERAL_TITLE.TITLE_SESSAO_IDENTIFICACAO_PROJETO },
@@ -78,7 +78,7 @@ function ReadOnlyWrapper({ children }: { children: React.ReactNode }) {
   }, [])
 
   return (
-    <div ref={ref} className="pointer-events-none select-none">
+    <div ref={ref} className={styles.readOnlyWrapper}>
       {children}
     </div>
   )
@@ -86,19 +86,10 @@ function ReadOnlyWrapper({ children }: { children: React.ReactNode }) {
 
 export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
   const projectData = useProjectData()
+  const pdfExportRef = useRef<HTMLDivElement>(null)
+  const [isExporting, setIsExporting] = useState(false)
 
   const status = (projectData?.status as StatusProjeto | undefined) ?? "TRP em Elaboração"
-
-  const projetoResumo = useMemo(() => {
-    if (!projectData) return null
-
-    return {
-      nome: projectData.nome ?? "Projeto",
-      responsavel: String(projectData.responsavel ?? ""),
-      status,
-      tipo: String(projectData.tipo ?? "TED"),
-    }
-  }, [projectData, status])
 
   const currentStep = useMemo(
     () => getProjectStepIndex(projectData ?? { status }),
@@ -106,74 +97,76 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
   )
 
   const handleExportPDF = async () => {
-    if (!projetoResumo || !projectId) return
+    if (!projectId || !pdfExportRef.current) return
 
-    const blob = await pdf(
-      <VisaoGeralPDF
-        projectId={projectId}
-        nome={projetoResumo.nome}
-        responsavel={projetoResumo.responsavel}
-        status={projetoResumo.status}
-        tipo={projetoResumo.tipo}
-        secoes={SECOES_VISAO_GERAL}
-      />
-    ).toBlob()
+    setIsExporting(true)
 
-    const url = URL.createObjectURL(blob)
-    const link = document.createElement("a")
-    link.href = url
-    link.download = `TRP_projeto-${projectId}_visao-geral.pdf`
-    link.click()
-    URL.revokeObjectURL(url)
+    try {
+      await new Promise((resolve) => requestAnimationFrame(() => resolve(undefined)))
+      await exportVisaoGeralToPdf(
+        pdfExportRef.current,
+        `TRP_projeto-${projectId}_visao-geral.pdf`,
+      )
+    } finally {
+      setIsExporting(false)
+    }
   }
 
   return (
     <div className={formLayoutStyles.page}>
-      <div className="space-y-2">
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <h2 className={formLayoutStyles.title}>{TITULO_VISAO_GERAL}</h2>
+      <div className={styles.header}>
+        <div className={styles.headerTop}>
+          <h2 className={styles.title}>{TITULO_VISAO_GERAL}</h2>
           <GenericButton
             variant="outline"
             size="sm"
             icon={FileDown}
             onClick={handleExportPDF}
+            disabled={isExporting || !projectId}
           >
-            {COMUNS_TITLES.TITLE_EXPORTAR_PDF}
+            {isExporting ? "Exportando..." : COMUNS_TITLES.TITLE_EXPORTAR_PDF}
           </GenericButton>
         </div>
-        <p className={formLayoutStyles.subtitle}>{DESCRICAO_VISAO_GERAL}</p>
+        <p className={styles.description}>{DESCRICAO_VISAO_GERAL}</p>
       </div>
 
-      <div className="space-y-4">
-        {projectId && (
-          <StatusStepper
-            steps={STATUS_PROJETO_STEPS}
-            currentStep={currentStep}
-            collapsible
-            collapsibleLabel="Status do projeto"
-          />
-        )}
-
-        <div className={formLayoutStyles.card}>
-          <h1 className="text-center text-base font-semibold text-black dark:text-white">
-            {TITULO_DOCUMENTO_TRP}
-          </h1>
+      <div
+        ref={pdfExportRef}
+        data-visao-geral-pdf-root
+        className={styles.pdfExportRoot}
+      >
+        <div className={styles.statusCard}>
+          {projectId && (
+            <StatusStepper
+              steps={STATUS_PROJETO_STEPS}
+              currentStep={currentStep}
+              collapsible
+              collapsibleLabel="Status do projeto"
+              forceExpanded={isExporting}
+            />
+          )}
         </div>
-      </div>
 
-      <div className="flex flex-col gap-4">
-        {SECOES_VISAO_GERAL.map(({ slug }) => {
-          const FormSection = getFormSection(slug)
-          if (!FormSection) return null
+        <div className={styles.documentHeader}>
+          <h1 className={styles.documentTitle}>{TITULO_DOCUMENTO_TRP}</h1>
+        </div>
 
-          return (
-            <section key={slug} id={`secao-${slug}`}>
-              <ReadOnlyWrapper>
-                <FormSection projectId={projectId} readOnlyView />
-              </ReadOnlyWrapper>
-            </section>
-          )
-        })}
+        <div className={styles.sectionsWrapper}>
+          {SECOES_VISAO_GERAL.map(({ slug }) => {
+            const FormSection = getFormSection(slug)
+            if (!FormSection) return null
+
+            return (
+              <section key={slug} id={`secao-${slug}`} className={styles.section}>
+                <div className={styles.sectionContent}>
+                  <ReadOnlyWrapper>
+                    <FormSection projectId={projectId} readOnlyView />
+                  </ReadOnlyWrapper>
+                </div>
+              </section>
+            )
+          })}
+        </div>
       </div>
     </div>
   )

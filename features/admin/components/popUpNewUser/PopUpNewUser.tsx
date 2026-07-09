@@ -5,6 +5,7 @@ import { XIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Spinner } from "@/components/ui/spinner"
 import { ADMIN_USERS_FORM, normalizeUsuarioTipo, USUARIO_TIPOS } from "../../constants/users"
 import type { Profile } from "../../types/profile"
 import type { Role } from "../../types/role"
@@ -372,11 +373,16 @@ export function PopUpNewUser({
             </Button>
             {!isViewMode && (
               <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting
-                  ? ADMIN_USERS_FORM.saving
-                  : mode === "edit"
-                    ? ADMIN_USERS_FORM.saveChanges
-                    : ADMIN_USERS_FORM.save}
+                {isSubmitting ? (
+                  <>
+                    <Spinner />
+                    {ADMIN_USERS_FORM.saving}
+                  </>
+                ) : mode === "edit" ? (
+                  ADMIN_USERS_FORM.saveChanges
+                ) : (
+                  ADMIN_USERS_FORM.save
+                )}
               </Button>
             )}
           </div>

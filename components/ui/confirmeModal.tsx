@@ -3,6 +3,7 @@
 import { TriangleAlertIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
 
 type ConfirmeModalVariant = "default" | "destructive"
 
@@ -77,7 +78,14 @@ export function ConfirmeModal({
             onClick={() => void onConfirm()}
             disabled={isLoading}
           >
-            {isLoading ? "Aguarde..." : confirmText}
+            {isLoading ? (
+              <>
+                <Spinner />
+                Aguarde...
+              </>
+            ) : (
+              confirmText
+            )}
           </Button>
         </div>
       </div>

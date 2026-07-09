@@ -15,7 +15,8 @@
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background-color: var(--card);
+  background: linear-gradient(to top, color-mix(in oklch, var(--primary) 5%, var(--card)), var(--card));
+  box-shadow: var(--shadow-xs);
 }
 
 .listTitle {
@@ -72,7 +73,8 @@
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background-color: var(--card);
+  background: linear-gradient(to top, color-mix(in oklch, var(--primary) 5%, var(--card)), var(--card));
+  box-shadow: var(--shadow-xs);
 }
 
 .header {
@@ -102,6 +104,14 @@
   color: var(--muted-foreground);
 }
 
+.legendBarPrimary {
+  width: 7rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  background: linear-gradient(to right, var(--map-heat-min), var(--map-heat-max));
+  border: 1px solid var(--border);
+}
+
 .legendBarGreen {
   width: 7rem;
   height: 0.625rem;
@@ -114,7 +124,7 @@
   width: 7rem;
   height: 0.625rem;
   border-radius: 9999px;
-  background: linear-gradient(to right, #dbeafe, #1d4ed8);
+  background: linear-gradient(to right, var(--map-heat-min), var(--map-heat-max));
   border: 1px solid var(--border);
 }
 
@@ -162,7 +172,8 @@
   padding: 1rem;
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  background-color: var(--card);
+  background: linear-gradient(to top, color-mix(in oklch, var(--primary) 5%, var(--card)), var(--card));
+  box-shadow: var(--shadow-xs);
 }
 
 .emptyMessage {

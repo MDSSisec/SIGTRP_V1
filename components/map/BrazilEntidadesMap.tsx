@@ -20,7 +20,7 @@ export function BrazilEntidadesMap({ entidades }: BrazilEntidadesMapProps) {
   return (
     <BrazilUfDistributionMap
       items={entidades}
-      variant="green"
+      variant="primary"
       labels={ENTIDADES_MAP_LABELS}
     />
   );

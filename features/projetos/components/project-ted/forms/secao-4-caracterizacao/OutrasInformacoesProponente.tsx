@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import { cn } from "@/lib/utils"
 
@@ -105,7 +106,13 @@ function FormularioOutrasInformacoesProponente({
               <GenericButton variant="outline" onClick={() => setIsEditing(false)}>
                 Cancelar
               </GenericButton>
-              <GenericButton variant="salvar" onClick={() => setIsEditing(false)} />
+              <GenericButton
+                variant="salvar"
+                onClick={() => {
+                  setIsEditing(false)
+                  notifyFormSaveSuccess("Outras informações salvas com sucesso!")
+                }}
+              />
             </>
           )}
         </div>

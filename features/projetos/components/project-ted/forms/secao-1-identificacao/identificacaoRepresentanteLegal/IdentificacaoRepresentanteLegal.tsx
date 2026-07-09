@@ -4,6 +4,10 @@ import React, { useCallback, useEffect, useState } from "react"
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import {
+  notifyFormSaveError,
+  notifyFormSaveSuccess,
+} from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import styles from "./IdentificacaoRepresentanteLegal.module.css"
 import {
   IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS,
@@ -47,8 +51,8 @@ const VAZIO_REP: DadosIdentificacaoRepresentanteLegal = {
   email: "",
 }
 
-function formatCpf(value: string) {
-  return value
+function formatCpf(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{3})(\d)/, "$1.$2")
     .replace(/^(\d{3})\.(\d{3})(\d)/, "$1.$2.$3")
@@ -56,8 +60,8 @@ function formatCpf(value: string) {
     .slice(0, 14)
 }
 
-function formatTelefone(value: string) {
-  return value
+function formatTelefone(value: string | number) {
+  return String(value)
     .replace(/\D/g, "")
     .replace(/^(\d{2})(\d)/, "($1) $2")
     .replace(/(\d{5})(\d)/, "$1-$2")
@@ -170,11 +174,13 @@ function FormularioIdentificacaoRepresentanteLegal({
       setDadosFormulario(mapIdentificacaoToForm(salvo))
       setIsEditing(false)
       await reload()
+      notifyFormSaveSuccess("Representante legal salvo com sucesso!")
     } catch (error) {
       setSaveError(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível salvar o representante legal.",
+        notifyFormSaveError(
+          error,
+          "Não foi possível salvar o representante legal.",
+        ),
       )
     } finally {
       setIsSaving(false)

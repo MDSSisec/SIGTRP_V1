@@ -1,6 +1,9 @@
 import {
+  BRAZIL_MAP_CSS_VARS,
   BRAZIL_MAP_EMPTY_FILL,
   BRAZIL_MAP_PALETTES,
+  BRAZIL_MAP_PRIMARY_MAX_FILL,
+  BRAZIL_MAP_PRIMARY_MIN_FILL,
   type BrazilMapVariant,
 } from "./constants";
 
@@ -10,6 +13,13 @@ export type UfSource = {
 
 /** @deprecated Use UfSource */
 export type EntidadeUfSource = UfSource;
+
+export type MapHeatPalette = {
+  variant: BrazilMapVariant;
+  empty: string;
+  min: string;
+  max: string;
+};
 
 export function countByUf(items: UfSource[]): Record<string, number> {
   const counts: Record<string, number> = {};
@@ -32,22 +42,44 @@ export function countEntidadesByUf(entidades: UfSource[]): Record<string, number
   return countByUf(entidades);
 }
 
-function interpolateColor(
+function parseColorChannels(color: string) {
+  const rgbMatch = color.match(
+    /rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i,
+  );
+
+  if (rgbMatch) {
+    return {
+      r: Number.parseInt(rgbMatch[1], 10),
+      g: Number.parseInt(rgbMatch[2], 10),
+      b: Number.parseInt(rgbMatch[3], 10),
+    };
+  }
+
+  const hex = color.replace("#", "");
+
+  if (hex.length === 6) {
+    return {
+      r: Number.parseInt(hex.slice(0, 2), 16),
+      g: Number.parseInt(hex.slice(2, 4), 16),
+      b: Number.parseInt(hex.slice(4, 6), 16),
+    };
+  }
+
+  return null;
+}
+
+function interpolateHexColor(
   start: string,
   end: string,
   factor: number,
 ): string {
-  const parse = (hex: string) => {
-    const value = hex.replace("#", "");
-    return {
-      r: Number.parseInt(value.slice(0, 2), 16),
-      g: Number.parseInt(value.slice(2, 4), 16),
-      b: Number.parseInt(value.slice(4, 6), 16),
-    };
-  };
+  const from = parseColorChannels(start);
+  const to = parseColorChannels(end);
 
-  const from = parse(start);
-  const to = parse(end);
+  if (!from || !to) {
+    return end;
+  }
+
   const ratio = Math.min(1, Math.max(0, factor));
 
   const r = Math.round(from.r + (to.r - from.r) * ratio);
@@ -57,22 +89,76 @@ function interpolateColor(
   return `rgb(${r}, ${g}, ${b})`;
 }
 
+function mixCssHeatColor(ratio: number): string {
+  if (typeof window === "undefined") {
+    return interpolateHexColor(
+      BRAZIL_MAP_PRIMARY_MIN_FILL,
+      BRAZIL_MAP_PRIMARY_MAX_FILL,
+      ratio,
+    );
+  }
+
+  const clamped = Math.min(1, Math.max(0, ratio));
+  const maxPercent = Math.round(clamped * 100);
+  const minPercent = 100 - maxPercent;
+
+  const probe = document.createElement("span");
+  probe.style.color = `color-mix(in oklch, var(${BRAZIL_MAP_CSS_VARS.min}) ${minPercent}%, var(${BRAZIL_MAP_CSS_VARS.max}) ${maxPercent}%)`;
+  probe.style.display = "none";
+  document.documentElement.appendChild(probe);
+
+  const resolved = getComputedStyle(probe).color;
+  document.documentElement.removeChild(probe);
+
+  if (!resolved || resolved === "rgba(0, 0, 0, 0)") {
+    return interpolateHexColor(
+      BRAZIL_MAP_PRIMARY_MIN_FILL,
+      BRAZIL_MAP_PRIMARY_MAX_FILL,
+      ratio,
+    );
+  }
+
+  return resolved;
+}
+
+export function getMapHeatPalette(
+  variant: BrazilMapVariant = "primary",
+): MapHeatPalette {
+  const fallback = BRAZIL_MAP_PALETTES[variant];
+
+  if (variant === "green") {
+    return {
+      variant,
+      empty: BRAZIL_MAP_EMPTY_FILL,
+      min: fallback.min,
+      max: fallback.max,
+    };
+  }
+
+  return {
+    variant,
+    empty: `var(${BRAZIL_MAP_CSS_VARS.empty})`,
+    min: BRAZIL_MAP_PRIMARY_MIN_FILL,
+    max: BRAZIL_MAP_PRIMARY_MAX_FILL,
+  };
+}
+
 export function getUfHeatFill(
   count: number,
   maxCount: number,
-  variant: BrazilMapVariant = "green",
+  palette: MapHeatPalette,
 ) {
   if (count <= 0 || maxCount <= 0) {
-    return BRAZIL_MAP_EMPTY_FILL;
+    return palette.empty;
   }
 
-  const palette = BRAZIL_MAP_PALETTES[variant];
+  const ratio = count / maxCount;
 
-  return interpolateColor(
-    palette.min,
-    palette.max,
-    count / maxCount,
-  );
+  if (palette.variant === "green") {
+    return interpolateHexColor(palette.min, palette.max, ratio);
+  }
+
+  return mixCssHeatColor(ratio);
 }
 
 export function getMaxUfCount(counts: Record<string, number>) {

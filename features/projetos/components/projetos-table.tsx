@@ -6,7 +6,6 @@ import Link from "next/link"
 
 import { Button } from "@/components/ui/button"
 import { ConfirmeModal } from "@/components/ui/confirmeModal"
-import { SuccessModal } from "@/components/ui/successModal"
 import {
   Table,
   TableBody,
@@ -22,17 +21,18 @@ import { ProjetoStatusBadge } from "./statusBadge/status-badge"
 
 type ProjetosTableProps = {
   projetos: Projeto[]
+  emptyMessage?: string
   canDelete?: boolean
   onDelete?: (id: string) => Promise<void>
 }
 
 export function ProjetosTable({
   projetos,
+  emptyMessage = "Nenhum projeto encontrado.",
   canDelete = false,
   onDelete,
 }: ProjetosTableProps) {
   const [projetoToDelete, setProjetoToDelete] = useState<Projeto | null>(null)
-  const [showSuccess, setShowSuccess] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState<string | null>(null)
 
@@ -45,7 +45,6 @@ export function ProjetosTable({
     try {
       await onDelete(projetoToDelete.id)
       setProjetoToDelete(null)
-      setShowSuccess(true)
     } catch (error) {
       setDeleteError(
         error instanceof Error
@@ -76,7 +75,17 @@ export function ProjetosTable({
           </TableRow>
         </TableHeader>
         <TableBody>
-          {projetos.map((projeto) => {
+          {projetos.length === 0 ? (
+            <TableRow>
+              <TableCell
+                colSpan={5}
+                className="h-32 text-center text-muted-foreground"
+              >
+                {emptyMessage}
+              </TableCell>
+            </TableRow>
+          ) : (
+            projetos.map((projeto) => {
             const editPath = getProjetoEditPath(projeto.id, projeto.tipoProjeto)
             const canEditTed =
               projeto.tipoProjeto === PROJETO_TIPOS.TED && editPath
@@ -165,7 +174,8 @@ export function ProjetosTable({
                 </TableCell>
               </TableRow>
             )
-          })}
+          })
+          )}
         </TableBody>
       </Table>
 
@@ -184,12 +194,6 @@ export function ProjetosTable({
         onCancel={handleCloseConfirm}
       />
 
-      <SuccessModal
-        open={showSuccess}
-        title="Projeto excluído"
-        description="O projeto e todas as informações vinculadas foram removidos com sucesso."
-        onConfirm={() => setShowSuccess(false)}
-      />
     </>
   )
 }

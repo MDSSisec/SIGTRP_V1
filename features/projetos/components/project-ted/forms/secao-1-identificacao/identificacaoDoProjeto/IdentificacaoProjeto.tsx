@@ -2,7 +2,7 @@
 
 import { Check, Pencil, X } from "lucide-react"
 import { Input } from "@/components/ui/input"
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useMemo, useState } from "react"
 import styles from "./IdentificacaoProjeto.module.css"
 import {
   useProjectData,
@@ -15,6 +15,10 @@ import {
 } from "@/features/projetos/constants/ted/identificacao-projeto"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import {
+  notifyFormSaveError,
+  notifyFormSaveSuccess,
+} from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import {
   fetchTedIdentificacao,
   saveTedIdentificacaoProjeto,
@@ -69,6 +73,15 @@ function FormularioIdentificacaoProjeto({
   const projectData = useProjectData()
   const updateProjectData = useUpdateProjectData()
   const nomeProjeto = projectData?.nome ?? ""
+  const valorTotalFormatado = useMemo(() => {
+    const valor = Number(projectData?.valorTotal)
+    if (!Number.isFinite(valor)) return "—"
+
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(valor)
+  }, [projectData?.valorTotal])
   const reviewCtx = useTedReview()
   const canManageReview = Boolean(reviewCtx?.canManage)
   const review = reviewCtx?.review ?? null
@@ -138,11 +151,13 @@ function FormularioIdentificacaoProjeto({
 
       setIsEditing(false)
       await reload()
+      notifyFormSaveSuccess("Identificação do projeto salva com sucesso!")
     } catch (error) {
       setSaveError(
-        error instanceof Error
-          ? error.message
-          : "Não foi possível salvar a identificação do projeto.",
+        notifyFormSaveError(
+          error,
+          "Não foi possível salvar a identificação do projeto.",
+        ),
       )
     } finally {
       setIsSaving(false)
@@ -165,19 +180,35 @@ function FormularioIdentificacaoProjeto({
         </h2>
 
         <div className={styles.formGrid}>
-          <div className={styles.fieldGroup}>
-            <CampoReviewLabel htmlFor="nomeProjeto" className={styles.label}>
-              {IDENTIFICACAO_PROJETO_LABELS.LABEL_NOME_PROJETO}
-            </CampoReviewLabel>
-            <Input
-              id="nomeProjeto"
-              name="nomeProjeto"
-              placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_NOME_PROJETO}
-              value={dadosFormulario.nomeProjeto}
-              className={cn(styles.input, VIEW_MODE_FIELD_CLASS)}
-              readOnly
-              disabled
-            />
+          <div className={styles.grid2}>
+            <div className={styles.fieldGroup}>
+              <CampoReviewLabel htmlFor="nomeProjeto" className={styles.label}>
+                {IDENTIFICACAO_PROJETO_LABELS.LABEL_NOME_PROJETO}
+              </CampoReviewLabel>
+              <Input
+                id="nomeProjeto"
+                name="nomeProjeto"
+                placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_NOME_PROJETO}
+                value={dadosFormulario.nomeProjeto}
+                className={cn(styles.input, VIEW_MODE_FIELD_CLASS)}
+                readOnly
+                disabled
+              />
+            </div>
+
+            <div className={styles.fieldGroup}>
+              <label htmlFor="valorTotalProjeto" className={styles.label}>
+                {IDENTIFICACAO_PROJETO_LABELS.LABEL_VALOR_TOTAL}
+              </label>
+              <Input
+                id="valorTotalProjeto"
+                name="valorTotalProjeto"
+                value={valorTotalFormatado}
+                className={cn(styles.input, VIEW_MODE_FIELD_CLASS)}
+                readOnly
+                disabled
+              />
+            </div>
           </div>
 
           <div className={styles.grid2}>

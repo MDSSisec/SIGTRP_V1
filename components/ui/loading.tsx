@@ -1,17 +1,20 @@
 "use client";
 
+import type { ReactNode } from "react";
 import { LoaderCircleIcon } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
 type LoadingProps = {
-  label?: string;
-  className?: string;
-};
+  label?: string
+  className?: string
+  icon?: ReactNode
+}
 
 export function Loading({
   label = "Carregando...",
   className,
+  icon,
 }: LoadingProps) {
   return (
     <div
@@ -22,8 +25,8 @@ export function Loading({
       role="status"
       aria-live="polite"
     >
-      <LoaderCircleIcon className="size-8 animate-spin text-primary" />
+      {icon ?? <LoaderCircleIcon className="size-8 animate-spin text-primary" />}
       <p className="text-sm font-medium text-muted-foreground">{label}</p>
     </div>
-  );
+  )
 }

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from "react"
 import { Trash2 } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
 import { useCronograma } from "../CronogramaContext/CronogramaContext"
 import type { CronogramaData, Etapa } from "./types"
 import styles from "./etapas-cronograma.module.css"
@@ -385,7 +386,10 @@ const CronogramaForm: React.FC<CronogramaFormProps> = ({
       {!readOnlyView && (
         <div className={styles.actions}>
           <GenericButton variant="editar" onClick={() => {}} />
-          <GenericButton variant="salvar" onClick={() => {}} />
+          <GenericButton
+            variant="salvar"
+            onClick={() => notifyFormSaveSuccess("Etapas e cronograma salvos com sucesso!")}
+          />
         </div>
       )}
     </div>
