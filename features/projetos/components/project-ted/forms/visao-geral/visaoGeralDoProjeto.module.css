@@ -1,6 +1,8 @@
 .container {
-    min-width: 0;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
@@ -15,11 +17,6 @@
     .container {
         gap: 2rem;
     }
-
-:global(.dark) .container {
-    background: oklch(0.29 0.006 264);
-    border-color: oklch(0.36 0.006 264);
-}
 }
 
 .header {
@@ -40,9 +37,16 @@
     font-size: 1rem;
     font-weight: 600;
     color: var(--foreground);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    min-width: 0;
+    word-break: break-word;
+}
+
+@media (min-width: 768px) {
+    .title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 }
 
 @media (min-width: 640px) {
@@ -84,16 +88,25 @@
 }
 
 .statusCard {
+    width: 100%;
+    max-width: 100%;
     min-width: 0;
+    box-sizing: border-box;
     border-radius: 0.75rem;
     border: 1px solid var(--input);
     background: var(--card);
-    padding: 1rem 1.5rem;
+    padding: 0.75rem 1rem;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     overflow: hidden;
 }
 
 @media (min-width: 640px) {
+    .statusCard {
+        padding: 1rem 1.5rem;
+    }
+}
+
+@media (min-width: 1024px) {
     .statusCard {
         padding: 1.5rem 2rem;
     }
@@ -135,13 +148,15 @@
 }
 
 .section {
-    min-width: 0;
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
     border-radius: 0.75rem;
     border: 1px solid var(--input);
     background: var(--card);
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    overflow: visible;
+    overflow: hidden;
 }
 
 .sectionContent {
@@ -149,8 +164,14 @@
     max-width: 100%;
     overflow-x: auto;
     overflow-y: visible;
-    padding: 1rem;
+    padding: 0.75rem;
     /* background: var(--background); */
+}
+
+@media (min-width: 640px) {
+    .sectionContent {
+        padding: 1rem;
+    }
 }
 
 /* Campos com fundo branco em todas as seções da visão geral (incl. readonly/disabled) */

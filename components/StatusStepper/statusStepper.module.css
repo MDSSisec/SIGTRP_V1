@@ -1,6 +1,7 @@
 .wrapper {
   width: 100%;
   max-width: 100%;
+  min-width: 0;
   overflow-x: auto;
   overflow-y: visible;
   -webkit-overflow-scrolling: touch;
@@ -226,8 +227,16 @@
 
 .motionWrapper {
   overflow: hidden;
-  padding: var(--spacing-4);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--spacing-2) var(--spacing-3);
   background: #ffffff;
+}
+
+@media (min-width: 640px) {
+  .motionWrapper {
+    padding: var(--spacing-4);
+  }
 }
 
 :global(.dark) .motionWrapper {

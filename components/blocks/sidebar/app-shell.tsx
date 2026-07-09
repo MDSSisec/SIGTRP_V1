@@ -15,10 +15,10 @@ export function AppShell({ user, children }: AppShellProps) {
   return (
     <SidebarProvider>
       <AppSidebar user={user} />
-      <SidebarInset className="min-h-svh">
+      <SidebarInset className="min-h-svh min-w-0 overflow-x-hidden">
         <PageHeaderActionProvider>
           <AppPageHeader />
-          <div className="flex flex-col gap-4 p-4 pt-2 md:gap-6 md:p-6 md:pt-4">
+          <div className="flex min-w-0 flex-col gap-4 overflow-x-hidden p-4 pt-2 md:gap-6 md:p-6 md:pt-4">
             {children}
           </div>
         </PageHeaderActionProvider>

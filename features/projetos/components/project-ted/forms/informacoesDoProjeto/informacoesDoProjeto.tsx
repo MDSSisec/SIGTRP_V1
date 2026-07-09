@@ -39,6 +39,7 @@ import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { cn } from "@/lib/utils"
 import type { ProjectFormSectionProps } from "../sections-map"
+import infoStyles from "./informacoesDoProjeto.module.css"
 
 /** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
 const VIEW_MODE_FIELD_CLASS =
@@ -221,12 +222,14 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
       </div>
 
       {projectId && (
-        <StatusStepper
-          steps={STATUS_PROJETO_STEPS}
-          currentStep={currentStep}
-          collapsible
-          collapsibleLabel="Status do projeto"
-        />
+        <div className={infoStyles.statusCard}>
+          <StatusStepper
+            steps={STATUS_PROJETO_STEPS}
+            currentStep={currentStep}
+            collapsible
+            collapsibleLabel="Status do projeto"
+          />
+        </div>
       )}
 
       <FormSectionCard>
