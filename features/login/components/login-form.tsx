@@ -89,29 +89,29 @@ export function LoginForm({
   return (
     <div className={cn("flex w-full flex-col", className)} {...props}>
       <Card className="border border-[#032a59]/10 bg-white/95 py-0 shadow-[0_24px_80px_-32px_rgba(3,42,89,0.35)] backdrop-blur">
-        <CardHeader className="px-8 pt-8 pb-2">
-          <div className="flex items-start gap-5">
-            <div className="flex size-14 shrink-0 items-center justify-center rounded-full bg-[#032a59]/8 text-[#032a59]">
-              <ShieldCheck className="size-6" />
+        <CardHeader className="px-4 pt-5 pb-2 sm:px-6 sm:pt-6 md:px-8 md:pt-8">
+          <div className="flex items-start gap-3 sm:gap-4 md:gap-5">
+            <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#032a59]/8 text-[#032a59] sm:size-12 md:size-14">
+              <ShieldCheck className="size-5 sm:size-6" />
             </div>
-            <div className="space-y-2">
-              <CardTitle className="text-2xl leading-tight font-semibold text-[#032a59]">
+            <div className="min-w-0 space-y-1 sm:space-y-2">
+              <CardTitle className="text-lg leading-tight font-semibold text-[#032a59] sm:text-xl md:text-2xl">
                 Acesso ao sistema
               </CardTitle>
-              <CardDescription className="text-base leading-6 text-slate-500">
+              <CardDescription className="text-sm leading-5 text-slate-500 sm:text-base sm:leading-6">
                 Entre com suas credenciais institucionais
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="px-8 pb-8">
-          <form onSubmit={(event) => void handleSubmit(event)} className="space-y-5">
+        <CardContent className="px-4 pb-5 sm:px-6 sm:pb-6 md:px-8 md:pb-8">
+          <form onSubmit={(event) => void handleSubmit(event)} className="space-y-4 sm:space-y-5">
             <div className="space-y-0">
-              <label htmlFor="email" className="mb-2.5 block text-base font-medium">
+              <label htmlFor="email" className="mb-2 block text-sm font-medium sm:mb-2.5 sm:text-base">
                 E-mail institucional
               </label>
               <div className="relative">
-                <Mail className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-muted-foreground" />
+                <Mail className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground sm:left-3.5 sm:size-5" />
                 <Input
                   id="email"
                   name="email"
@@ -121,16 +121,16 @@ export function LoginForm({
                   placeholder="seu.email@exemplo.com.br"
                   autoComplete="email"
                   disabled={isSubmitting}
-                  className="h-12 bg-white pl-11 text-base"
+                  className="h-10 bg-white pl-10 text-sm sm:h-11 sm:pl-11 sm:text-base md:h-12"
                 />
               </div>
             </div>
             <div className="space-y-0">
-              <label htmlFor="password" className="mb-2.5 block text-base font-medium">
+              <label htmlFor="password" className="mb-2 block text-sm font-medium sm:mb-2.5 sm:text-base">
                 Senha
               </label>
               <div className="relative">
-                <LockKeyhole className="pointer-events-none absolute top-1/2 left-3.5 size-5 -translate-y-1/2 text-muted-foreground" />
+                <LockKeyhole className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground sm:left-3.5 sm:size-5" />
                 <Input
                   id="password"
                   name="password"
@@ -140,7 +140,7 @@ export function LoginForm({
                   placeholder="••••••••"
                   autoComplete="current-password"
                   disabled={isSubmitting}
-                  className="h-12 bg-white pr-12 pl-11 text-base"
+                  className="h-10 bg-white pr-11 pl-10 text-sm sm:h-11 sm:pr-12 sm:pl-11 sm:text-base md:h-12"
                 />
                 <button
                   type="button"
@@ -174,28 +174,28 @@ export function LoginForm({
               </label>
             </div>
             {error ? (
-              <p className="text-base text-destructive">{error}</p>
+              <p className="text-sm text-destructive sm:text-base">{error}</p>
             ) : null}
             <Button
               type="submit"
-              className="h-12 w-full gap-2 rounded-lg bg-[#032a59] text-base font-semibold text-white shadow-sm hover:bg-[#032a59]/95"
+              className="h-10 w-full gap-2 rounded-lg bg-[#032a59] text-sm font-semibold text-white shadow-sm hover:bg-[#032a59]/95 sm:h-11 sm:text-base md:h-12"
               disabled={isSubmitting}
             >
-              <LogIn className="size-5" />
+              <LogIn className="size-4 sm:size-5" />
               {isSubmitting ? "Entrando..." : "Entrar no sistema"}
             </Button>
           </form>
         </CardContent>
-        <div className="border-t border-[#032a59]/10 px-8 py-6">
-          <div className="flex items-start gap-4">
-            <div className="flex size-12 items-center justify-center rounded-full bg-[#032a59]/10 text-[#032a59]">
-              <Headphones className="size-5" />
+        <div className="border-t border-[#032a59]/10 px-4 py-4 sm:px-6 sm:py-5 md:px-8 md:py-6">
+          <div className="flex items-start gap-3 sm:gap-4">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#032a59]/10 text-[#032a59] sm:size-12">
+              <Headphones className="size-4 sm:size-5" />
             </div>
-            <div>
-              <p className="text-base font-medium text-foreground">
+            <div className="min-w-0">
+              <p className="text-sm font-medium text-foreground sm:text-base">
                 Problemas para acessar?
               </p>
-              <p className="text-base text-muted-foreground">
+              <p className="text-sm text-muted-foreground sm:text-base">
                 Entre em contato com o gestor do seu projeto.
               </p>
             </div>
