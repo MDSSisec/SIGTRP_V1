@@ -14,7 +14,7 @@ export type CronogramaDataMapped = {
 
 // Estrutura flexível do modelo TED — detalhada conforme as seções forem tipadas.
 export type ProjectModelData = {
-  id?: number
+  id?: string
   nome?: string
   responsavel?: string
   status?: string

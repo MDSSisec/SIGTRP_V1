@@ -1,12 +1,14 @@
 import { getDbPool } from "@/lib/db"
 import {
   toTedIdentificacao,
-  type TedIdentificacao,
-  type TedIdentificacaoProjetoInput,
-  type TedIdentificacaoProponenteInput,
-  type TedIdentificacaoRepresentanteInput,
-  type TedIdentificacaoResponsavelTecnicoInput,
   type TedIdentificacaoRow,
+} from "../mappers/ted-identificacao.mapper"
+import type {
+  TedIdentificacao,
+  TedIdentificacaoProjetoInput,
+  TedIdentificacaoProponenteInput,
+  TedIdentificacaoRepresentanteInput,
+  TedIdentificacaoResponsavelTecnicoInput,
 } from "../types/ted-identificacao"
 
 const TED_IDENTIFICACAO_SELECT = `

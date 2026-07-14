@@ -30,7 +30,7 @@ import styles from "./ProjectTEDEdit.module.css"
 
 function buildProjectDataFromProjeto(projeto: Projeto): ProjectModelData {
   return {
-    id: projeto.id as unknown as number,
+    id: projeto.id,
     nome: projeto.nome,
     tipo: projeto.tipoProjeto,
     status: projeto.etapaNome ?? "TRP em Elaboração",

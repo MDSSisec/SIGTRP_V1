@@ -16,7 +16,7 @@ import {
 } from "@/features/projetos/services"
 import type { TedCampoReview } from "@/features/projetos/types/ted-campo-review"
 import type { TedSecaoReview } from "@/features/projetos/types/ted-secao-review"
-import { canEditProjetoInformacoes } from "@/features/projetos/utils/projetos-permissions"
+import { canEditProjetoInformacoes } from "@/features/projetos/domain/projetos.permissions"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"

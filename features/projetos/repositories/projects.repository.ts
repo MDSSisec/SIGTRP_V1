@@ -2,9 +2,10 @@ import { randomUUID } from "node:crypto"
 
 import { getDbPool } from "@/lib/db"
 import type { ProjetoTipo } from "../constants/project-types"
-import { toProjeto, type Projeto, type ProjetoRow } from "../types/projeto"
+import { toProjeto, type ProjetoRow } from "../mappers/projeto.mapper"
+import type { Projeto } from "../types/projeto"
 
-export type CreateProjetoData = {
+export type InsertProjetoData = {
   tipoProjeto: ProjetoTipo
   nome: string
   responsavelInternoId: string
@@ -53,7 +54,23 @@ export async function listProjetos(
   return result.rows.map(toProjeto)
 }
 
-export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
+export async function findProjetoById(id: string): Promise<Projeto | null> {
+  const pool = getDbPool()
+
+  const result = await pool.query<ProjetoRow>(
+    `
+      ${PROJECT_SELECT}
+      WHERE p.id = $1
+      LIMIT 1
+    `,
+    [id],
+  )
+
+  const row = result.rows[0]
+  return row ? toProjeto(row) : null
+}
+
+export async function insertProjeto(data: InsertProjetoData): Promise<Projeto> {
   const pool = getDbPool()
   const id = randomUUID()
 
@@ -86,73 +103,38 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
     ],
   )
 
-  const result = await pool.query<ProjetoRow>(
-    `
-      ${PROJECT_SELECT}
-      WHERE p.id = $1
-      LIMIT 1
-    `,
-    [id],
-  )
+  const projeto = await findProjetoById(id)
 
-  const row = result.rows[0]
-
-  if (!row) {
-    throw new Error("Não foi possível criar o projeto.")
+  if (!projeto) {
+    throw new Error("Falha ao persistir o projeto.")
   }
 
-  return toProjeto(row)
+  return projeto
 }
 
-export type UpdateProjetoInformacoesData = {
-  etapaId?: string
-  responsavelInternoId: string
-  responsavelExternoId: string
-}
-
-export async function getProjetoById(id: string): Promise<Projeto | null> {
-  const pool = getDbPool()
-
-  const result = await pool.query<ProjetoRow>(
-    `
-      ${PROJECT_SELECT}
-      WHERE p.id = $1
-      LIMIT 1
-    `,
-    [id],
-  )
-
-  const row = result.rows[0]
-  return row ? toProjeto(row) : null
-}
-
+/**
+ * Persistência de atualização de informações.
+ * A existência do projeto e regras de negócio devem ser tratadas no Service.
+ */
 export async function updateProjetoInformacoes(
   id: string,
-  data: UpdateProjetoInformacoesData,
-  options: { alteradoPorId: string; includeInfoFields: boolean },
-): Promise<Projeto> {
+  data: {
+    etapaId: string
+    responsavelInternoId: string
+    responsavelExternoId: string
+  },
+  options: {
+    alteradoPorId: string
+    previousEtapaId: string | null
+    trackEtapaHistory: boolean
+  },
+): Promise<Projeto | null> {
   const pool = getDbPool()
-  const current = await getProjetoById(id)
-
-  if (!current) {
-    throw new Error("Projeto não encontrado.")
-  }
-
-  const etapaId =
-    options.includeInfoFields && data.etapaId
-      ? data.etapaId
-      : current.etapaId
-
-  if (!etapaId) {
-    throw new Error("Etapa do projeto inválida.")
-  }
 
   const etapaChanged =
-    options.includeInfoFields &&
-    Boolean(data.etapaId) &&
-    data.etapaId !== current.etapaId
+    options.trackEtapaHistory && data.etapaId !== options.previousEtapaId
 
-  await pool.query(
+  const result = await pool.query(
     `
       UPDATE "SIGTRP_TB_PROJECTS"
       SET
@@ -162,13 +144,12 @@ export async function updateProjetoInformacoes(
         atualizado_em = NOW()
       WHERE id = $1
     `,
-    [
-      id,
-      etapaId,
-      data.responsavelInternoId,
-      data.responsavelExternoId,
-    ],
+    [id, data.etapaId, data.responsavelInternoId, data.responsavelExternoId],
   )
+
+  if ((result.rowCount ?? 0) === 0) {
+    return null
+  }
 
   if (etapaChanged) {
     await pool.query(
@@ -180,20 +161,14 @@ export async function updateProjetoInformacoes(
         )
         VALUES ($1, $2, $3)
       `,
-      [id, etapaId, options.alteradoPorId],
+      [id, data.etapaId, options.alteradoPorId],
     )
   }
 
-  const updated = await getProjetoById(id)
-
-  if (!updated) {
-    throw new Error("Não foi possível atualizar o projeto.")
-  }
-
-  return updated
+  return findProjetoById(id)
 }
 
-export async function deleteProjeto(id: string): Promise<void> {
+export async function deleteProjetoById(id: string): Promise<boolean> {
   const pool = getDbPool()
 
   const result = await pool.query(
@@ -204,7 +179,5 @@ export async function deleteProjeto(id: string): Promise<void> {
     [id],
   )
 
-  if (result.rowCount === 0) {
-    throw new Error("Projeto não encontrado.")
-  }
+  return (result.rowCount ?? 0) > 0
 }

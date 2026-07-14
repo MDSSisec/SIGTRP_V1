@@ -1,0 +1,25 @@
+.pageWrapper {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 640px) {
+  .pageWrapper {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+}
+
+.formContainer {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+  padding: 0;
+  border: none;
+  background: transparent;
+}

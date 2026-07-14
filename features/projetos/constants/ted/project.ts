@@ -27,12 +27,13 @@ export const STATUS_PROJETO_LIST = [
 
 export type StatusProjeto = (typeof STATUS_PROJETO_LIST)[number]
 
-export type ProjectTipo = "TED" | "EMENDA"
+export type ProjectTipo = "TED" | "EMENDA" | "CONVENIO"
 
 export const PROJECT_TYPE_OPTIONS = [
   { value: "", label: "Selecione..." },
   { value: "TED", label: "TED" },
   { value: "EMENDA", label: "Emenda" },
+  { value: "CONVENIO", label: "Convênio" },
 ] as const
 
 export const STATUS_PROJETO_STEPS: { title: StatusProjeto; icon: LucideIcon }[] = [

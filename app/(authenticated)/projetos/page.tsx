@@ -1,5 +1,5 @@
-import { ProjetosScreen } from "@/features/projetos"
+import { ScreenProjeto } from "@/features/projeto"
 
 export default function ProjetosPage() {
-  return <ProjetosScreen />
+  return <ScreenProjeto />
 }

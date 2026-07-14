@@ -6,6 +6,7 @@ export {
   DespesasEventoFinal,
 } from "./screens"
 export { CursoDetalhamentoForm } from "./shared/CursoDetalhamentoForm"
+export { DadosGeraisStatusStepper } from "./shared/DadosGeraisStatusStepper"
 export { DetalhamentoGastosCurso } from "./shared/DetalhamentoGastosCurso"
 export type {
   CursoDespesaRow,

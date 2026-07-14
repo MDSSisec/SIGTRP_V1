@@ -19,3 +19,21 @@ export async function listProjectStages(): Promise<ProjectStageRow[]> {
 
   return result.rows
 }
+
+export async function findProjectStageById(
+  id: string,
+): Promise<ProjectStageRow | null> {
+  const pool = getDbPool()
+
+  const result = await pool.query<ProjectStageRow>(
+    `
+      SELECT id, ordem, nome
+      FROM "SIGTRP_TB_PROJECT_STAGES"
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  )
+
+  return result.rows[0] ?? null
+}

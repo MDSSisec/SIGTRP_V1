@@ -5,6 +5,11 @@ import type {
   ResponsavelOption,
 } from "../types/projeto"
 
+/**
+ * Cliente HTTP do BFF — chama /api/projetos.
+ * Sem acesso ao banco e sem regras de negócio.
+ */
+
 type ProjetosResponse = {
   projetos: Projeto[]
 }

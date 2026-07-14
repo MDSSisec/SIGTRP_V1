@@ -28,13 +28,14 @@ import {
   useProjectData,
   useUpdateProjectData,
 } from "@/features/projetos/contexts/project-data-context"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
+import { SESSOES_VISAO_GERAL_SLUG, SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 import {
   formatCurrencyInput,
   parseCurrencyInput,
 } from "@/features/projetos/utils/currency"
 import { cn } from "@/lib/utils"
 
+import { DadosGeraisStatusStepper } from "../shared/DadosGeraisStatusStepper"
 import styles from "./dadosGeraisDoprojeto.module.css"
 
 const VIEW_MODE_FIELD_CLASS =
@@ -217,6 +218,10 @@ export function DadosGeraisDoProjeto({
           certificação.
         </p>
       </div>
+
+      <DadosGeraisStatusStepper
+        activeSlug={SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_DADOS_GERAIS_PROJETO}
+      />
 
       <FormSectionCard>
         <section className={formLayoutStyles.section}>

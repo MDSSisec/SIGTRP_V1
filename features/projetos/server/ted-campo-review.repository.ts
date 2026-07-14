@@ -1,9 +1,9 @@
 import { getDbPool } from "@/lib/db"
 import {
   toTedCampoReview,
-  type TedCampoReview,
   type TedCampoReviewRow,
-} from "../types/ted-campo-review"
+} from "../mappers/ted-campo-review.mapper"
+import type { TedCampoReview } from "../types/ted-campo-review"
 import {
   getTedSecaoReview,
   upsertTedSecaoReview,
@@ -56,7 +56,7 @@ export async function listTedCampoReviewsBySecao(
 
 /**
  * Substitui as marcações da seção pelos campoKeys informados.
- * Atualiza também o status da seção (precisa_atencao / ok).
+ * Atualiza também o status da seção (precisaAtencao / ok).
  */
 export async function syncTedCampoReviews(
   projetoId: string,
@@ -117,9 +117,8 @@ export async function syncTedCampoReviews(
     projetoId,
     {
       secaoSlug,
-      // Atenção exige desbloqueio para o externo corrigir
       bloqueada: temAtencao ? false : Boolean(currentSecao?.bloqueada),
-      statusRevisao: temAtencao ? "precisa_atencao" : "ok",
+      statusRevisao: temAtencao ? "precisaAtencao" : "ok",
       comentario: temAtencao ? comentarioValue : null,
     },
     atualizadoPorId,

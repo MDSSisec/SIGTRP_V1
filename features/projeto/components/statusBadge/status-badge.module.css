@@ -1,0 +1,67 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  border-radius: 9999px;
+  border-width: 1px;
+  border-style: solid;
+  padding: 0.25rem 0.75rem;
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.elaboracao,
+.execucao,
+.analise {
+  border-color: #bae6fd;
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.aprovado,
+.celebrado,
+.concluido,
+.encerrado {
+  border-color: #a7f3d0;
+  background-color: #ecfdf5;
+  color: #047857;
+}
+
+.pendente,
+.glosa {
+  border-color: #fde68a;
+  background-color: #fffbeb;
+  color: #b45309;
+}
+
+.default {
+  border-color: var(--border);
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+:global(.dark) .elaboracao,
+:global(.dark) .execucao,
+:global(.dark) .analise {
+  border-color: #075985;
+  background-color: rgb(8 47 73 / 40%);
+  color: #38bdf8;
+}
+
+:global(.dark) .aprovado,
+:global(.dark) .celebrado,
+:global(.dark) .concluido,
+:global(.dark) .encerrado {
+  border-color: #065f46;
+  background-color: rgb(2 44 34 / 40%);
+  color: #34d399;
+}
+
+:global(.dark) .pendente,
+:global(.dark) .glosa {
+  border-color: #92400e;
+  background-color: rgb(69 26 3 / 40%);
+  color: #fbbf24;
+}

@@ -1,10 +1,13 @@
 import { getDbPool } from "@/lib/db"
 import {
   toTedSecaoReview,
-  type TedSecaoReview,
-  type TedSecaoReviewInput,
+  toTedSecaoRevisaoStatusDb,
   type TedSecaoReviewRow,
-  type TedSecaoRevisaoStatus,
+} from "../mappers/ted-secao-review.mapper"
+import type {
+  TedSecaoReview,
+  TedSecaoReviewInput,
+  TedSecaoRevisaoStatus,
 } from "../types/ted-secao-review"
 
 function emptyToNull(value: string | null | undefined): string | null {
@@ -65,8 +68,8 @@ export async function upsertTedSecaoReview(
   const current = await getTedSecaoReview(projetoId, secaoSlug)
 
   const statusRevisao: TedSecaoRevisaoStatus =
-    data.statusRevisao === "precisa_atencao"
-      ? "precisa_atencao"
+    data.statusRevisao === "precisaAtencao"
+      ? "precisaAtencao"
       : data.statusRevisao === "ok"
         ? "ok"
         : (current?.statusRevisao ?? "ok")
@@ -104,7 +107,7 @@ export async function upsertTedSecaoReview(
       projetoId,
       secaoSlug,
       bloqueada,
-      statusRevisao,
+      toTedSecaoRevisaoStatusDb(statusRevisao),
       comentario,
       atualizadoPorId,
     ],

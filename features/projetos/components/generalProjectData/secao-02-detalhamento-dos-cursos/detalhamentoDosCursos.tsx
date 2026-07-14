@@ -17,8 +17,9 @@ import {
   useProjectData,
   useUpdateProjectData,
 } from "@/features/projetos/contexts/project-data-context"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
+import { SESSOES_VISAO_GERAL_SLUG, SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 
+import { DadosGeraisStatusStepper } from "../shared/DadosGeraisStatusStepper"
 import styles from "./detalhamentoDosCursos.module.css"
 
 function readDadosGerais(
@@ -89,6 +90,10 @@ export function DetalhamentoCursos({ readOnlyView }: ProjectFormSectionProps) {
           individualmente.
         </p>
       </div>
+
+      <DadosGeraisStatusStepper
+        activeSlug={SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_DETALHAMENTO_CURSOS}
+      />
 
       {!quantidadeCursos ? (
         <FormSectionCard>

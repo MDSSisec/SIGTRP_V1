@@ -53,7 +53,7 @@ export function useTedSecaoReviews(projetoId?: string) {
   const secaoTemAtencao = useCallback(
     (secaoSlug: string) => {
       const review = bySlug.get(secaoSlug)
-      if (review?.statusRevisao === "precisa_atencao") return true
+      if (review?.statusRevisao === "precisaAtencao") return true
       return (camposBySecao.get(secaoSlug)?.length ?? 0) > 0
     },
     [bySlug, camposBySecao],

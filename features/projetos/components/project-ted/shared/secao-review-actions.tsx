@@ -5,7 +5,7 @@ import { AlertTriangle, Lock, LockOpen } from "lucide-react"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
-import { TED_IDENTIFICACAO_SECAO_SLUGS } from "@/features/projetos/types/ted-secao-review"
+import { TED_IDENTIFICACAO_SECAO_SLUGS } from "@/features/projetos/constants/ted/secao-review"
 import { cn } from "@/lib/utils"
 
 const SECOES_COM_REVIEW = new Set<string>(TED_IDENTIFICACAO_SECAO_SLUGS)
@@ -20,7 +20,7 @@ export function SecaoReviewHeaderActions() {
   if (!review.secaoSlug || !SECOES_COM_REVIEW.has(review.secaoSlug)) return null
 
   const bloqueada = Boolean(review.review?.bloqueada)
-  const precisaAtencao = review.review?.statusRevisao === "precisa_atencao"
+  const precisaAtencao = review.review?.statusRevisao === "precisaAtencao"
 
   return (
     <div className="flex flex-wrap items-center gap-2">
@@ -163,7 +163,7 @@ export function SecaoReviewBanner() {
 
   if (!review.review) return null
 
-  if (review.review.statusRevisao === "precisa_atencao") {
+  if (review.review.statusRevisao === "precisaAtencao") {
     return (
       <div className="mb-4 flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/10 px-3 py-2 text-sm text-destructive">
         <AlertTriangle className="mt-0.5 size-4 shrink-0" />

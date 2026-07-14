@@ -5,7 +5,12 @@ import { Suspense } from "react"
 import { usePathname, useSearchParams } from "next/navigation"
 
 import type { PublicUser } from "@/features/login/types"
-import { DEFAULT_FORM_SECTION } from "@/features/projetos/components/project-ted/forms"
+import {
+  fetchProjetos,
+  getSidebarConfig,
+} from "@/features/projeto/services"
+import type { Projeto } from "@/features/projeto/types"
+import { useAsyncData } from "@/hooks/use-async-data"
 import { NavMain } from "@/components/blocks/sidebar/nav-main"
 import { NavUser } from "@/components/blocks/sidebar/nav-user"
 import { SidebarBrand } from "@/components/blocks/sidebar/sidebar-brand"
@@ -18,10 +23,6 @@ import {
   SidebarTrigger,
 } from "@/components/ui/sidebar"
 import { buildSidebarNavItems } from "./build-sidebar-nav-items"
-import {
-  buildProjectTedNavItems,
-  parseProjetoTedPath,
-} from "./build-ted-sidebar-nav"
 
 type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
   user: PublicUser
@@ -30,19 +31,29 @@ type AppSidebarProps = React.ComponentProps<typeof Sidebar> & {
 function AppSidebarNavigation({ user }: { user: PublicUser }) {
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const activeSecao = searchParams.get("secao") ?? DEFAULT_FORM_SECTION
+  const activeSecao = searchParams.get("secao")
 
-  const tedContext = React.useMemo(
-    () => parseProjetoTedPath(pathname),
-    [pathname],
-  )
+  const editPathMatch = pathname.match(/^\/projetos\/[^/]+\/(editar|ted)\/?$/)
 
-  const tedNavItems = React.useMemo(
+  const { data: projetos } = useAsyncData(fetchProjetos, {
+    initialData: [] as Projeto[],
+    errorMessage: "Não foi possível carregar os projetos.",
+    loadOnMount: Boolean(editPathMatch),
+  })
+
+  const projeto = React.useMemo(() => {
+    if (!editPathMatch) return null
+    const projectId = pathname.split("/")[2]
+    return projetos.find((item) => item.id === projectId) ?? null
+  }, [editPathMatch, pathname, projetos])
+
+  const sidebarConfig = React.useMemo(
     () =>
-      tedContext
-        ? buildProjectTedNavItems(tedContext.projectId, activeSecao)
-        : null,
-    [tedContext, activeSecao],
+      getSidebarConfig(pathname, {
+        activeSecao,
+        tipoProjeto: projeto?.tipoProjeto,
+      }),
+    [pathname, activeSecao, projeto?.tipoProjeto],
   )
 
   const navMainItems = React.useMemo(
@@ -50,8 +61,24 @@ function AppSidebarNavigation({ user }: { user: PublicUser }) {
     [pathname, user],
   )
 
-  if (tedNavItems) {
-    return <NavMain items={tedNavItems} label="Formulário TRP" sectionSpacing />
+  if (sidebarConfig.mode === "projeto-edit") {
+    if (!sidebarConfig.navMain) {
+      return (
+        <div className="px-2 py-3 text-sm text-sidebar-foreground/70">
+          {projetos.length === 0
+            ? "Carregando menu..."
+            : "Projeto não encontrado."}
+        </div>
+      )
+    }
+
+    return (
+      <NavMain
+        items={sidebarConfig.navMain}
+        label={sidebarConfig.label}
+        sectionSpacing
+      />
+    )
   }
 
   return <NavMain items={navMainItems} label="" />

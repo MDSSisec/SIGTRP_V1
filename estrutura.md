@@ -1,60 +1,53 @@
-# File Tree: sgi-essential
+# File Tree: SIGTRP_V1
 
-**Generated:** 7/3/2026, 8:53:22 PM
-**Root Path:** `/Users/lucasfontoura/Documents/lucas/Projetos_React/sgi-essential`
+**Generated:** 7/14/2026, 10:31:52 AM
+**Root Path:** `c:\Users\lucas.fontes\Documents\Lucas_Fontoura\03_desenvolvimento\SIGTRP_V1`
 
 ```
 ├── app
 │   ├── (authenticated)
-│   │   ├── dashboard
-│   │   │   ├── controle-instrumento-parceria
-│   │   │   │   ├── instrumentos
-│   │   │   │   │   └── [id]
-│   │   │   │   │       └── editar
-│   │   │   │   │           └── page.tsx
+│   │   ├── administracao
+│   │   │   ├── permissoes
 │   │   │   │   └── page.tsx
-│   │   │   ├── documentos
-│   │   │   │   ├── organograma-sisec
-│   │   │   │   │   └── page.tsx
+│   │   │   ├── profiles
 │   │   │   │   └── page.tsx
-│   │   │   ├── gerador-de-qr-code
+│   │   │   ├── roles
 │   │   │   │   └── page.tsx
-│   │   │   ├── relatorio-equipe-ti
+│   │   │   ├── status
 │   │   │   │   └── page.tsx
-│   │   │   └── relatorio-semanal
-│   │   │       ├── [id]
-│   │   │       │   ├── preencher
-│   │   │       │   │   └── [userEmail]
-│   │   │       │   │       └── page.tsx
-│   │   │       │   ├── visualizar
-│   │   │       │   │   └── page.tsx
-│   │   │       │   └── page.tsx
-│   │   │       ├── layout.tsx
-│   │   │       └── page.tsx
-│   │   ├── ferias
+│   │   │   ├── tipos
+│   │   │   ├── usuarios
+│   │   │   │   └── page.tsx
 │   │   │   └── page.tsx
-│   │   ├── gerador-de-qr-code
+│   │   ├── configuracoes
+│   │   │   └── page.tsx
 │   │   ├── inicio
 │   │   │   └── page.tsx
-│   │   ├── sala-de-reuniao
+│   │   ├── projetos
+│   │   │   ├── [id]
+│   │   │   │   └── ted
+│   │   │   │       └── page.tsx
 │   │   │   └── page.tsx
 │   │   └── layout.tsx
 │   ├── api
-│   │   ├── [[...path]]
-│   │   │   └── route.ts
-│   │   └── documentos
-│   │       └── arquivo
-│   │           └── [nome]
-│   │               └── route.ts
-│   ├── dashboard
-│   ├── relatorio_semanal
+│   │   └── [[...path]]
+│   │       └── route.ts
+│   ├── login
+│   │   └── page.tsx
 │   ├── favicon.ico
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx
 ├── components
+│   ├── ChartBarInteractive
+│   │   ├── chart-bar-interactive.tsx
+│   │   └── index.ts
+│   ├── StatusStepper
+│   │   ├── statusStepper.module.css
+│   │   └── statusStepper.tsx
 │   ├── blocks
 │   │   └── sidebar
+│   │       ├── app-page-header.tsx
 │   │       ├── app-shell.tsx
 │   │       ├── app-sidebar.tsx
 │   │       ├── authenticated-app-shell.tsx
@@ -62,42 +55,51 @@
 │   │       ├── nav-main.tsx
 │   │       ├── nav-projects.tsx
 │   │       ├── nav-user.tsx
+│   │       ├── page-header-action.tsx
 │   │       ├── sidebar-brand.tsx
-│   │       └── team-switcher.tsx
+│   │       └── sidebar-nav-rules.ts
 │   ├── map
 │   │   ├── BrazilEntidadesMap.tsx
 │   │   ├── BrazilUfDistributionMap.module.css
 │   │   ├── BrazilUfDistributionMap.tsx
+│   │   ├── BrazilUfMap.tsx
+│   │   ├── brazil-ufs.ts
 │   │   ├── brazilEntidadesMap.utils.ts
 │   │   ├── constants.ts
 │   │   ├── d3-geo.d.ts
 │   │   ├── index.ts
 │   │   └── react-simple-maps.d.ts
-│   └── ui
-│       ├── avatar.tsx
-│       ├── breadcrumb.tsx
-│       ├── button.tsx
-│       ├── card.tsx
-│       ├── chart-line-dote-label.tsx
-│       ├── chart.tsx
-│       ├── collapsible.tsx
-│       ├── comboBox.tsx
-│       ├── confirmeModal.tsx
-│       ├── dropdown-menu.tsx
-│       ├── input-group.tsx
-│       ├── input.tsx
-│       ├── loading.tsx
-│       ├── loadingMoreButton.tsx
-│       ├── menuBar.tsx
-│       ├── separator.tsx
-│       ├── sheet.tsx
-│       ├── sidebar.tsx
-│       ├── skeleton.tsx
-│       ├── successModal.tsx
-│       ├── table.tsx
-│       ├── textarea.tsx
-│       ├── tooltip.tsx
-│       └── total.tsx
+│   ├── ui
+│   │   ├── async-load-state.tsx
+│   │   ├── avatar.tsx
+│   │   ├── breadcrumb.tsx
+│   │   ├── button.tsx
+│   │   ├── card.tsx
+│   │   ├── chart-line-dote-label.tsx
+│   │   ├── chart.tsx
+│   │   ├── collapsible.tsx
+│   │   ├── comboBox.tsx
+│   │   ├── confirmeModal.tsx
+│   │   ├── dropdown-menu.tsx
+│   │   ├── input-group.tsx
+│   │   ├── input.tsx
+│   │   ├── label.tsx
+│   │   ├── loading.tsx
+│   │   ├── loadingMoreButton.tsx
+│   │   ├── menuBar.tsx
+│   │   ├── separator.tsx
+│   │   ├── sheet.tsx
+│   │   ├── sidebar.tsx
+│   │   ├── skeleton.tsx
+│   │   ├── sonner.tsx
+│   │   ├── spinner.tsx
+│   │   ├── successModal.tsx
+│   │   ├── table.tsx
+│   │   ├── textarea.tsx
+│   │   ├── tooltip.tsx
+│   │   └── total.tsx
+│   ├── theme-provider.tsx
+│   └── theme-toggle.tsx
 ├── features
 │   ├── _template
 │   │   ├── components
@@ -113,405 +115,336 @@
 │   │   ├── types
 │   │   │   └── index.ts
 │   │   └── index.ts
-│   ├── controle_instrumento_parceria
+│   ├── admin
 │   │   ├── components
-│   │   │   ├── addContato
-│   │   │   │   ├── AddContato.module.css
-│   │   │   │   └── AddContato.tsx
-│   │   │   ├── contagemDeUnidades
-│   │   │   │   ├── ContagemDeUnidades.module.css
-│   │   │   │   ├── ContagemDeUnidades.tsx
+│   │   │   ├── popUpNewProfile
+│   │   │   │   ├── PopUpNewProfile.styles.module.css
+│   │   │   │   ├── PopUpNewProfile.tsx
 │   │   │   │   └── index.ts
-│   │   │   ├── editarInstrumento
-│   │   │   │   ├── EditarInstrumento.module.css
-│   │   │   │   ├── EditarInstrumento.tsx
+│   │   │   ├── popUpNewRole
+│   │   │   ├── popUpNewStatus
+│   │   │   ├── popUpNewUser
+│   │   │   │   ├── PopUpNewUser.styles.module.css
+│   │   │   │   ├── PopUpNewUser.tsx
 │   │   │   │   └── index.ts
-│   │   │   ├── entidadeIndicadores
-│   │   │   │   ├── EntidadeIndicadores.module.css
-│   │   │   │   └── EntidadeIndicadores.tsx
-│   │   │   ├── popUpNovaEntidade
-│   │   │   │   ├── PopUpNovaEntidade.module.css
-│   │   │   │   └── PopUpNovaEntidade.tsx
-│   │   │   ├── popUpNovoInstrumento
-│   │   │   │   ├── PopUpNovoInstrumento.module.css
-│   │   │   │   └── PopUpNovoInstrumento.tsx
 │   │   │   └── index.ts
 │   │   ├── constants
-│   │   │   ├── ScreenControleDeInstrumentoDeParceria.ts
-│   │   │   ├── addContato.ts
-│   │   │   ├── contagemDeUnidades.ts
-│   │   │   ├── contagemDeUnidadesEmpresasMeta.ts
-│   │   │   ├── editarInstrumento.ts
-│   │   │   ├── entidadeIndicadores.ts
 │   │   │   ├── index.ts
-│   │   │   ├── localidade.ts
-│   │   │   ├── popUpNovaEntidade.ts
-│   │   │   ├── popUpNovoInstrumento.ts
-│   │   │   └── tipoEntidade.ts
-│   │   ├── data
-│   │   │   └── data.sql
+│   │   │   ├── mock-admin-entities.ts
+│   │   │   ├── profile.ts
+│   │   │   ├── roles.ts
+│   │   │   ├── status.ts
+│   │   │   └── users.ts
 │   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   ├── useEditarInstrumento.ts
-│   │   │   ├── useEntidadeContatos.ts
-│   │   │   ├── useEntidadeTipoOptions.ts
-│   │   │   ├── useEntidades.ts
-│   │   │   ├── useEntidadesFilters.ts
-│   │   │   ├── useIbgeLocalidades.ts
-│   │   │   ├── useInstrumentoParceriaOptions.ts
-│   │   │   ├── useInstrumentos.ts
-│   │   │   ├── useInstrumentosFilters.ts
-│   │   │   ├── useNovaEntidadeForm.ts
-│   │   │   └── useNovoInstrumentoForm.ts
-│   │   ├── screens
-│   │   │   ├── ControleDeInstrumentoDeParceria.module.css
-│   │   │   ├── ControleDeInstrumentoDeParceria.tsx
-│   │   │   ├── EditarInstrumentoScreen.tsx
 │   │   │   └── index.ts
-│   │   ├── services
-│   │   │   ├── contagemDeUnidades.service.ts
-│   │   │   ├── entidades.service.ts
-│   │   │   ├── ibge.service.ts
+│   │   ├── screens
+│   │   │   ├── profiles
+│   │   │   │   ├── admin-profiles-screen.module.css
+│   │   │   │   └── admin-profiles-screen.tsx
+│   │   │   ├── roles
+│   │   │   │   ├── admin-roles-screen.module.css
+│   │   │   │   └── admin-roles-screen.tsx
+│   │   │   ├── status
+│   │   │   │   ├── admin-status-screen.module.css
+│   │   │   │   └── admin-status-screen.tsx
+│   │   │   ├── users
+│   │   │   │   ├── admin-users-screen.module.css
+│   │   │   │   └── admin-users-screen.tsx
+│   │   │   └── index.ts
+│   │   ├── server
 │   │   │   ├── index.ts
-│   │   │   └── instrumentoParceria.service.ts
+│   │   │   ├── profiles.repository.ts
+│   │   │   ├── roles.repository.ts
+│   │   │   └── usuarios.repository.ts
+│   │   ├── services
+│   │   │   ├── index.ts
+│   │   │   ├── profiles.service.ts
+│   │   │   ├── roles.service.ts
+│   │   │   └── usuarios.service.ts
 │   │   ├── types
-│   │   │   └── index.ts
-│   │   ├── utils
-│   │   │   ├── contagemDeUnidades.ts
-│   │   │   ├── contato.ts
-│   │   │   ├── editarInstrumento.ts
-│   │   │   ├── entidade.ts
+│   │   │   ├── admin-entity.ts
 │   │   │   ├── index.ts
-│   │   │   └── instrumento.ts
+│   │   │   ├── profile.ts
+│   │   │   ├── role.ts
+│   │   │   └── usuario.ts
+│   │   ├── utils
+│   │   │   ├── admin-entity-filter.ts
+│   │   │   ├── profile-filter.ts
+│   │   │   ├── role-filter.ts
+│   │   │   └── usuario-filter.ts
 │   │   └── index.ts
-│   ├── documentos
-│   │   ├── components
-│   │   │   ├── DocumentoAreaBadge.tsx
-│   │   │   ├── DocumentoArquivoActions.tsx
-│   │   │   ├── DocumentoCard.tsx
-│   │   │   ├── DocumentoCategoriaBadge.tsx
-│   │   │   ├── DocumentoDestaqueCard.tsx
-│   │   │   ├── DocumentoFileIcon.tsx
-│   │   │   ├── DocumentosDestaques.tsx
-│   │   │   ├── DocumentosFilters.tsx
-│   │   │   ├── DocumentosList.tsx
-│   │   │   └── index.ts
+│   ├── configuracoes
 │   │   ├── constants
 │   │   │   └── index.ts
-│   │   ├── data
-│   │   │   ├── documentos.json
-│   │   │   └── organograma_sisec.pdf
+│   │   └── index.ts
+│   ├── dashboard
+│   │   ├── components
+│   │   │   ├── dashboard-totals.tsx
+│   │   │   ├── dashboard-uf-section.tsx
+│   │   │   └── index.ts
+│   │   ├── constants
+│   │   │   ├── dashboard-uf-data.ts
+│   │   │   └── index.ts
 │   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   └── useDocumentosFilters.ts
+│   │   │   └── index.ts
 │   │   ├── screens
-│   │   │   ├── DocumentosScreen.tsx
+│   │   │   ├── dashboard-screen.tsx
 │   │   │   └── index.ts
 │   │   ├── services
-│   │   │   ├── documentos.service.ts
 │   │   │   └── index.ts
 │   │   ├── types
 │   │   │   └── index.ts
-│   │   ├── utils
-│   │   │   └── index.ts
 │   │   └── index.ts
-│   ├── ferias
+│   ├── footer
 │   │   ├── components
-│   │   │   ├── popUpAgendarFerias
-│   │   │   │   ├── PopUpAgendarFerias.styles.module.css
-│   │   │   │   └── PopUpAgendarFerias.tsx
 │   │   │   └── index.ts
 │   │   ├── constants
 │   │   │   └── index.ts
 │   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   ├── useFerias.ts
-│   │   │   ├── useFeriasActions.ts
-│   │   │   └── useFeriasFilters.ts
+│   │   │   └── index.ts
 │   │   ├── screens
-│   │   │   ├── FeriasScreen.style.css
-│   │   │   ├── FeriasScreens.tsx
 │   │   │   └── index.ts
 │   │   ├── services
-│   │   │   ├── ferias.service.ts
-│   │   │   └── index.ts
-│   │   ├── types
-│   │   │   └── index.ts
-│   │   ├── utils
-│   │   │   └── index.ts
-│   │   └── index.ts
-│   ├── fluxogramas
-│   │   ├── components
-│   │   │   ├── OrganogramaEstatisticas.tsx
-│   │   │   ├── OrganogramaFitView.tsx
-│   │   │   ├── OrganogramaFlow.tsx
-│   │   │   ├── OrganogramaLateralEdge.tsx
-│   │   │   ├── OrganogramaLegenda.tsx
-│   │   │   ├── OrganogramaNodeCard.tsx
-│   │   │   ├── OrganogramaRamoEsquerdoEdge.tsx
-│   │   │   ├── OrganogramaTroncoInferiorEdge.tsx
-│   │   │   └── index.ts
-│   │   ├── constants
-│   │   │   └── index.ts
-│   │   ├── data
-│   │   │   └── organograma-sisec.ts
-│   │   ├── screens
-│   │   │   ├── OrganogramaSisecScreen.tsx
-│   │   │   └── index.ts
-│   │   ├── types
-│   │   │   └── index.ts
-│   │   ├── utils
-│   │   │   ├── organograma-cores.ts
-│   │   │   ├── organograma-edges.ts
-│   │   │   ├── organograma-layout.ts
-│   │   │   ├── organograma-viewport.ts
-│   │   │   └── organograma.ts
-│   │   └── index.ts
-│   ├── home
-│   │   ├── components
-│   │   │   ├── hero
-│   │   │   │   ├── HomeHero.styles.css
-│   │   │   │   └── HomeHero.tsx
-│   │   │   ├── statusCard
-│   │   │   │   ├── HomeStatusCard.styles.css
-│   │   │   │   └── HomeStatusCard.tsx
-│   │   │   ├── home-entry.tsx
-│   │   │   └── index.ts
-│   │   ├── constants
-│   │   │   └── index.ts
-│   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   └── useHome.ts
-│   │   ├── screens
-│   │   │   ├── HomeScreen.styles.css
-│   │   │   ├── HomeScreen.tsx
-│   │   │   └── index.ts
-│   │   ├── services
-│   │   │   ├── home.service.ts
 │   │   │   └── index.ts
 │   │   ├── types
 │   │   │   └── index.ts
 │   │   └── index.ts
 │   ├── login
 │   │   ├── components
-│   │   │   ├── LoginCard.tsx
-│   │   │   └── index.ts
+│   │   │   ├── index.ts
+│   │   │   └── login-form.tsx
 │   │   ├── constants
 │   │   │   └── index.ts
 │   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   └── useLogin.ts
+│   │   │   └── index.ts
 │   │   ├── screens
 │   │   │   └── index.ts
+│   │   ├── server
+│   │   │   ├── auth.service.ts
+│   │   │   ├── index.ts
+│   │   │   ├── session.ts
+│   │   │   └── users.repository.ts
 │   │   ├── services
 │   │   │   ├── index.ts
 │   │   │   └── login.service.ts
 │   │   ├── types
-│   │   │   └── index.ts
+│   │   │   ├── index.ts
+│   │   │   └── public-user.ts
 │   │   └── index.ts
-│   ├── qrcode
+│   ├── projetos
 │   │   ├── components
-│   │   │   ├── QrCodePreviewCard.tsx
-│   │   │   ├── QrCodeSettingsCard.tsx
-│   │   │   └── index.ts
+│   │   │   ├── generalProjectData
+│   │   │   │   ├── secao-01-dados-gerais-projeto
+│   │   │   │   │   ├── dadosGeraisDoprojeto.module.css
+│   │   │   │   │   ├── dadosGeraisDoprojeto.tsx
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── secao-02-detalhamento-dos-cursos
+│   │   │   │   │   ├── detalhamentoDosCursos.module.css
+│   │   │   │   │   ├── detalhamentoDosCursos.tsx
+│   │   │   │   │   └── index.ts
+│   │   │   │   ├── secao-03-etapa-evento-1-1
+│   │   │   │   ├── secao-04-etapa-evento-1-2
+│   │   │   │   ├── secap-05-evento-final
+│   │   │   │   ├── shared
+│   │   │   │   │   ├── CursoDetalhamentoForm
+│   │   │   │   │   │   ├── CursoDetalhamentoForm.module.css
+│   │   │   │   │   │   ├── CursoDetalhamentoForm.tsx
+│   │   │   │   │   │   └── index.ts
+│   │   │   │   │   └── DetalhamentoGastosCurso
+│   │   │   │   │       ├── DetalhamentoGastosCurso.module.css
+│   │   │   │   │       ├── DetalhamentoGastosCurso.tsx
+│   │   │   │   │       └── index.ts
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── screens.tsx
+│   │   │   │   └── types.ts
+│   │   │   ├── popUpNewProject
+│   │   │   │   ├── index.ts
+│   │   │   │   ├── popUpNewProject.module.css
+│   │   │   │   └── popUpNewProject.tsx
+│   │   │   ├── project-ted
+│   │   │   │   ├── edit
+│   │   │   │   │   ├── ProjectTEDEdit.module.css
+│   │   │   │   │   └── ProjectTEDEdit.tsx
+│   │   │   │   ├── forms
+│   │   │   │   │   ├── andamentoDoProjeto
+│   │   │   │   │   │   ├── andamentoDoProjeto.module.css
+│   │   │   │   │   │   └── andamentoDoProjeto.tsx
+│   │   │   │   │   ├── informacoesDoProjeto
+│   │   │   │   │   │   ├── informacoesDoProjeto.module.css
+│   │   │   │   │   │   └── informacoesDoProjeto.tsx
+│   │   │   │   │   ├── observacoes
+│   │   │   │   │   │   └── Observacoes.tsx
+│   │   │   │   │   ├── secao-1-identificacao
+│   │   │   │   │   │   ├── IdentificacaoResponsavelTecnico
+│   │   │   │   │   │   │   ├── IdentificacaoResponsavelTecnico.module.css
+│   │   │   │   │   │   │   └── IdentificacaoResponsavelTecnico.tsx
+│   │   │   │   │   │   ├── identificacaoDoProjeto
+│   │   │   │   │   │   │   ├── IdentificacaoProjeto.module.css
+│   │   │   │   │   │   │   └── IdentificacaoProjeto.tsx
+│   │   │   │   │   │   ├── identificacaoProponente
+│   │   │   │   │   │   │   ├── IdentificacaoProponente.module.css
+│   │   │   │   │   │   │   └── IdentificacaoProponente.tsx
+│   │   │   │   │   │   └── identificacaoRepresentanteLegal
+│   │   │   │   │   │       ├── IdentificacaoRepresentanteLegal.module.css
+│   │   │   │   │   │       └── IdentificacaoRepresentanteLegal.tsx
+│   │   │   │   │   ├── secao-2-descricao
+│   │   │   │   │   │   ├── CronogramaContext
+│   │   │   │   │   │   │   └── CronogramaContext.tsx
+│   │   │   │   │   │   ├── GestaoProjeto
+│   │   │   │   │   │   │   └── GestaoProjeto.tsx
+│   │   │   │   │   │   ├── Justificativa
+│   │   │   │   │   │   │   ├── Justificativa.module.css
+│   │   │   │   │   │   │   └── Justificativa.tsx
+│   │   │   │   │   │   ├── Metas
+│   │   │   │   │   │   │   ├── Metas.module.css
+│   │   │   │   │   │   │   └── Metas.tsx
+│   │   │   │   │   │   ├── Metodologia
+│   │   │   │   │   │   │   ├── Metodologia.module.css
+│   │   │   │   │   │   │   └── Metodologia.tsx
+│   │   │   │   │   │   ├── Objetivos
+│   │   │   │   │   │   │   ├── Objetivos.module.css
+│   │   │   │   │   │   │   └── Objetivos.tsx
+│   │   │   │   │   │   ├── Resultados
+│   │   │   │   │   │   │   └── ResultadosEsperados.tsx
+│   │   │   │   │   │   └── etapas-cronograma
+│   │   │   │   │   │       ├── EtapaItem.tsx
+│   │   │   │   │   │       ├── MetaCronogramaCard.tsx
+│   │   │   │   │   │       ├── etapas-cronograma.module.css
+│   │   │   │   │   │       ├── index.tsx
+│   │   │   │   │   │       └── types.ts
+│   │   │   │   │   ├── secao-3-participantes
+│   │   │   │   │   │   ├── BaseTerritorial.tsx
+│   │   │   │   │   │   ├── HistoricoSituacaoTerritorio.tsx
+│   │   │   │   │   │   ├── PerfilSocioOcupacional.tsx
+│   │   │   │   │   │   ├── PovosComunidadesTradicionais.tsx
+│   │   │   │   │   │   ├── PublicoBeneficiario.tsx
+│   │   │   │   │   │   └── ServicosAcessados.tsx
+│   │   │   │   │   ├── secao-4-caracterizacao
+│   │   │   │   │   │   └── OutrasInformacoesProponente.tsx
+│   │   │   │   │   ├── secao-5-planilhas
+│   │   │   │   │   │   ├── CronogramaDesembolso.tsx
+│   │   │   │   │   │   ├── DetalhamentoOrcamento.tsx
+│   │   │   │   │   │   ├── ResumoPlanoAplicacao.tsx
+│   │   │   │   │   │   └── ValorTotal.tsx
+│   │   │   │   │   ├── secao-6-monitoramento
+│   │   │   │   │   │   ├── IndicadoresEficiencia.tsx
+│   │   │   │   │   │   └── ProcedimentosMonitoramento.tsx
+│   │   │   │   │   ├── visao-geral
+│   │   │   │   │   │   ├── export-visao-geral-pdf.ts
+│   │   │   │   │   │   ├── visaoGeralDoProjeto.module.css
+│   │   │   │   │   │   └── visaoGeralDoProjeto.tsx
+│   │   │   │   │   ├── index.tsx
+│   │   │   │   │   └── sections-map.tsx
+│   │   │   │   ├── shared
+│   │   │   │   │   ├── data-table.module.css
+│   │   │   │   │   ├── data-table.tsx
+│   │   │   │   │   ├── form-fields.ts
+│   │   │   │   │   ├── form-layout.module.css
+│   │   │   │   │   ├── form-save-toast.ts
+│   │   │   │   │   ├── form-section.tsx
+│   │   │   │   │   ├── generic-button.tsx
+│   │   │   │   │   ├── secao-review-actions.tsx
+│   │   │   │   │   ├── status-stepper.tsx
+│   │   │   │   │   └── ted-form-placeholder.tsx
+│   │   │   │   └── index.ts
+│   │   │   ├── statusBadge
+│   │   │   │   ├── status-badge.module.css
+│   │   │   │   └── status-badge.tsx
+│   │   │   ├── index.ts
+│   │   │   └── projetos-table.tsx
 │   │   ├── constants
-│   │   │   ├── QrCodeScreen.ts
-│   │   │   └── index.ts
+│   │   │   ├── ted
+│   │   │   │   ├── catalogo-despesas-curso.ts
+│   │   │   │   ├── communs.ts
+│   │   │   │   ├── identificacao-projeto.ts
+│   │   │   │   ├── identificacao-proponente.ts
+│   │   │   │   ├── identificacao-representante-legal.ts
+│   │   │   │   ├── identificacao-responsavel-tecnico.ts
+│   │   │   │   ├── justificativa.ts
+│   │   │   │   ├── metas.ts
+│   │   │   │   ├── metodologia.ts
+│   │   │   │   ├── project.ts
+│   │   │   │   ├── sidebar-menu.ts
+│   │   │   │   └── visao-geral.ts
+│   │   │   ├── index.ts
+│   │   │   ├── project-types.ts
+│   │   │   └── project.ts
+│   │   ├── contexts
+│   │   │   ├── breadcrumb-context.tsx
+│   │   │   ├── project-data-context.tsx
+│   │   │   └── ted-review-context.tsx
 │   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   └── useGerarQrCode.ts
+│   │   │   └── use-ted-secao-reviews.ts
+│   │   ├── model
+│   │   │   └── ted
 │   │   ├── screens
-│   │   │   ├── GerarQrCodeScreen.style.css
-│   │   │   ├── GerarQrCodeScreen.tsx
-│   │   │   └── index.ts
+│   │   │   ├── index.ts
+│   │   │   ├── project-ted-edit-screen.tsx
+│   │   │   └── projetos-screen.tsx
+│   │   ├── server
+│   │   │   ├── index.ts
+│   │   │   ├── project-stages.repository.ts
+│   │   │   ├── projects.repository.ts
+│   │   │   ├── responsaveis.repository.ts
+│   │   │   ├── ted-campo-review.repository.ts
+│   │   │   ├── ted-identificacao.repository.ts
+│   │   │   └── ted-secao-review.repository.ts
 │   │   ├── services
+│   │   │   ├── ibge.service.ts
 │   │   │   ├── index.ts
-│   │   │   └── qr-code.service.ts
+│   │   │   ├── project-ted.service.ts
+│   │   │   ├── projetos.service.ts
+│   │   │   ├── sidebar.service.ts
+│   │   │   ├── ted-identificacao.service.ts
+│   │   │   └── ted-secao-review.service.ts
 │   │   ├── types
-│   │   │   └── index.ts
-│   │   └── index.ts
-│   ├── relatorio_equipe_ti
-│   │   ├── components
-│   │   │   ├── charts
-│   │   │   │   ├── CategoriasDoughnutChart.tsx
-│   │   │   │   ├── SetoresBarChart.tsx
-│   │   │   │   ├── SetoresDoughnutChart.tsx
-│   │   │   │   ├── StatusPieChart.tsx
-│   │   │   │   └── chart-config.ts
-│   │   │   ├── CategoriasRecorrentesTable.tsx
-│   │   │   ├── RelatorioEquipeTiReport.tsx
-│   │   │   └── index.ts
-│   │   ├── constants
-│   │   │   └── index.ts
-│   │   ├── hooks
-│   │   │   └── index.ts
-│   │   ├── screens
-│   │   │   ├── RelatorioEquipeTiScreen.tsx
-│   │   │   └── index.ts
-│   │   ├── services
-│   │   │   └── index.ts
-│   │   ├── types
-│   │   │   └── index.ts
-│   │   └── index.ts
-│   ├── relatorio_semanal
-│   │   ├── components
-│   │   │   ├── RelatorioSemanalTable.tsx
-│   │   │   ├── UsuariosDaitTable.tsx
 │   │   │   ├── index.ts
-│   │   │   └── relatorio-semanal-access-gate.tsx
-│   │   ├── constants
-│   │   │   ├── conteudoConsolidado.ts
-│   │   │   └── index.ts
-│   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   └── useRelatorioSemanal.ts
-│   │   ├── screens
-│   │   │   ├── RelatorioSemanalEditScreen.tsx
-│   │   │   ├── RelatorioSemanalPreencherScreen.tsx
-│   │   │   ├── RelatorioSemanalScreen.tsx
-│   │   │   ├── RelatorioSemanalVisualizarScreen.tsx
-│   │   │   └── index.ts
-│   │   ├── services
-│   │   │   ├── index.ts
-│   │   │   └── relatorioSemanal.service.ts
-│   │   ├── types
-│   │   │   └── index.ts
+│   │   │   ├── projeto.ts
+│   │   │   ├── ted-campo-review.ts
+│   │   │   ├── ted-identificacao.ts
+│   │   │   ├── ted-secao-review.ts
+│   │   │   └── ted.ts
 │   │   ├── utils
-│   │   │   ├── index.ts
-│   │   │   └── relatorioRoles.ts
-│   │   ├── index.ts
-│   │   └── permissions.ts
-│   ├── reserva_sala_de_reuniao
-│   │   ├── components
-│   │   │   ├── calendar
-│   │   │   │   ├── Calendar.styles.css
-│   │   │   │   └── calendar.tsx
-│   │   │   ├── popUpNovaReserva
-│   │   │   │   ├── PopUpNovaReserva.styles.css
-│   │   │   │   └── PopUpNovaReserva.tsx
-│   │   │   ├── ReservaSalaReuniaoTable.tsx
-│   │   │   └── index.ts
-│   │   ├── constants
-│   │   │   ├── calendar.ts
-│   │   │   ├── constScreenSalaReuniao.ts
-│   │   │   ├── index.ts
-│   │   │   ├── popUpCancelarReserva.ts
-│   │   │   ├── popUpNovaReserva.ts
-│   │   │   └── reservaScreen.ts
-│   │   ├── hooks
-│   │   │   ├── index.ts
-│   │   │   ├── useNovaReservaForm.ts
-│   │   │   ├── useReservaActions.ts
-│   │   │   ├── useReservaFilters.ts
-│   │   │   ├── useReservas.ts
-│   │   │   └── useSolicitantes.ts
-│   │   ├── screens
-│   │   │   ├── reserva-sala-reuniao
-│   │   │   │   ├── ReservaSalaReuniao.styles.css
-│   │   │   │   └── ReservaSalaReuniaoScreen.tsx
-│   │   │   └── index.ts
-│   │   ├── services
-│   │   │   ├── index.ts
-│   │   │   └── reservaSalaReuniao.service.ts
-│   │   ├── types
-│   │   │   └── index.ts
-│   │   ├── utils
-│   │   │   ├── index.ts
-│   │   │   ├── reservaHelpers.ts
-│   │   │   └── reservaStatus.ts
+│   │   │   ├── currency.ts
+│   │   │   ├── projeto-routes.ts
+│   │   │   ├── projetos-permissions.ts
+│   │   │   ├── ted-model.ts
+│   │   │   └── ted-preenchimento.ts
 │   │   └── index.ts
 │   └── welcome
 │       ├── components
-│       │   ├── welcomeCard
-│       │   │   ├── WelcomeCard.module.css
-│       │   │   └── WelcomeCard.tsx
-│       │   ├── welcomeCardIcon
-│       │   │   ├── WelcomeCardIcon.module.css
-│       │   │   └── WelcomeCardIcon.tsx
-│       │   ├── welcomeCardLink
-│       │   │   ├── WelcomeCardLink.module.css
-│       │   │   └── WelcomeCardLink.tsx
-│       │   ├── welcomeChart
-│       │   │   ├── WelcomeChart.module.css
-│       │   │   └── WelcomeChart.tsx
-│       │   ├── welcomeItems
-│       │   │   ├── WelcomeItems.module.css
-│       │   │   └── WelcomeItems.tsx
-│       │   ├── welcomeMetrics
-│       │   │   ├── WelcomeMetrics.module.css
-│       │   │   └── WelcomeMetrics.tsx
-│       │   └── index.ts
+│       │   ├── index.ts
+│       │   └── welcome-hero.tsx
 │       ├── constants
 │       │   └── index.ts
 │       ├── hooks
-│       │   ├── index.ts
-│       │   └── useWelcomeMetrics.ts
-│       ├── screens
-│       │   ├── WelcomeScreen.module.css
-│       │   ├── WelcomeScreen.tsx
 │       │   └── index.ts
-│       ├── services
+│       ├── screens
 │       │   ├── index.ts
-│       │   └── welcome.service.ts
+│       │   └── welcome-screen.tsx
+│       ├── services
+│       │   └── index.ts
 │       ├── types
 │       │   └── index.ts
 │       └── index.ts
 ├── hooks
+│   ├── index.ts
+│   ├── use-async-data.ts
 │   └── use-mobile.ts
 ├── lib
-│   ├── api-route-error.ts
+│   ├── api.ts
+│   ├── db.ts
 │   ├── parse-api-response.ts
 │   └── utils.ts
-├── public
-│   ├── file.svg
-│   ├── globe.svg
-│   ├── next.svg
-│   ├── vercel.svg
-│   └── window.svg
-├── server
-│   ├── _template
-│   │   └── index.ts
-│   ├── auth
-│   │   ├── auth.service.ts
-│   │   ├── auth.types.ts
-│   │   ├── dait-users.ts
-│   │   ├── index.ts
-│   │   ├── profiles.ts
-│   │   ├── roles.ts
-│   │   ├── session-token.ts
-│   │   ├── session.ts
-│   │   ├── supabase.ts
-│   │   └── users.ts
-│   ├── controle-instrumento-parceria
-│   │   ├── diretorio-brasil.ts
-│   │   ├── store.ts
-│   │   └── supabase.ts
-│   ├── documentos
-│   │   ├── mime.ts
-│   │   └── store.ts
-│   ├── ferias
-│   │   ├── store.ts
-│   │   └── supabase.ts
-│   ├── health
-│   │   ├── health.service.ts
-│   │   ├── health.types.ts
-│   │   └── index.ts
-│   ├── lib
-│   │   ├── http.ts
-│   │   └── supabase.ts
-│   ├── relatorio-semanal
-│   │   ├── data
-│   │   ├── access.ts
-│   │   ├── store.ts
-│   │   ├── supabase.ts
-│   │   ├── types.ts
-│   │   └── utils.ts
-│   ├── reserva-sala-reuniao
-│   │   ├── store.ts
-│   │   └── supabase.ts
-│   ├── welcome
-│   │   └── metrics.ts
-│   └── index.ts
+├── supabase
+│   └── migrations
+│       ├── 001_create_project_stages.sql
+│       ├── 002_create_ted_identificacao.sql
+│       ├── 003_alter_proponente_registro_cnpj_to_date.sql
+│       ├── 004_alter_representante_matricula_to_cpf.sql
+│       ├── 005_create_ted_secao_review.sql
+│       ├── 006_create_ted_campo_review.sql
+│       └── 007_drop_projects_valor_total.sql
 ├── .gitignore
 ├── .npmrc
 ├── AGENTS.md
@@ -519,6 +452,8 @@
 ├── README.md
 ├── components.json
 ├── eslint.config.mjs
+├── estrutura.md
+├── form_manoel.html
 ├── next.config.ts
 ├── package-lock.json
 ├── package.json

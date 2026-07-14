@@ -95,7 +95,10 @@ export function ProjetosTable({
                 <TableCell className="font-medium">{projeto.nome}</TableCell>
                 <TableCell>{projeto.responsavel}</TableCell>
                 <TableCell>
-                  <ProjetoStatusBadge status={projeto.status} />
+                  <ProjetoStatusBadge
+                    status={projeto.etapaNome}
+                    ordem={projeto.etapaOrdem}
+                  />
                 </TableCell>
                 <TableCell>{projeto.tipo}</TableCell>
                 <TableCell>
