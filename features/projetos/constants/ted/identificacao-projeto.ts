@@ -1,6 +1,5 @@
 export const IDENTIFICACAO_PROJETO_LABELS = {
   LABEL_NOME_PROJETO: "Nome do projeto",
-  LABEL_VALOR_TOTAL: "Valor total do projeto",
   LABEL_LOCAL_EXECUCAO: "Local de Execução",
   LABEL_DURACAO: "Duração",
   LABEL_RESUMO_PROJETO: "Resumo do projeto",

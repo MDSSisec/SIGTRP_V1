@@ -19,15 +19,19 @@ import {
 } from "@/components/ui/sidebar"
 import { ChevronRightIcon } from "lucide-react"
 
+import { cn } from "@/lib/utils"
+
 export type NavMainItem = {
   title: string
   url: string
   icon?: React.ReactNode
   isActive?: boolean
+  disabled?: boolean
   items?: {
     title: string
     url: string
     isActive?: boolean
+    disabled?: boolean
   }[]
 }
 
@@ -63,6 +67,17 @@ export function NavMain({
               buttonClass={buttonClass}
               subButtonClass={subButtonClass}
             />
+          ) : item.disabled ? (
+            <SidebarMenuItem key={item.title} className={sectionClass}>
+              <SidebarMenuButton
+                tooltip="Seção bloqueada"
+                aria-disabled
+                className={cn(buttonClass, "pointer-events-none opacity-40")}
+              >
+                {item.icon}
+                <span>{item.title}</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
           ) : (
             <SidebarMenuItem key={item.title} className={sectionClass}>
               <SidebarMenuButton
@@ -95,15 +110,33 @@ function NavMainCollapsibleItem({
   buttonClass,
   subButtonClass,
 }: NavMainCollapsibleItemProps) {
+  const isGroupDisabled = Boolean(item.disabled)
+
   const shouldBeOpen =
-    item.isActive || (item.items?.some((subItem) => subItem.isActive) ?? false)
+    !isGroupDisabled &&
+    (item.isActive || (item.items?.some((subItem) => subItem.isActive) ?? false))
 
   const [open, setOpen] = React.useState(shouldBeOpen)
 
-  // Abre automaticamente quando um subitem passa a estar ativo (mudança de rota)
   React.useEffect(() => {
     if (shouldBeOpen) setOpen(true)
   }, [shouldBeOpen])
+
+  if (isGroupDisabled) {
+    return (
+      <SidebarMenuItem className={sectionClass}>
+        <SidebarMenuButton
+          tooltip="Seção bloqueada"
+          aria-disabled
+          className={cn(buttonClass, "pointer-events-none opacity-40")}
+        >
+          {item.icon}
+          <span>{item.title}</span>
+          <ChevronRightIcon className="ml-auto opacity-50" />
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    )
+  }
 
   return (
     <Collapsible
@@ -123,13 +156,23 @@ function NavMainCollapsibleItem({
         <SidebarMenuSub>
           {item.items?.map((subItem) => (
             <SidebarMenuSubItem key={subItem.title}>
-              <SidebarMenuSubButton
-                isActive={subItem.isActive}
-                className={subButtonClass}
-                render={<Link href={subItem.url} />}
-              >
-                <span>{subItem.title}</span>
-              </SidebarMenuSubButton>
+              {subItem.disabled ? (
+                <SidebarMenuSubButton
+                  aria-disabled
+                  className={cn(subButtonClass, "pointer-events-none opacity-40")}
+                  title="Seção bloqueada"
+                >
+                  <span>{subItem.title}</span>
+                </SidebarMenuSubButton>
+              ) : (
+                <SidebarMenuSubButton
+                  isActive={subItem.isActive}
+                  className={subButtonClass}
+                  render={<Link href={subItem.url} />}
+                >
+                  <span>{subItem.title}</span>
+                </SidebarMenuSubButton>
+              )}
             </SidebarMenuSubItem>
           ))}
         </SidebarMenuSub>

@@ -3,6 +3,7 @@ import {
   BarChart3Icon,
   Building2Icon,
   CalculatorIcon,
+  ClipboardListIcon,
   FileTextIcon,
   FingerprintIcon,
   HomeIcon,
@@ -18,6 +19,7 @@ import type { NavMainItem } from "./nav-main"
 
 const GROUP_ICONS: Record<string, ReactNode> = {
   "Visão Geral do Projeto": <HomeIcon />,
+  "Dados Gerais do Projeto": <ClipboardListIcon />,
   Observações: <MessageCircleIcon />,
   "I - Identificação": <FingerprintIcon />,
   "II - Descrição do Projeto": <FileTextIcon />,
@@ -44,19 +46,27 @@ export function buildProjectTedNavItems(
   const secao = activeSecao || DEFAULT_FORM_SECTION
 
   return TED_SIDEBAR_MENU_GROUPS.map((group) => {
-    const items = group.items.map((item) => ({
-      title: item.title,
-      url: getProjetoTedSectionUrl(projectId, item.slug),
-      isActive: secao === item.slug,
-    }))
+    const groupDisabled = Boolean(group.disabled)
 
-    const isActive = items.some((item) => item.isActive)
+    const items = group.items.map((item) => {
+      const itemDisabled = groupDisabled || Boolean(item.disabled)
+
+      return {
+        title: item.title,
+        url: getProjetoTedSectionUrl(projectId, item.slug),
+        isActive: !itemDisabled && secao === item.slug,
+        disabled: itemDisabled,
+      }
+    })
+
+    const isActive = !groupDisabled && items.some((item) => item.isActive)
 
     return {
       title: group.title,
       url: items[0]?.url ?? getProjetoTedSectionUrl(projectId, DEFAULT_FORM_SECTION),
       icon: GROUP_ICONS[group.title] ?? <FileTextIcon />,
       isActive,
+      disabled: groupDisabled,
       items,
     }
   })

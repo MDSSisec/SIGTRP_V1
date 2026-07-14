@@ -7,7 +7,6 @@ import { toProjeto, type Projeto, type ProjetoRow } from "../types/projeto"
 export type CreateProjetoData = {
   tipoProjeto: ProjetoTipo
   nome: string
-  valorTotal: number
   responsavelInternoId: string
   responsavelExternoId: string
   criadoPorId: string
@@ -18,7 +17,6 @@ const PROJECT_SELECT = `
     p.id,
     p.tipo_projeto,
     p.nome,
-    p.valor_total,
     p.responsavel_interno_id,
     p.responsavel_externo_id,
     p.criado_por_id,
@@ -65,7 +63,6 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
         id,
         tipo_projeto,
         nome,
-        valor_total,
         responsavel_interno_id,
         responsavel_externo_id,
         criado_por_id,
@@ -74,7 +71,7 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
         atualizado_em
       )
       VALUES (
-        $1, $2, $3, $4, $5, $6, $7,
+        $1, $2, $3, $4, $5, $6,
         (SELECT id FROM "SIGTRP_TB_PROJECT_STAGES" ORDER BY ordem ASC LIMIT 1),
         NOW(), NOW()
       )
@@ -83,7 +80,6 @@ export async function createProjeto(data: CreateProjetoData): Promise<Projeto> {
       id,
       data.tipoProjeto,
       data.nome,
-      data.valorTotal,
       data.responsavelInternoId,
       data.responsavelExternoId,
       data.criadoPorId,

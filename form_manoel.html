@@ -1,0 +1,1854 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formulário de Projeto de Qualificação Profissional</title>
+  <style>
+    :root {
+      --primary: #1351b4;
+      --primary-dark: #0c326f;
+      --primary-light: #e7f0ff;
+      --surface: #ffffff;
+      --background: #f5f6f8;
+      --text: #1f2937;
+      --muted: #667085;
+      --border: #d0d5dd;
+      --danger: #b42318;
+      --danger-bg: #fef3f2;
+      --success: #067647;
+      --success-bg: #ecfdf3;
+      --warning: #b54708;
+      --warning-bg: #fffaeb;
+      --shadow: 0 8px 24px rgba(16, 24, 40, 0.08);
+      --radius: 12px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      color: var(--text);
+      background: var(--background);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+    }
+
+    button, input, select { font: inherit; }
+
+    .app-header {
+      background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+      color: #fff;
+      padding: 28px 20px;
+    }
+
+    .app-header__inner,
+    .app-shell {
+      width: min(1240px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .app-header h1 {
+      max-width: 860px;
+      margin: 0;
+      font-size: clamp(1.45rem, 3vw, 2.1rem);
+      line-height: 1.2;
+    }
+
+    .app-header p {
+      max-width: 780px;
+      margin: 10px 0 0;
+      color: rgba(255,255,255,.86);
+    }
+
+    .app-shell {
+      display: grid;
+      grid-template-columns: 270px minmax(0, 1fr);
+      gap: 24px;
+      padding: 24px 0 48px;
+    }
+
+    .stepper {
+      position: sticky;
+      top: 16px;
+      align-self: start;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .stepper__title {
+      margin: 4px 8px 12px;
+      font-size: .82rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .stepper button {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      align-items: center;
+      width: 100%;
+      border: 0;
+      border-radius: 9px;
+      padding: 9px 8px;
+      background: transparent;
+      color: var(--text);
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .stepper button:hover { background: #f2f4f7; }
+    .stepper button[aria-current="step"] { background: var(--primary-light); color: var(--primary-dark); }
+    .stepper button[hidden] { display: none; }
+
+    .step-index {
+      display: grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      font-size: .82rem;
+      font-weight: 700;
+      background: #fff;
+    }
+
+    .stepper button[aria-current="step"] .step-index {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .stepper button.is-complete .step-index {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: var(--success);
+    }
+
+    .step-label { font-size: .9rem; font-weight: 650; }
+
+    main { min-width: 0; }
+
+    .panel {
+      padding: clamp(20px, 4vw, 34px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      box-shadow: var(--shadow);
+    }
+
+    .wizard-section[hidden] { display: none; }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--primary);
+      font-size: .83rem;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: clamp(1.3rem, 2.4vw, 1.8rem);
+      line-height: 1.25;
+    }
+
+    .section-description {
+      max-width: 900px;
+      margin: 12px 0 24px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .field { grid-column: span 6; min-width: 0; }
+    .field--full { grid-column: 1 / -1; }
+    .field--third { grid-column: span 4; }
+
+    label, .field-label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: .91rem;
+      font-weight: 650;
+    }
+
+    .required::after { content: " *"; color: var(--danger); }
+
+    input[type="text"],
+    input[type="number"],
+    select {
+      width: 100%;
+      min-height: 44px;
+      padding: 9px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      color: var(--text);
+      transition: border-color .15s, box-shadow .15s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(19, 81, 180, .14);
+    }
+
+    input[readonly] { background: #f2f4f7; color: #475467; }
+    select:disabled { background: #f2f4f7; color: #667085; }
+
+    .input-with-suffix { position: relative; }
+    .input-with-suffix input { padding-right: 70px; }
+    .input-suffix {
+      position: absolute;
+      top: 50%;
+      right: 12px;
+      transform: translateY(-50%);
+      color: var(--muted);
+      font-size: .87rem;
+      pointer-events: none;
+    }
+
+    .hint, .error-message {
+      display: block;
+      margin-top: 6px;
+      font-size: .8rem;
+    }
+
+    .hint { color: var(--muted); }
+    .error-message { min-height: 1.1em; color: var(--danger); }
+    .is-invalid { border-color: var(--danger) !important; box-shadow: 0 0 0 3px rgba(180,35,24,.1) !important; }
+
+    .check-card {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .check-card input {
+      width: 20px;
+      height: 20px;
+      margin: 2px 0 0;
+      accent-color: var(--primary);
+    }
+
+    .check-card label { margin: 0; cursor: pointer; }
+    .check-card small { display: block; margin-top: 3px; color: var(--muted); font-weight: 400; }
+
+    .course-card {
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .course-card__header {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+      padding: 15px 18px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .course-card__header h3 { margin: 0; font-size: 1.05rem; }
+    .course-card__body { padding: 20px; }
+
+    .subsection-title {
+      margin: 0 0 16px;
+      font-size: 1rem;
+    }
+
+    .divider { height: 1px; margin: 24px 0; background: var(--border); }
+
+    .table-toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin: 16px 0 10px;
+    }
+
+    .table-toolbar h3 { margin: 0; font-size: 1rem; }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1080px;
+      border-collapse: collapse;
+      background: #fff;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      text-align: left;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475467;
+      font-size: .78rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    tbody tr:last-child td { border-bottom: 0; }
+    td input, td select { min-width: 125px; min-height: 40px; padding: 7px 9px; font-size: .86rem; }
+    td .error-message { max-width: 180px; }
+
+    .empty-state {
+      padding: 26px 16px;
+      color: var(--muted);
+      text-align: center;
+      background: #fff;
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      padding: 9px 15px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      font-weight: 680;
+      cursor: pointer;
+      transition: transform .08s, background .15s, border-color .15s;
+    }
+
+    .btn:active { transform: translateY(1px); }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-dark); }
+    .btn-secondary { border-color: var(--primary); background: #fff; color: var(--primary); }
+    .btn-secondary:hover { background: var(--primary-light); }
+    .btn-ghost { border-color: var(--border); background: #fff; color: #344054; }
+    .btn-ghost:hover { background: #f2f4f7; }
+    .btn-danger { border-color: #fecdca; background: #fff; color: var(--danger); }
+    .btn-danger:hover { background: var(--danger-bg); }
+    .btn-sm { min-height: 35px; padding: 6px 10px; font-size: .84rem; }
+
+    .wizard-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 26px;
+    }
+
+    .wizard-actions__right { display: flex; gap: 10px; }
+
+    .summary-strip {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin: 0 0 22px;
+    }
+
+    .summary-card {
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #f9fafb;
+    }
+
+    .summary-card span { display: block; color: var(--muted); font-size: .78rem; }
+    .summary-card strong { display: block; margin-top: 3px; font-size: 1.05rem; }
+
+    /* RESUMO FINANCEIRO INDIVIDUAL DE CADA CURSO */
+    .summary-strip--course {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      margin-bottom: 12px;
+    }
+
+    .status-banner {
+      display: none;
+      margin-bottom: 18px;
+      padding: 13px 15px;
+      border-radius: 9px;
+      font-size: .9rem;
+    }
+
+    .status-banner.is-error { display: block; color: var(--danger); background: var(--danger-bg); border: 1px solid #fecdca; }
+    .status-banner.is-success { display: block; color: var(--success); background: var(--success-bg); border: 1px solid #abefc6; }
+
+    dialog {
+      width: min(800px, calc(100% - 32px));
+      max-height: 85vh;
+      padding: 0;
+      border: 0;
+      border-radius: 14px;
+      box-shadow: 0 24px 48px rgba(16,24,40,.25);
+    }
+
+    dialog::backdrop { background: rgba(16,24,40,.55); }
+    .dialog-header, .dialog-footer { padding: 18px 22px; }
+    .dialog-header { border-bottom: 1px solid var(--border); }
+    .dialog-header h2 { margin: 0; font-size: 1.25rem; }
+    .dialog-body { padding: 18px 22px; overflow: auto; }
+    .dialog-footer { display: flex; justify-content: flex-end; gap: 10px; border-top: 1px solid var(--border); }
+    pre {
+      margin: 0;
+      padding: 16px;
+      overflow: auto;
+      border-radius: 9px;
+      background: #101828;
+      color: #e6edf3;
+      font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .noscript {
+      margin: 20px auto;
+      width: min(900px, calc(100% - 32px));
+      padding: 16px;
+      color: var(--danger);
+      background: var(--danger-bg);
+      border: 1px solid #fecdca;
+      border-radius: 10px;
+    }
+
+    @media (max-width: 900px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .stepper { position: static; display: flex; overflow-x: auto; }
+      .stepper__title { display: none; }
+      .stepper button { min-width: 185px; }
+      .field, .field--third { grid-column: 1 / -1; }
+    }
+
+    @media (max-width: 620px) {
+      .app-shell, .app-header__inner { width: min(100% - 20px, 1240px); }
+      .app-header { padding: 22px 10px; }
+      .panel { padding: 18px 14px; }
+      .summary-strip,
+      .summary-strip--course { grid-template-columns: 1fr; }
+      .wizard-actions { align-items: stretch; }
+      .wizard-actions, .wizard-actions__right { flex-direction: column-reverse; }
+      .wizard-actions .btn { width: 100%; }
+      .course-card__header { align-items: flex-start; flex-direction: column; }
+    }
+
+    /* =========================================================
+       AJUSTE DE LARGURA E TABELAS SEM ROLAGEM HORIZONTAL
+       Alteração solicitada em 13/07/2026
+       ========================================================= */
+
+    /* Amplia o formulário para aproveitar quase toda a tela. */
+    .app-header__inner,
+    .app-shell {
+      width: min(1800px, calc(100% - 24px));
+    }
+
+    .app-shell {
+      grid-template-columns: 230px minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .panel {
+      padding: clamp(18px, 2vw, 28px);
+    }
+
+    main,
+    .panel,
+    .course-card,
+    .course-card__body,
+    .table-wrap {
+      min-width: 0;
+      max-width: 100%;
+    }
+
+    /* Remove a largura mínima fixa que provocava a rolagem horizontal. */
+    .table-wrap {
+      width: 100%;
+      overflow-x: visible;
+    }
+
+    table {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+    }
+
+    th,
+    td {
+      padding: 8px 6px;
+      overflow-wrap: anywhere;
+    }
+
+    th {
+      white-space: normal;
+      line-height: 1.2;
+    }
+
+    td input,
+    td select {
+      width: 100%;
+      min-width: 0;
+      padding: 7px 6px;
+      font-size: .82rem;
+    }
+
+    td .error-message {
+      max-width: none;
+      overflow-wrap: anywhere;
+    }
+
+    td:last-child .btn {
+      width: 100%;
+      min-width: 0;
+      padding-inline: 4px;
+      font-size: .76rem;
+    }
+
+    /* Distribuição proporcional das oito colunas das despesas dos cursos. */
+    [data-course-expenses] th:nth-child(1),
+    [data-course-expenses] td:nth-child(1) { width: 14%; }
+    [data-course-expenses] th:nth-child(2),
+    [data-course-expenses] td:nth-child(2) { width: 20%; }
+    [data-course-expenses] th:nth-child(3),
+    [data-course-expenses] td:nth-child(3) { width: 14%; }
+    [data-course-expenses] th:nth-child(4),
+    [data-course-expenses] td:nth-child(4) { width: 12%; }
+    [data-course-expenses] th:nth-child(5),
+    [data-course-expenses] td:nth-child(5) { width: 8%; }
+    [data-course-expenses] th:nth-child(6),
+    [data-course-expenses] td:nth-child(6) { width: 12%; }
+    [data-course-expenses] th:nth-child(7),
+    [data-course-expenses] td:nth-child(7) { width: 12%; }
+    [data-course-expenses] th:nth-child(8),
+    [data-course-expenses] td:nth-child(8) { width: 8%; }
+
+    /* Distribuição proporcional das onze colunas das despesas das etapas. */
+    #stage11-table th:nth-child(1), #stage11-table td:nth-child(1),
+    #stage12-table th:nth-child(1), #stage12-table td:nth-child(1),
+    #event-table th:nth-child(1), #event-table td:nth-child(1) { width: 15%; }
+
+    #stage11-table th:nth-child(2), #stage11-table td:nth-child(2),
+    #stage12-table th:nth-child(2), #stage12-table td:nth-child(2),
+    #event-table th:nth-child(2), #event-table td:nth-child(2) { width: 10%; }
+
+    #stage11-table th:nth-child(3), #stage11-table td:nth-child(3),
+    #stage12-table th:nth-child(3), #stage12-table td:nth-child(3),
+    #event-table th:nth-child(3), #event-table td:nth-child(3) { width: 8%; }
+
+    #stage11-table th:nth-child(4), #stage11-table td:nth-child(4),
+    #stage12-table th:nth-child(4), #stage12-table td:nth-child(4),
+    #event-table th:nth-child(4), #event-table td:nth-child(4) { width: 6%; }
+
+    #stage11-table th:nth-child(5), #stage11-table td:nth-child(5),
+    #stage12-table th:nth-child(5), #stage12-table td:nth-child(5),
+    #event-table th:nth-child(5), #event-table td:nth-child(5) { width: 10%; }
+
+    #stage11-table th:nth-child(6), #stage11-table td:nth-child(6),
+    #stage12-table th:nth-child(6), #stage12-table td:nth-child(6),
+    #event-table th:nth-child(6), #event-table td:nth-child(6) { width: 10%; }
+
+    #stage11-table th:nth-child(7), #stage11-table td:nth-child(7),
+    #stage12-table th:nth-child(7), #stage12-table td:nth-child(7),
+    #event-table th:nth-child(7), #event-table td:nth-child(7) { width: 10%; }
+
+    #stage11-table th:nth-child(8), #stage11-table td:nth-child(8),
+    #stage12-table th:nth-child(8), #stage12-table td:nth-child(8),
+    #event-table th:nth-child(8), #event-table td:nth-child(8) { width: 8%; }
+
+    #stage11-table th:nth-child(9), #stage11-table td:nth-child(9),
+    #stage12-table th:nth-child(9), #stage12-table td:nth-child(9),
+    #event-table th:nth-child(9), #event-table td:nth-child(9) { width: 8%; }
+
+    #stage11-table th:nth-child(10), #stage11-table td:nth-child(10),
+    #stage12-table th:nth-child(10), #stage12-table td:nth-child(10),
+    #event-table th:nth-child(10), #event-table td:nth-child(10) { width: 7%; }
+
+    #stage11-table th:nth-child(11), #stage11-table td:nth-child(11),
+    #stage12-table th:nth-child(11), #stage12-table td:nth-child(11),
+    #event-table th:nth-child(11), #event-table td:nth-child(11) { width: 8%; }
+
+    /* Em telas intermediárias, o menu fica acima para liberar a largura inteira. */
+    @media (max-width: 1180px) {
+      .app-shell { grid-template-columns: 1fr; }
+      .stepper {
+        position: static;
+        display: flex;
+        flex-wrap: wrap;
+        overflow-x: visible;
+      }
+      .stepper__title { display: none; }
+      .stepper button {
+        flex: 1 1 180px;
+        min-width: 0;
+      }
+    }
+
+    /* Em telas pequenas, cada linha vira um cartão vertical, sem scroll lateral. */
+    @media (max-width: 760px) {
+      .table-wrap {
+        border: 0;
+        overflow: visible;
+      }
+
+      .table-wrap table,
+      .table-wrap tbody,
+      .table-wrap tr,
+      .table-wrap td {
+        display: block;
+        width: 100% !important;
+      }
+
+      .table-wrap thead { display: none; }
+
+      .table-wrap tbody tr {
+        margin-bottom: 14px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        background: #fff;
+      }
+
+      .table-wrap td {
+        display: grid;
+        grid-template-columns: minmax(105px, 34%) minmax(0, 1fr);
+        gap: 10px;
+        align-items: start;
+        padding: 10px;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .table-wrap td:last-child { border-bottom: 0; }
+
+      .table-wrap td::before {
+        color: #475467;
+        font-size: .78rem;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      [data-course-expenses] td:nth-child(1)::before { content: "Tipo do item"; }
+      [data-course-expenses] td:nth-child(2)::before { content: "Item"; }
+      [data-course-expenses] td:nth-child(3)::before { content: "Elemento"; }
+      [data-course-expenses] td:nth-child(4)::before { content: "Unidade"; }
+      [data-course-expenses] td:nth-child(5)::before { content: "Quantidade"; }
+      [data-course-expenses] td:nth-child(6)::before { content: "Valor unitário"; }
+      [data-course-expenses] td:nth-child(7)::before { content: "Valor total"; }
+      [data-course-expenses] td:nth-child(8)::before { content: "Ações"; }
+
+      #stage11-table td:nth-child(1)::before,
+      #stage12-table td:nth-child(1)::before,
+      #event-table td:nth-child(1)::before { content: "Item"; }
+      #stage11-table td:nth-child(2)::before,
+      #stage12-table td:nth-child(2)::before,
+      #event-table td:nth-child(2)::before { content: "Elemento"; }
+      #stage11-table td:nth-child(3)::before,
+      #stage12-table td:nth-child(3)::before,
+      #event-table td:nth-child(3)::before { content: "Unidade"; }
+      #stage11-table td:nth-child(4)::before,
+      #stage12-table td:nth-child(4)::before,
+      #event-table td:nth-child(4)::before { content: "Quantidade"; }
+      #stage11-table td:nth-child(5)::before,
+      #stage12-table td:nth-child(5)::before,
+      #event-table td:nth-child(5)::before { content: "Valor unitário"; }
+      #stage11-table td:nth-child(6)::before,
+      #stage12-table td:nth-child(6)::before,
+      #event-table td:nth-child(6)::before { content: "Valor total"; }
+      #stage11-table td:nth-child(7)::before,
+      #stage12-table td:nth-child(7)::before,
+      #event-table td:nth-child(7)::before { content: "Fonte"; }
+      #stage11-table td:nth-child(8)::before,
+      #stage12-table td:nth-child(8)::before,
+      #event-table td:nth-child(8)::before { content: "Início"; }
+      #stage11-table td:nth-child(9)::before,
+      #stage12-table td:nth-child(9)::before,
+      #event-table td:nth-child(9)::before { content: "Fim"; }
+      #stage11-table td:nth-child(10)::before,
+      #stage12-table td:nth-child(10)::before,
+      #event-table td:nth-child(10)::before { content: "Tipo"; }
+      #stage11-table td:nth-child(11)::before,
+      #stage12-table td:nth-child(11)::before,
+      #event-table td:nth-child(11)::before { content: "Ações"; }
+
+      td:last-child .btn { width: auto; }
+    }
+
+    @media (max-width: 620px) {
+      .app-shell,
+      .app-header__inner {
+        width: calc(100% - 12px);
+      }
+    }
+
+    /* ====================== FIM DO AJUSTE ====================== */
+
+  </style>
+</head>
+<body>
+  <noscript><div class="noscript">Este formulário precisa de JavaScript habilitado para funcionar.</div></noscript>
+
+  <header class="app-header">
+    <div class="app-header__inner">
+      <h1>Formulário de Projeto de Qualificação Profissional</h1>
+      <p>Preencha as etapas do projeto. Os campos são validados em tempo real e, ao final, os dados poderão ser exportados em JSON.</p>
+    </div>
+  </header>
+
+  <div class="app-shell">
+    <nav class="stepper" aria-label="Etapas do formulário">
+      <p class="stepper__title">Etapas</p>
+      <button type="button" data-step-target="dados_gerais_projeto" aria-current="step">
+        <span class="step-index">1</span><span class="step-label">Dados gerais</span>
+      </button>
+      <button type="button" data-step-target="detalhamento_cursos">
+        <span class="step-index">2</span><span class="step-label">Cursos</span>
+      </button>
+      <button type="button" data-step-target="despesas_etapa_1_1">
+        <span class="step-index">3</span><span class="step-label">Etapa 1.1</span>
+      </button>
+      <button type="button" data-step-target="despesas_etapa_1_2">
+        <span class="step-index">4</span><span class="step-label">Etapa 1.2</span>
+      </button>
+      <button type="button" data-step-target="despesas_evento_final" hidden>
+        <span class="step-index">5</span><span class="step-label">Evento final</span>
+      </button>
+    </nav>
+
+    <main>
+      <div id="form-status" class="status-banner" role="alert" aria-live="polite"></div>
+
+      <form id="project-form" novalidate>
+        <section class="panel wizard-section" id="dados_gerais_projeto" data-section>
+          <p class="eyebrow">Etapa 1 de 5</p>
+          <h2 class="section-title">Dados gerais do projeto</h2>
+          <p class="section-description">Informe o orçamento total, a quantidade de cursos e se haverá evento de certificação.</p>
+
+          <div class="grid">
+            <div class="field">
+              <label class="required" for="custo_total_projeto">Custo total do projeto</label>
+              <input id="custo_total_projeto" name="custo_total_projeto" type="text" inputmode="numeric" class="currency-input" autocomplete="off" placeholder="R$ 0,00" data-required="true" />
+              <small class="hint">Formato monetário brasileiro.</small>
+              <small class="error-message" data-error-for="custo_total_projeto"></small>
+            </div>
+
+            <div class="field">
+              <label class="required" for="quantidade_cursos">Quantidade de cursos</label>
+              <input id="quantidade_cursos" name="quantidade_cursos" type="number" min="1" step="1" inputmode="numeric" data-required="true" value="1" />
+              <small class="hint">A seção de cursos será criada conforme esta quantidade.</small>
+              <small class="error-message" data-error-for="quantidade_cursos"></small>
+            </div>
+
+            <div class="field field--full">
+              <div class="check-card">
+                <input id="possui_evento_certificacao" name="possui_evento_certificacao" type="checkbox" />
+                <label for="possui_evento_certificacao">
+                  Projeto irá possuir evento de entrega de certificado?
+                  <small>Ao marcar, a etapa de despesas do evento final será exibida e passará a ser validada.</small>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="wizard-actions">
+            <span></span>
+            <div class="wizard-actions__right">
+              <button class="btn btn-primary" type="button" data-next>Próxima etapa</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wizard-section" id="detalhamento_cursos" data-section hidden>
+          <p class="eyebrow">Etapa 2 de 5</p>
+          <h2 class="section-title">Detalhamento dos cursos</h2>
+          <p class="section-description">Preencha os dados gerais e, quando necessário, adicione despesas específicas de cada curso.</p>
+          <div id="courses-container"></div>
+
+          <div class="wizard-actions">
+            <button class="btn btn-ghost" type="button" data-prev>Voltar</button>
+            <div class="wizard-actions__right">
+              <button class="btn btn-primary" type="button" data-next>Próxima etapa</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wizard-section" id="despesas_etapa_1_1" data-section hidden>
+          <p class="eyebrow">Etapa 3 de 5</p>
+          <h2 class="section-title">Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1</h2>
+          <p class="section-description">Detalhe as despesas para planejar, executar, monitorar, mobilizar, sensibilizar e divulgar as ações do projeto, incluindo contratações, bens e insumos.</p>
+          <div class="summary-strip">
+            <div class="summary-card"><span>Itens adicionados</span><strong id="stage11-count">0</strong></div>
+            <div class="summary-card"><span>Total da etapa</span><strong id="stage11-total">R$ 0,00</strong></div>
+            <div class="summary-card"><span>Fonte disponível</span><strong>SISEC / Contrapartida</strong></div>
+          </div>
+          <div class="table-toolbar">
+            <h3>Despesas da Etapa 1.1</h3>
+            <button class="btn btn-secondary btn-sm" type="button" data-add-stage-row="stage11">+ Adicionar despesa</button>
+          </div>
+          <div id="stage11-table"></div>
+
+          <div class="wizard-actions">
+            <button class="btn btn-ghost" type="button" data-prev>Voltar</button>
+            <div class="wizard-actions__right">
+              <button class="btn btn-primary" type="button" data-next>Próxima etapa</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wizard-section" id="despesas_etapa_1_2" data-section hidden>
+          <p class="eyebrow">Etapa 4 de 5</p>
+          <h2 class="section-title">Estruturação e Equipamento dos Espaços — Etapa 1.2</h2>
+          <p class="section-description">Detalhe as despesas para estruturar os espaços de capacitação e adquirir os equipamentos necessários às ações de qualificação profissional.</p>
+          <div class="summary-strip">
+            <div class="summary-card"><span>Itens adicionados</span><strong id="stage12-count">0</strong></div>
+            <div class="summary-card"><span>Total da etapa</span><strong id="stage12-total">R$ 0,00</strong></div>
+            <div class="summary-card"><span>Tipo predominante</span><strong>Estruturação</strong></div>
+          </div>
+          <div class="table-toolbar">
+            <h3>Despesas da Etapa 1.2</h3>
+            <button class="btn btn-secondary btn-sm" type="button" data-add-stage-row="stage12">+ Adicionar despesa</button>
+          </div>
+          <div id="stage12-table"></div>
+
+          <div class="wizard-actions">
+            <button class="btn btn-ghost" type="button" data-prev>Voltar</button>
+            <div class="wizard-actions__right">
+              <button class="btn btn-primary" type="button" data-next>Próxima etapa</button>
+              <button class="btn btn-primary" type="button" data-finish hidden>Finalizar e gerar JSON</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel wizard-section" id="despesas_evento_final" data-section hidden>
+          <p class="eyebrow">Etapa 5 de 5</p>
+          <h2 class="section-title">Celebração, Certificação e Encerramento — Etapa Final</h2>
+          <p class="section-description">Detalhe as despesas dos eventos de celebração do termo, certificação, avaliação dos avanços e encerramento com entrega de certificados.</p>
+          <div class="summary-strip">
+            <div class="summary-card"><span>Itens adicionados</span><strong id="event-count">0</strong></div>
+            <div class="summary-card"><span>Total da etapa</span><strong id="event-total">R$ 0,00</strong></div>
+            <div class="summary-card"><span>Aplicação</span><strong>Evento final</strong></div>
+          </div>
+          <div class="table-toolbar">
+            <h3>Despesas do evento final</h3>
+            <button class="btn btn-secondary btn-sm" type="button" data-add-stage-row="event">+ Adicionar despesa</button>
+          </div>
+          <div id="event-table"></div>
+
+          <div class="wizard-actions">
+            <button class="btn btn-ghost" type="button" data-prev>Voltar</button>
+            <div class="wizard-actions__right">
+              <button class="btn btn-primary" type="button" data-finish>Finalizar e gerar JSON</button>
+            </div>
+          </div>
+        </section>
+      </form>
+    </main>
+  </div>
+
+  <dialog id="json-dialog">
+    <div class="dialog-header"><h2>JSON gerado com sucesso</h2></div>
+    <div class="dialog-body">
+      <p>Revise a prévia abaixo. O arquivo <strong>projeto_qualificacao.json</strong> foi preparado para download.</p>
+      <pre id="json-preview"></pre>
+    </div>
+    <div class="dialog-footer">
+      <button type="button" class="btn btn-ghost" id="close-dialog">Fechar</button>
+      <button type="button" class="btn btn-primary" id="download-json">Baixar JSON</button>
+    </div>
+  </dialog>
+
+  <script>
+    "use strict";
+
+    /* =========================================================
+       CATÁLOGO NEGOCIAL ATUALIZADO
+       Fonte: arquivo catalogo.html fornecido pelo usuário.
+       ========================================================= */
+    const catalogs = {
+          fontesRecurso: ["SISEC", "Contrapartida"],
+          tiposItemCurso: [
+            {
+              id: "kit_participante", label: "Kit participante", itens: [
+                { id: "estojo_escolar_simples_nylon_preto", label: "Estojo Escolar Simples Nylon Preto", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "caderno_a4_100_paginas", label: "Caderno a4 100 paginas", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "lapis_preto_hb2", label: "Lápis preto HB2", codigo: "33.90.39", unidades: ["kit 4 unidades"] },
+                { id: "apontador_de_lapis_de_grafiti", label: "Apontador de lapis de grafiti", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "borracha_para_lapis_grafiti", label: "Borracha para lápis grafiti", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "caneta_esferografica_azul", label: "Caneta esferográfica azul", codigo: "33.90.39", unidades: ["kit 3 unidades"] },
+                { id: "mochila_poliester_42cm_x_48cm_x_33cm", label: "Mochila poliester 42cm x 48cm x 33cm", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "ecobag_tecido", label: "Ecobag de tecido 22cm x 28cm x 13cm", codigo: "33.90.39", unidades: ["unidade"] }
+              ]
+            },
+            {
+              id: "insumos_gerais", label: "Insumos gerais", itens: [
+                { id: "material_escritorio", label: "Material de escritório", codigo: "33.90.30", unidades: ["pacote", "unidade"] },
+                { id: "material_consumo", label: "Material de consumo", codigo: "33.90.30", unidades: ["unidade", "litro", "metro"] },
+                { id: "cimento_50kg", label: "Cimento (50 kg)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "areia_media_m3", label: "Areia média (m³)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "blocos_tijolos", label: "Blocos/tijolos", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "brita_fina_m3", label: "Brita fina (m³)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "cal_hidratada_saco_padrao", label: "Cal hidratada (saco padrão)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "colher_de_pedreiro", label: "Colher de pedreiro", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "desempenadeira_lisa", label: "Desempenadeira lisa", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "desempenadeira_dentada", label: "Desempenadeira dentada", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "prumo", label: "Prumo", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "nivel", label: "Nível", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "trena", label: "Trena", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "esquadro", label: "Esquadro", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "regua_de_aluminio", label: "Régua de alumínio", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "enxada", label: "Enxada", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "pa", label: "Pá", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "balde_reforcado", label: "Balde reforçado", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "martelo", label: "Martelo", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "serra_manual", label: "Serra manual", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "serrote", label: "Serrote", codigo: "33.90.40", unidades: ["unidade"] },
+                { id: "formao_kit_c_4", label: "Formão (kit c/ 4)", codigo: "33.90.41", unidades: ["unidade"] },
+                { id: "plaina_manual", label: "Plaina manual", codigo: "33.90.42", unidades: ["unidade"] },
+                { id: "esquadro_carpinteiro", label: "Esquadro carpinteiro", codigo: "33.90.43", unidades: ["unidade"] },
+                { id: "grampo_sargento", label: "Grampo/sargento", codigo: "33.90.44", unidades: ["unidade"] },
+                { id: "furadeira_eletrica", label: "Furadeira elétrica", codigo: "33.90.45", unidades: ["unidade"] },
+                { id: "brocas_para_madeira_kit_c_5", label: "Brocas para madeira (kit c/ 5)", codigo: "33.90.46", unidades: ["unidade"] },
+                { id: "bancada_de_trabalho", label: "Bancada de trabalho", codigo: "33.90.46", unidades: ["unidade"] },
+                { id: "are_de_pratica", label: "Áre de prática", codigo: "33.90.46", unidades: ["unidade"] },
+                { id: "masseira", label: "Masseira", codigo: "33.90.46", unidades: ["unidade"] },
+                { id: "formas_de_madeira", label: "Formas de madeira", codigo: "33.90.46", unidades: ["unidade"] },
+                { id: "tabuas_de_madeira", label: "Tábuas de madeira", codigo: "33.90.47", unidades: ["unidade"] },
+                { id: "sarrafos", label: "Sarrafos", codigo: "33.90.48", unidades: ["unidade"] },
+                { id: "compensado_chapa", label: "Compensado (chapa)", codigo: "33.90.49", unidades: ["unidade"] },
+                { id: "pregos_kg", label: "Pregos (Kg)", codigo: "33.90.50", unidades: ["unidade"] },
+                { id: "parafusos_kg", label: "Parafusos (Kg)", codigo: "33.90.51", unidades: ["unidade"] },
+                { id: "buchas_caixa", label: "Buchas (caixa)", codigo: "33.90.52", unidades: ["unidade"] },
+                { id: "cola_para_madeira_litro", label: "Cola para madeira (litro)", codigo: "33.90.53", unidades: ["unidade"] },
+                { id: "desempenadeira_acabamento", label: "Desempenadeira acabamento", codigo: "33.90.54", unidades: ["unidade"] },
+                { id: "lixas_kit", label: "Lixas (kit)", codigo: "33.90.55", unidades: ["unidade"] },
+                { id: "espatula", label: "Espátula", codigo: "33.90.56", unidades: ["unidade"] },
+                { id: "rolo_de_pintura", label: "Rolo de pintura", codigo: "33.90.57", unidades: ["unidade"] },
+                { id: "bandeja_de_pintura", label: "Bandeja de pintura", codigo: "33.90.58", unidades: ["unidade"] },
+                { id: "massa_corrida_kg", label: "Massa corrida (kg)", codigo: "33.90.59", unidades: ["unidade"] },
+                { id: "baldes", label: "Baldes", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "carrinho_de_mao", label: "Carrinho de mão", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "mangueira_20_m", label: "Mangueira (20 m)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "lona_plastica", label: "Lona plástica", codigo: "33.90.40", unidades: ["unidade"] },
+                { id: "pregos_adicionais", label: "Pregos adicionais", codigo: "33.90.41", unidades: ["unidade"] }
+              ]
+            },
+            {
+              id: "epi", label: "EPI", itens: [
+                { id: "luva_protecao", label: "Luva de proteção", codigo: "33.90.30", unidades: ["unidade", "par"] },
+                { id: "oculos_protecao", label: "Óculos de proteção", codigo: "33.90.30", unidades: ["unidade"] },
+                { id: "capacete_seguranca", label: "Capacete de segurança", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "oculos_seguranca", label: "Óculos de segurança", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "luvas_protecao_tabela", label: "Luvas de proteção (Tabela)", codigo: "33.90.39", unidades: ["unidade", "par"] },
+                { id: "botina_seguranca", label: "Botina de segurança", codigo: "33.90.40", unidades: ["unidade"] },
+                { id: "mascara_respiratoria_pf2", label: "Máscara respiratória (PF2)", codigo: "33.90.41", unidades: ["unidade", "kit"] },
+                { id: "protetor_auricular", label: "Protetor auricular", codigo: "33.90.42", unidades: ["unidade", "kit"] }
+              ]
+            },
+            {
+              id: "kit_trabalho", label: "Kit Trabalho", itens: [
+                { id: "ferramentas_basicas", label: "Ferramentas básicas", codigo: "33.90.30", unidades: ["kit"] },
+                { id: "uniforme_trabalho", label: "Uniforme de trabalho", codigo: "33.90.30", unidades: ["kit", "unidade"] }
+              ]
+            },
+            {
+              id: "Outros", label: "Outros", itens: [
+                { id: "apostila_impressa", label: "Apostila impressa", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "uniforme_camiseta", label: "Uniforme (camiseta)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "certificados", label: "Certificados", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "epis_memoria_calculo", label: "EPIs (memória de cálculo anexo)", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "instrutor", label: "Instrutor", codigo: "33.90.39", unidades: ["hora"] },
+                { id: "monitor", label: "Monitor", codigo: "33.90.39", unidades: ["hora"] },
+                { id: "lanche_participantes", label: "Lanche para os participantes do curso", codigo: "33.90.39", unidades: ["unidade"] },
+                { id: "transporte_participantes", label: "Transporte para os participantes do curso", codigo: "33.90.39", unidades: ["unidade"] }
+              ]
+            }
+          ],
+          stage11: [
+            { id: "servico_planejamento", label: "Serviço de planejamento", codigo: "33.90.39", unidades: ["servico", "hora"], tipo: "Gestao" },
+            { id: "mobilizacao_divulgacao", label: "Mobilização e divulgação", codigo: "33.90.39", unidades: ["servico", "unidade"], tipo: "Finalistica" },
+            { id: "monitoramento_projeto", label: "Monitoramento do projeto", codigo: "33.90.39", unidades: ["servico", "hora"], tipo: "Gestao" },
+            { id: "material_apoio_execucao", label: "Material de apoio à execução", codigo: "33.90.30", unidades: ["unidade", "kit"], tipo: "Finalistica" },
+            { id: "servicos_administrativos_financeiros", label: "Serviços administrativos e financeiros do projeto (Taxa de Administração)", codigo: "33.90.39", unidades: ["unidade"], tipo: "Gestao" },
+            { id: "coordenador_geral", label: "Contratação de Coordenador geral", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "coordenador_executivo", label: "Contratação de Coordenador Executivo", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "assessor_tecnico", label: "Contratação de Assessor Técnico", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "assessor_operacional", label: "Contratação de Assessor Operacional", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "apoio_administrativo", label: "Contratação de Apoio Administrativo", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "diarias_equipe_gestao", label: "Diárias para equipe de gestão", codigo: "33.90.39", unidades: ["diaria", "unidade"], tipo: "Finalistica" },
+            { id: "material_consumo_gestao", label: "Material de Consumo (pasta, lápis, caneta, papel, etc.)", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" },
+            { id: "producao_banners", label: "Serviço de Produção de banners", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" },
+            { id: "desenvolvimento_website", label: "Serviço de desenvolvimento de website", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" },
+            { id: "webmaster_social_media", label: "Serviço de webmaster e social mídia do Projeto", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" },
+            { id: "coordenador_regional", label: "Contratação de Coordenador Regional", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "mobilizador_social", label: "Contratação de Mobilizadores Sociais", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "assistente_academico", label: "Contratação de Assistente Acadêmico", codigo: "33.90.39", unidades: ["hora"], tipo: "Gestao" },
+            { id: "servico_comunicacao", label: "Serviço de comunicação", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" }
+          ],
+          stage12: [
+            { id: "notebook", label: "Aquisição de notebook", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "smartphone", label: "Aquisição de smartphone", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "power_bank", label: "Aquisição de power bank", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "tela_projecao", label: "Aquisição de tela de projeção", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "mesa_som", label: "Aquisição de mesa de som", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "caixa_som_amplificada", label: "Aquisição de caixa de som amplificada", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "microfone_sem_fio", label: "Aquisição de microfone sem fio", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "camera_dslr_mirrorless", label: "Aquisição de câmera DSLR/Mirrorless", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "camera_360", label: "Aquisição de câmera 360°", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "extensao_filtro_linha", label: "Aquisição de extensão/filtro de linha profissional", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "kit_portatil_som", label: "Aquisição de kit portátil de som", codigo: "44.90.52", unidades: ["unidade"], tipo: "Estruturacao" },
+            { id: "locacao_espaco_capacitacao", label: "Locação de espaço para as capacitações", codigo: "33.90.39", unidades: ["unidade", "servico"], tipo: "Estruturacao" }
+          ],
+          event: [
+            { id: "locacao_espaco", label: "Locação de espaço para evento", codigo: "33.90.39", unidades: ["servico", "diaria"], tipo: "Finalistica" },
+            { id: "impressao_certificados", label: "Impressão de certificados", codigo: "33.90.39", unidades: ["unidade"], tipo: "Finalistica" },
+            { id: "servico_organizacao_evento", label: "Serviço de organização do evento", codigo: "33.90.39", unidades: ["servico"], tipo: "Gestao" },
+            { id: "kit_evento", label: "Kit para participantes do evento", codigo: "33.90.30", unidades: ["kit"], tipo: "Kit" },
+            { id: "contratacao", label: "Contratação de Pessoa jurídica para realizar os Eventos de celebração do Termo de Execução Descentralizada e certificação e Avaliação dos avanços do projeto.", codigo: "33.90.39", unidades: ["unidade"], tipo: "Gestao" }
+          ]
+        };
+
+    /* =========================================================
+       ITENS PADRÃO DAS TABELAS DE DESPESAS DOS CURSOS
+       Cada novo curso é iniciado com estas 16 despesas:
+       - 8 itens de "Kit participante";
+       - 8 itens de "Outros".
+       Quantidade e valor unitário permanecem para preenchimento.
+       ========================================================= */
+    const defaultCourseExpenseItems = [
+      { tipoId: "kit_participante", itemId: "estojo_escolar_simples_nylon_preto" },
+      { tipoId: "kit_participante", itemId: "caderno_a4_100_paginas" },
+      { tipoId: "kit_participante", itemId: "lapis_preto_hb2" },
+      { tipoId: "kit_participante", itemId: "apontador_de_lapis_de_grafiti" },
+      { tipoId: "kit_participante", itemId: "borracha_para_lapis_grafiti" },
+      { tipoId: "kit_participante", itemId: "caneta_esferografica_azul" },
+      { tipoId: "kit_participante", itemId: "mochila_poliester_42cm_x_48cm_x_33cm" },
+      { tipoId: "kit_participante", itemId: "ecobag_tecido" },
+      { tipoId: "Outros", itemId: "apostila_impressa" },
+      { tipoId: "Outros", itemId: "uniforme_camiseta" },
+      { tipoId: "Outros", itemId: "certificados" },
+      { tipoId: "Outros", itemId: "epis_memoria_calculo" },
+      { tipoId: "Outros", itemId: "instrutor" },
+      { tipoId: "Outros", itemId: "monitor" },
+      { tipoId: "Outros", itemId: "lanche_participantes" },
+      { tipoId: "Outros", itemId: "transporte_participantes" }
+    ];
+
+    const state = {
+      currentStep: "dados_gerais_projeto",
+      completedSteps: new Set(),
+      json: null,
+      rowCounter: 0
+    };
+
+    const form = document.getElementById("project-form");
+    const eventCheckbox = document.getElementById("possui_evento_certificacao");
+    const quantityCourses = document.getElementById("quantidade_cursos");
+    const statusBanner = document.getElementById("form-status");
+
+    function escapeHtml(value = "") {
+      return String(value).replace(/[&<>'"]/g, char => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#039;", '"': "&quot;"
+      })[char]);
+    }
+
+    function formatBRL(value) {
+      const number = Number(value) || 0;
+      return new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(number);
+    }
+
+    function currencyValue(input) {
+      return Number(input.dataset.value || 0);
+    }
+
+    function setCurrencyFromDigits(input) {
+      const digits = input.value.replace(/\D/g, "");
+      if (!digits) {
+        input.value = "";
+        input.dataset.value = "";
+        return;
+      }
+      const value = Number(digits) / 100;
+      input.dataset.value = String(value);
+      input.value = formatBRL(value);
+    }
+
+    function maskMonthYear(input) {
+      const digits = input.value.replace(/\D/g, "").slice(0, 6);
+      input.value = digits.length > 2 ? `${digits.slice(0, 2)}/${digits.slice(2)}` : digits;
+    }
+
+    function monthYearToComparable(value) {
+      const match = /^(0[1-9]|1[0-2])\/(\d{4})$/.exec(value || "");
+      if (!match) return null;
+      return Number(match[2]) * 12 + Number(match[1]);
+    }
+
+    function optionList(items, placeholder = "Selecione") {
+      return `<option value="">${placeholder}</option>` + items.map(item => {
+        const value = typeof item === "string" ? item : item.id;
+        const label = typeof item === "string" ? item : item.label;
+        return `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`;
+      }).join("");
+    }
+
+    function setStatus(message = "", type = "") {
+      statusBanner.className = "status-banner";
+      statusBanner.textContent = message;
+      if (message && type) statusBanner.classList.add(`is-${type}`);
+    }
+
+    function visibleSteps() {
+      return [...document.querySelectorAll("[data-step-target]")]
+        .filter(button => !button.hidden)
+        .map(button => button.dataset.stepTarget);
+    }
+
+    function updateNavigation() {
+      const visible = visibleSteps();
+      document.querySelectorAll("[data-step-target]").forEach(button => {
+        const target = button.dataset.stepTarget;
+        button.hidden = !visible.includes(target);
+        button.toggleAttribute("aria-current", target === state.currentStep);
+        if (target === state.currentStep) button.setAttribute("aria-current", "step");
+        else button.removeAttribute("aria-current");
+        button.classList.toggle("is-complete", state.completedSteps.has(target));
+      });
+
+      const currentIndex = visible.indexOf(state.currentStep);
+      document.querySelectorAll("[data-section] .eyebrow").forEach(eyebrow => {
+        const section = eyebrow.closest("[data-section]");
+        const index = visible.indexOf(section.id);
+        if (index >= 0) eyebrow.textContent = `Etapa ${index + 1} de ${visible.length}`;
+      });
+
+      const stage12 = document.getElementById("despesas_etapa_1_2");
+      const nextButton = stage12.querySelector("[data-next]");
+      const finishButton = stage12.querySelector("[data-finish]");
+      const stage12IsLast = visible.at(-1) === "despesas_etapa_1_2";
+      nextButton.hidden = stage12IsLast;
+      finishButton.hidden = !stage12IsLast;
+
+      return currentIndex;
+    }
+
+    function showStep(stepId, options = {}) {
+      const target = document.getElementById(stepId);
+      const navButton = document.querySelector(`[data-step-target="${stepId}"]`);
+      if (!target || !navButton || navButton.hidden) return;
+      document.querySelectorAll("[data-section]").forEach(section => {
+        section.hidden = section.id !== stepId;
+      });
+      state.currentStep = stepId;
+      updateNavigation();
+      setStatus();
+      if (options.scroll !== false) window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function buildCourseCard(index) {
+      const courseNumber = index + 1;
+      const card = document.createElement("article");
+      card.className = "course-card";
+      card.dataset.courseIndex = String(index);
+      card.innerHTML = `
+        <div class="course-card__header">
+          <h3>Curso ${courseNumber}</h3>
+          <span class="hint">Campos obrigatórios marcados com *</span>
+        </div>
+        <div class="course-card__body">
+          <h4 class="subsection-title">2.1 — Dados gerais do curso</h4>
+          <div class="grid">
+            ${courseField(index, "nome_curso", "Nome do Curso", "text", { full: true, max: 255 })}
+            ${courseField(index, "carga_horaria", "Carga horária", "number", { min: 1, suffix: "horas" })}
+            ${courseField(index, "quantidade_participantes", "Quantidade de participantes", "number", { min: 1 })}
+            ${courseField(index, "carga_horaria_diaria", "Carga horária diária", "number", { min: 2, max: 8, suffix: "horas" })}
+            ${courseField(index, "quantidade_dias_semanais", "Quantidade de dias semanais", "number", { min: 1, max: 5 })}
+            ${courseField(index, "quantidade_turmas", "Quantidade de turmas", "number", { min: 1 })}
+            ${courseField(index, "participantes_por_turma", "Quantidade de participantes por turma", "number", { min: 1, max: 30 })}
+          </div>
+          <div class="divider"></div>
+          <!-- RESUMO FINANCEIRO INDIVIDUAL DO CURSO -->
+          <div class="summary-strip summary-strip--course" data-course-summary="${index}">
+            <div class="summary-card">
+              <span>Total de itens</span>
+              <strong data-course-count>0</strong>
+            </div>
+            <div class="summary-card">
+              <span>Valor total</span>
+              <strong data-course-total>R$ 0,00</strong>
+            </div>
+            <div class="summary-card">
+              <span>Valor Kit Participante por Aluno</span>
+              <strong data-course-kit-per-student>R$ 0,00</strong>
+            </div>
+            <!-- Cards condicionais: aparecem apenas quando há despesas do respectivo tipo -->
+            <div class="summary-card" data-course-type-card="epi" hidden>
+              <span>Valor EPI por Aluno</span>
+              <strong data-course-epi-per-student>R$ 0,00</strong>
+            </div>
+            <div class="summary-card" data-course-type-card="insumos_gerais" hidden>
+              <span>Valor Insumo por Aluno</span>
+              <strong data-course-insumos-per-student>R$ 0,00</strong>
+            </div>
+            <div class="summary-card" data-course-type-card="kit_trabalho" hidden>
+              <span>Valor Kit Trabalho por Aluno</span>
+              <strong data-course-kit-trabalho-per-student>R$ 0,00</strong>
+            </div>
+          </div>
+          <div class="table-toolbar">
+            <h4 class="subsection-title">2.2 — Detalhamento de gastos do curso</h4>
+            <button class="btn btn-secondary btn-sm" type="button" data-add-course-expense="${index}">+ Adicionar despesa</button>
+          </div>
+          <div data-course-expenses="${index}">${emptyState("Nenhuma despesa adicionada a este curso.")}</div>
+        </div>`;
+      return card;
+    }
+
+    function courseField(index, id, label, type, options = {}) {
+      const fieldId = `curso_${index}_${id}`;
+      const attrs = [
+        `id="${fieldId}"`, `name="${fieldId}"`, `type="${type}"`, `data-field="${id}"`, `data-required="true"`
+      ];
+      if (type === "number") attrs.push(`step="1"`, `inputmode="numeric"`);
+      if (options.min != null) attrs.push(`min="${options.min}"`);
+      if (options.max != null) attrs.push(`max="${options.max}"`);
+      if (options.max) attrs.push(`max="${options.max}"`);
+      if (options.max && type === "text") attrs.push(`maxlength="${options.max}"`);
+      if (options.max && type !== "text") attrs.push(`max="${options.max}"`);
+      const wrapper = options.suffix ? "input-with-suffix" : "";
+      return `
+        <div class="field ${options.full ? "field--full" : ""}">
+          <label class="required" for="${fieldId}">${escapeHtml(label)}</label>
+          <div class="${wrapper}">
+            <input ${attrs.join(" ")} />
+            ${options.suffix ? `<span class="input-suffix">${escapeHtml(options.suffix)}</span>` : ""}
+          </div>
+          <small class="error-message" data-error-for="${fieldId}"></small>
+        </div>`;
+    }
+
+    function syncCourses() {
+      const container = document.getElementById("courses-container");
+      const desired = Math.max(1, Number.parseInt(quantityCourses.value, 10) || 1);
+      const existing = [...container.querySelectorAll(".course-card")];
+      if (existing.length < desired) {
+        for (let index = existing.length; index < desired; index += 1) {
+          const card = buildCourseCard(index);
+          container.appendChild(card);
+          populateDefaultCourseExpenses(card, index);
+        }
+      } else if (existing.length > desired) {
+        existing.slice(desired).forEach(card => card.remove());
+      }
+    }
+
+    function emptyState(message) {
+      return `<div class="empty-state">${escapeHtml(message)}</div>`;
+    }
+
+    function courseExpenseRow(courseIndex, preset = null) {
+      const rowId = `course-${courseIndex}-${++state.rowCounter}`;
+      const tr = document.createElement("tr");
+      tr.dataset.rowId = rowId;
+      tr.innerHTML = `
+        ${tableCellSelect("tipo_item_despesa", optionList(catalogs.tiposItemCurso), rowId, "Tipo do item")}
+        ${tableCellSelect("item_despesa", optionList([], "Selecione o tipo primeiro"), rowId, "Item", true)}
+        ${tableCellSelect("codigo_elemento_despesa", optionList([], "Selecione o item primeiro"), rowId, "Código", true)}
+        ${tableCellSelect("unidade", optionList([], "Selecione o item primeiro"), rowId, "Unidade", true)}
+        ${tableCellInput("quantidade_itens", "number", rowId, { min: 1 })}
+        ${tableCellInput("valor_unitario", "text", rowId, { currency: true })}
+        ${tableCellInput("valor_total", "text", rowId, { readonly: true, value: "R$ 0,00" })}
+        <td><button class="btn btn-danger btn-sm" type="button" data-remove-row>Remover</button></td>`;
+
+      if (preset) {
+        const typeSelect = tr.querySelector('[data-field="tipo_item_despesa"]');
+        const itemSelect = tr.querySelector('[data-field="item_despesa"]');
+        const unitSelect = tr.querySelector('[data-field="unidade"]');
+
+        typeSelect.value = preset.tipoId;
+        updateCourseDependencies(tr);
+        itemSelect.value = preset.itemId;
+        updateCourseItemDependencies(tr);
+
+        const type = catalogs.tiposItemCurso.find(entry => entry.id === preset.tipoId);
+        const item = type?.itens.find(entry => entry.id === preset.itemId);
+        if (item?.unidades?.length) unitSelect.value = item.unidades[0];
+
+        tr.dataset.defaultCourseItem = preset.itemId;
+      }
+
+      return tr;
+    }
+
+    function stageExpenseRow(kind) {
+      const rowId = `${kind}-${++state.rowCounter}`;
+      const tr = document.createElement("tr");
+      tr.dataset.rowId = rowId;
+      tr.dataset.stageKind = kind;
+      tr.innerHTML = `
+        ${tableCellSelect("item_despesa", optionList(catalogs[kind]), rowId, "Item")}
+        ${tableCellSelect("codigo_elemento_despesa", optionList([], "Selecione o item primeiro"), rowId, "Código", true)}
+        ${tableCellSelect("unidade", optionList([], "Selecione o item primeiro"), rowId, "Unidade", true)}
+        ${tableCellInput("quantidade_itens", "number", rowId, { min: 1 })}
+        ${tableCellInput("valor_unitario", "text", rowId, { currency: true })}
+        ${tableCellInput("valor_total", "text", rowId, { readonly: true, value: "R$ 0,00" })}
+        ${tableCellSelect("fonte_recurso", optionList(catalogs.fontesRecurso), rowId, "Fonte")}
+        ${tableCellInput("inicio_etapa", "text", rowId, { monthYear: true, placeholder: "MM/AAAA" })}
+        ${tableCellInput("fim_etapa", "text", rowId, { monthYear: true, placeholder: "MM/AAAA" })}
+        ${tableCellInput("tipo_despesa", "text", rowId, { readonly: true })}
+        <td><button class="btn btn-danger btn-sm" type="button" data-remove-row>Remover</button></td>`;
+      return tr;
+    }
+
+    function tableCellSelect(field, options, rowId, label, disabled = false) {
+      const id = `${rowId}_${field}`;
+      return `<td><select id="${id}" data-field="${field}" data-required="true" aria-label="${escapeHtml(label)}" ${disabled ? "disabled" : ""}>${options}</select><small class="error-message" data-error-for="${id}"></small></td>`;
+    }
+
+    function tableCellInput(field, type, rowId, options = {}) {
+      const id = `${rowId}_${field}`;
+      const classes = [options.currency ? "currency-input" : "", options.monthYear ? "month-year-input" : ""].filter(Boolean).join(" ");
+      const attributes = [
+        `id="${id}"`, `type="${type}"`, `data-field="${field}"`, `aria-label="${field.replaceAll("_", " ")}"`
+      ];
+      if (!options.readonly) attributes.push(`data-required="true"`);
+      if (options.readonly) attributes.push("readonly");
+      if (options.min != null) attributes.push(`min="${options.min}"`, `step="1"`, `inputmode="numeric"`);
+      if (options.currency) attributes.push(`inputmode="numeric"`, `autocomplete="off"`, `placeholder="R$ 0,00"`);
+      if (options.monthYear) attributes.push(`inputmode="numeric"`, `maxlength="7"`);
+      if (options.placeholder) attributes.push(`placeholder="${escapeHtml(options.placeholder)}"`);
+      if (options.value != null) attributes.push(`value="${escapeHtml(options.value)}"`);
+      return `<td><input class="${classes}" ${attributes.join(" ")} /><small class="error-message" data-error-for="${id}"></small></td>`;
+    }
+
+    /* =========================================================
+       CORREÇÃO: CABEÇALHO DUPLICADO NAS TABELAS DE DESPESAS
+       Obtém somente as linhas de dados do <tbody>, ignorando o
+       <tr> existente no <thead> da tabela já renderizada.
+       ========================================================= */
+    function getExpenseDataRows(container) {
+      const tbody = container.querySelector(".table-wrap table tbody");
+      if (tbody) return [...tbody.children].filter(child => child.tagName === "TR");
+      return [...container.children].filter(child => child.tagName === "TR");
+    }
+
+    function renderCourseExpenseTable(container) {
+      const rows = getExpenseDataRows(container);
+      if (!rows.length) {
+        container.innerHTML = emptyState("Nenhuma despesa adicionada a este curso.");
+        updateCourseSummary(container);
+        return;
+      }
+      const table = document.createElement("div");
+      table.className = "table-wrap";
+      table.innerHTML = `<table>
+        <thead><tr>
+          <th>Tipo do item *</th><th>Item *</th><th>Elemento *</th><th>Unidade *</th>
+          <th>Qtd. *</th><th>Valor unitário *</th><th>Valor total</th><th>Ações</th>
+        </tr></thead><tbody></tbody></table>`;
+      rows.forEach(row => table.querySelector("tbody").appendChild(row));
+      container.replaceChildren(table);
+      updateCourseSummary(container);
+    }
+
+    function renderStageTable(kind) {
+      const container = document.getElementById(`${kind}-table`);
+      const rows = getExpenseDataRows(container);
+      if (!rows.length) {
+        container.innerHTML = emptyState("Nenhuma despesa adicionada nesta etapa.");
+      } else {
+        const wrapper = document.createElement("div");
+        wrapper.className = "table-wrap";
+        wrapper.innerHTML = `<table>
+          <thead><tr>
+            <th>Item *</th><th>Elemento *</th><th>Unidade *</th><th>Qtd. *</th>
+            <th>Valor unitário *</th><th>Valor total</th><th>Fonte *</th>
+            <th>Início *</th><th>Fim *</th><th>Tipo</th><th>Ações</th>
+          </tr></thead><tbody></tbody></table>`;
+        rows.forEach(row => wrapper.querySelector("tbody").appendChild(row));
+        container.replaceChildren(wrapper);
+      }
+      updateStageSummary(kind);
+    }
+
+    /* =========================================================
+       PREENCHIMENTO INICIAL DAS DESPESAS DE CADA NOVO CURSO
+       O preenchimento ocorre somente na criação do card, evitando
+       recriar itens que o usuário tenha removido posteriormente.
+       ========================================================= */
+    function populateDefaultCourseExpenses(card, courseIndex) {
+      const container = card.querySelector(`[data-course-expenses="${courseIndex}"]`);
+      if (!container || container.dataset.defaultsLoaded === "true") return;
+
+      const rows = defaultCourseExpenseItems.map(preset =>
+        courseExpenseRow(courseIndex, preset)
+      );
+
+      container.dataset.defaultsLoaded = "true";
+      container.replaceChildren(...rows);
+      renderCourseExpenseTable(container);
+    }
+
+    function addCourseExpense(courseIndex) {
+      const container = document.querySelector(`[data-course-expenses="${courseIndex}"]`);
+      const existingRows = getExpenseDataRows(container);
+      existingRows.push(courseExpenseRow(courseIndex));
+      container.replaceChildren(...existingRows);
+      renderCourseExpenseTable(container);
+    }
+
+    function addStageRow(kind) {
+      const container = document.getElementById(`${kind}-table`);
+      const rows = getExpenseDataRows(container);
+      rows.push(stageExpenseRow(kind));
+      container.replaceChildren(...rows);
+      renderStageTable(kind);
+    }
+
+    function updateCourseDependencies(row) {
+      const typeSelect = row.querySelector('[data-field="tipo_item_despesa"]');
+      const itemSelect = row.querySelector('[data-field="item_despesa"]');
+      const codeSelect = row.querySelector('[data-field="codigo_elemento_despesa"]');
+      const unitSelect = row.querySelector('[data-field="unidade"]');
+      const type = catalogs.tiposItemCurso.find(item => item.id === typeSelect.value);
+      itemSelect.disabled = !type;
+      itemSelect.innerHTML = type ? optionList(type.itens) : optionList([], "Selecione o tipo primeiro");
+      codeSelect.disabled = true;
+      codeSelect.innerHTML = optionList([], "Selecione o item primeiro");
+      unitSelect.disabled = true;
+      unitSelect.innerHTML = optionList([], "Selecione o item primeiro");
+    }
+
+    function updateCourseItemDependencies(row) {
+      const type = catalogs.tiposItemCurso.find(item => item.id === row.querySelector('[data-field="tipo_item_despesa"]').value);
+      const selected = type?.itens.find(item => item.id === row.querySelector('[data-field="item_despesa"]').value);
+      const codeSelect = row.querySelector('[data-field="codigo_elemento_despesa"]');
+      const unitSelect = row.querySelector('[data-field="unidade"]');
+      codeSelect.disabled = !selected;
+      codeSelect.innerHTML = selected ? optionList([selected.codigo], "Selecione") : optionList([], "Selecione o item primeiro");
+      unitSelect.disabled = !selected;
+      unitSelect.innerHTML = selected ? optionList(selected.unidades, "Selecione") : optionList([], "Selecione o item primeiro");
+      if (selected) codeSelect.value = selected.codigo;
+    }
+
+    function updateStageDependencies(row) {
+      const kind = row.dataset.stageKind;
+      const item = catalogs[kind].find(entry => entry.id === row.querySelector('[data-field="item_despesa"]').value);
+      const codeSelect = row.querySelector('[data-field="codigo_elemento_despesa"]');
+      const unitSelect = row.querySelector('[data-field="unidade"]');
+      const typeInput = row.querySelector('[data-field="tipo_despesa"]');
+      codeSelect.disabled = !item;
+      codeSelect.innerHTML = item ? optionList([item.codigo]) : optionList([], "Selecione o item primeiro");
+      unitSelect.disabled = !item;
+      unitSelect.innerHTML = item ? optionList(item.unidades) : optionList([], "Selecione o item primeiro");
+      typeInput.value = item?.tipo || "";
+      if (item) codeSelect.value = item.codigo;
+    }
+
+    function recalculateRow(row) {
+      const quantity = Number(row.querySelector('[data-field="quantidade_itens"]')?.value || 0);
+      const unitInput = row.querySelector('[data-field="valor_unitario"]');
+      const totalInput = row.querySelector('[data-field="valor_total"]');
+      if (!unitInput || !totalInput) return;
+      const total = quantity * currencyValue(unitInput);
+      totalInput.dataset.value = String(total);
+      totalInput.value = formatBRL(total);
+      const kind = row.dataset.stageKind;
+      if (kind) {
+        updateStageSummary(kind);
+      } else {
+        const courseContainer = row.closest("[data-course-expenses]");
+        if (courseContainer) updateCourseSummary(courseContainer);
+      }
+    }
+
+    /* =========================================================
+       RESUMO FINANCEIRO DAS DESPESAS DE CADA CURSO
+       - Total de itens: quantidade de linhas de despesa.
+       - Valor total: soma dos valores totais dessas linhas.
+       - Valor Kit Participante por Aluno: sempre exibido.
+       - Valores por aluno de EPI, Insumos Gerais e Kit Trabalho:
+         exibidos somente quando existir ao menos uma linha do tipo.
+       ========================================================= */
+    function updateCourseSummary(container) {
+      const card = container.closest(".course-card");
+      if (!card) return;
+
+      const rows = [...container.querySelectorAll("tbody tr")];
+      const total = rows.reduce(
+        (sum, row) => sum + Number(row.querySelector('[data-field="valor_total"]')?.dataset.value || 0),
+        0
+      );
+
+      const totalsByType = rows.reduce((totals, row) => {
+        const expenseType = row.querySelector('[data-field="tipo_item_despesa"]')?.value;
+        if (!expenseType) return totals;
+
+        const rowTotal = Number(
+          row.querySelector('[data-field="valor_total"]')?.dataset.value || 0
+        );
+        totals[expenseType] = (totals[expenseType] || 0) + rowTotal;
+        return totals;
+      }, {});
+
+      const participantInput = card.querySelector('[data-field="quantidade_participantes"]');
+      const participantCount = Number(participantInput?.value || 0);
+      const valuePerStudent = typeId => participantCount > 0
+        ? (totalsByType[typeId] || 0) / participantCount
+        : 0;
+
+      const countOutput = card.querySelector("[data-course-count]");
+      const totalOutput = card.querySelector("[data-course-total]");
+      const kitPerStudentOutput = card.querySelector("[data-course-kit-per-student]");
+
+      if (countOutput) countOutput.textContent = String(rows.length);
+      if (totalOutput) totalOutput.textContent = formatBRL(total);
+      if (kitPerStudentOutput) {
+        kitPerStudentOutput.textContent = formatBRL(valuePerStudent("kit_participante"));
+      }
+
+      const conditionalCards = [
+        {
+          typeId: "epi",
+          cardSelector: '[data-course-type-card="epi"]',
+          outputSelector: "[data-course-epi-per-student]"
+        },
+        {
+          typeId: "insumos_gerais",
+          cardSelector: '[data-course-type-card="insumos_gerais"]',
+          outputSelector: "[data-course-insumos-per-student]"
+        },
+        {
+          typeId: "kit_trabalho",
+          cardSelector: '[data-course-type-card="kit_trabalho"]',
+          outputSelector: "[data-course-kit-trabalho-per-student]"
+        }
+      ];
+
+      conditionalCards.forEach(({ typeId, cardSelector, outputSelector }) => {
+        const typeCard = card.querySelector(cardSelector);
+        const output = card.querySelector(outputSelector);
+        const hasType = rows.some(
+          row => row.querySelector('[data-field="tipo_item_despesa"]')?.value === typeId
+        );
+
+        if (typeCard) typeCard.hidden = !hasType;
+        if (output) output.textContent = formatBRL(valuePerStudent(typeId));
+      });
+    }
+
+    function updateStageSummary(kind) {
+      const container = document.getElementById(`${kind}-table`);
+      const rows = [...container.querySelectorAll("tbody tr")];
+      const total = rows.reduce((sum, row) => sum + Number(row.querySelector('[data-field="valor_total"]')?.dataset.value || 0), 0);
+      document.getElementById(`${kind}-count`).textContent = String(rows.length);
+      document.getElementById(`${kind}-total`).textContent = formatBRL(total);
+    }
+
+    function clearError(control) {
+      control.classList.remove("is-invalid");
+      const message = document.querySelector(`[data-error-for="${CSS.escape(control.id)}"]`);
+      if (message) message.textContent = "";
+    }
+
+    function setError(control, message) {
+      control.classList.add("is-invalid");
+      const target = document.querySelector(`[data-error-for="${CSS.escape(control.id)}"]`);
+      if (target) target.textContent = message;
+    }
+
+    function validateControl(control, options = {}) {
+      clearError(control);
+      if (control.disabled || (!options.ignoreVisibility && control.closest("[hidden]"))) return true;
+
+      const value = control.type === "checkbox" ? control.checked : control.value.trim();
+      if (control.dataset.required === "true" && (value === "" || value === false)) {
+        setError(control, "Campo obrigatório.");
+        return false;
+      }
+      if (value === "") return true;
+
+      if (control.classList.contains("currency-input")) {
+        if (currencyValue(control) < 0) {
+          setError(control, "Informe um valor igual ou superior a zero.");
+          return false;
+        }
+      }
+
+      if (control.type === "number") {
+        const number = Number(control.value);
+        if (!Number.isInteger(number)) {
+          setError(control, "Informe somente números inteiros.");
+          return false;
+        }
+        if (control.min !== "" && number < Number(control.min)) {
+          setError(control, `O valor mínimo é ${control.min}.`);
+          return false;
+        }
+        if (control.max !== "" && number > Number(control.max)) {
+          setError(control, `O valor máximo é ${control.max}.`);
+          return false;
+        }
+      }
+
+      if (control.classList.contains("month-year-input")) {
+        if (monthYearToComparable(control.value) == null) {
+          setError(control, "Use o formato MM/AAAA.");
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    function validatePeriods(section) {
+      let valid = true;
+      section.querySelectorAll("tbody tr").forEach(row => {
+        const start = row.querySelector('[data-field="inicio_etapa"]');
+        const end = row.querySelector('[data-field="fim_etapa"]');
+        if (!start || !end || !start.value || !end.value) return;
+        const startValue = monthYearToComparable(start.value);
+        const endValue = monthYearToComparable(end.value);
+        if (startValue != null && endValue != null && endValue < startValue) {
+          setError(end, "O fim não pode ser anterior ao início.");
+          valid = false;
+        }
+      });
+      return valid;
+    }
+
+    function validateStep(stepId, focusFirst = true) {
+      const section = document.getElementById(stepId);
+      const navButton = document.querySelector(`[data-step-target="${stepId}"]`);
+      if (!section || !navButton || navButton.hidden) return true;
+      const controls = [...section.querySelectorAll("input, select")].filter(control => control.type !== "button");
+      let valid = true;
+      controls.forEach(control => { if (!validateControl(control, { ignoreVisibility: true })) valid = false; });
+      if (!validatePeriods(section)) valid = false;
+      if (!valid && focusFirst) section.querySelector(".is-invalid")?.focus();
+      return valid;
+    }
+
+    function validateAll() {
+      const invalidStep = visibleSteps().find(stepId => !validateStep(stepId, false));
+      if (invalidStep) {
+        showStep(invalidStep);
+        document.getElementById(invalidStep).querySelector(".is-invalid")?.focus();
+        setStatus("Revise os campos destacados antes de finalizar.", "error");
+        return false;
+      }
+      return true;
+    }
+
+    function selectedText(select) {
+      return select?.selectedOptions?.[0]?.textContent || "";
+    }
+
+    function collectCourseExpenses(card) {
+      return [...card.querySelectorAll("[data-course-expenses] tbody tr")].map(row => ({
+        tipo_item_despesa: selectedText(row.querySelector('[data-field="tipo_item_despesa"]')),
+        item_despesa: selectedText(row.querySelector('[data-field="item_despesa"]')),
+        codigo_elemento_despesa: row.querySelector('[data-field="codigo_elemento_despesa"]').value,
+        unidade: row.querySelector('[data-field="unidade"]').value,
+        quantidade_itens: Number(row.querySelector('[data-field="quantidade_itens"]').value),
+        valor_unitario: currencyValue(row.querySelector('[data-field="valor_unitario"]')),
+        valor_total: Number(row.querySelector('[data-field="valor_total"]').dataset.value || 0)
+      }));
+    }
+
+    function collectCourses() {
+      return [...document.querySelectorAll(".course-card")].map(card => {
+        const value = field => card.querySelector(`[data-field="${field}"]`).value;
+        return {
+          dados_gerais: {
+            nome_curso: value("nome_curso").trim(),
+            carga_horaria: Number(value("carga_horaria")),
+            quantidade_participantes: Number(value("quantidade_participantes")),
+            carga_horaria_diaria: Number(value("carga_horaria_diaria")),
+            quantidade_dias_semanais: Number(value("quantidade_dias_semanais")),
+            quantidade_turmas: Number(value("quantidade_turmas")),
+            participantes_por_turma: Number(value("participantes_por_turma"))
+          },
+          despesas: collectCourseExpenses(card)
+        };
+      });
+    }
+
+    function collectStage(kind) {
+      return [...document.querySelectorAll(`#${kind}-table tbody tr`)].map(row => ({
+        item_despesa: selectedText(row.querySelector('[data-field="item_despesa"]')),
+        codigo_elemento_despesa: row.querySelector('[data-field="codigo_elemento_despesa"]').value,
+        unidade: row.querySelector('[data-field="unidade"]').value,
+        quantidade_itens: Number(row.querySelector('[data-field="quantidade_itens"]').value),
+        valor_unitario: currencyValue(row.querySelector('[data-field="valor_unitario"]')),
+        valor_total: Number(row.querySelector('[data-field="valor_total"]').dataset.value || 0),
+        fonte_recurso: row.querySelector('[data-field="fonte_recurso"]').value,
+        inicio_etapa: row.querySelector('[data-field="inicio_etapa"]').value,
+        fim_etapa: row.querySelector('[data-field="fim_etapa"]').value,
+        tipo_despesa: row.querySelector('[data-field="tipo_despesa"]').value
+      }));
+    }
+
+    function buildJson() {
+      const output = {
+        custo_total_projeto: currencyValue(document.getElementById("custo_total_projeto")),
+        quantidade_cursos: Number(quantityCourses.value),
+        possui_evento_certificacao: eventCheckbox.checked,
+        cursos: collectCourses(),
+        despesas_etapa_1_1: collectStage("stage11"),
+        despesas_etapa_1_2: collectStage("stage12")
+      };
+      if (eventCheckbox.checked) output.despesas_evento_final = collectStage("event");
+      return output;
+    }
+
+    function downloadJson() {
+      if (!state.json) return;
+      const blob = new Blob([JSON.stringify(state.json, null, 2)], { type: "application/json;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = "projeto_qualificacao.json";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      URL.revokeObjectURL(url);
+    }
+
+    function finishForm() {
+      if (!validateAll()) return;
+      state.json = buildJson();
+      document.getElementById("json-preview").textContent = JSON.stringify(state.json, null, 2);
+      setStatus("Formulário validado. O JSON foi gerado com sucesso.", "success");
+      const dialog = document.getElementById("json-dialog");
+      if (typeof dialog.showModal === "function") dialog.showModal();
+      else downloadJson();
+    }
+
+    function handleEventSection() {
+      const section = document.getElementById("despesas_evento_final");
+      const navButton = document.querySelector('[data-step-target="despesas_evento_final"]');
+      if (eventCheckbox.checked) {
+        navButton.hidden = false;
+      } else {
+        document.getElementById("event-table").innerHTML = emptyState("Nenhuma despesa adicionada nesta etapa.");
+        updateStageSummary("event");
+        navButton.hidden = true;
+        state.completedSteps.delete("despesas_evento_final");
+        if (state.currentStep === "despesas_evento_final") showStep("despesas_etapa_1_2");
+      }
+      // Restore the section's visibility only when it is the active step.
+      section.hidden = state.currentStep !== "despesas_evento_final";
+      updateNavigation();
+    }
+
+    form.addEventListener("input", event => {
+      const control = event.target;
+      if (control.classList.contains("currency-input")) setCurrencyFromDigits(control);
+      if (control.classList.contains("month-year-input")) maskMonthYear(control);
+      if (control.matches("input, select")) validateControl(control);
+
+      if (control.dataset.field === "quantidade_participantes") {
+        const courseCard = control.closest(".course-card");
+        const courseContainer = courseCard?.querySelector("[data-course-expenses]");
+        if (courseContainer) updateCourseSummary(courseContainer);
+      }
+
+      const row = control.closest("tr");
+      if (row && ["quantidade_itens", "valor_unitario"].includes(control.dataset.field)) recalculateRow(row);
+    });
+
+    form.addEventListener("change", event => {
+      const control = event.target;
+      if (control === quantityCourses) syncCourses();
+      if (control === eventCheckbox) handleEventSection();
+      const row = control.closest("tr");
+      if (!row) return;
+      if (control.dataset.field === "tipo_item_despesa") {
+        updateCourseDependencies(row);
+        const courseContainer = row.closest("[data-course-expenses]");
+        if (courseContainer) updateCourseSummary(courseContainer);
+      }
+      if (control.dataset.field === "item_despesa" && row.querySelector('[data-field="tipo_item_despesa"]')) updateCourseItemDependencies(row);
+      if (control.dataset.field === "item_despesa" && row.dataset.stageKind) updateStageDependencies(row);
+    });
+
+    form.addEventListener("click", event => {
+      const addCourse = event.target.closest("[data-add-course-expense]");
+      if (addCourse) return addCourseExpense(Number(addCourse.dataset.addCourseExpense));
+
+      const addStage = event.target.closest("[data-add-stage-row]");
+      if (addStage) return addStageRow(addStage.dataset.addStageRow);
+
+      const remove = event.target.closest("[data-remove-row]");
+      if (remove) {
+        const row = remove.closest("tr");
+        const courseContainer = row.closest("[data-course-expenses]");
+        const kind = row.dataset.stageKind;
+        row.remove();
+        if (courseContainer) renderCourseExpenseTable(courseContainer);
+        if (kind) renderStageTable(kind);
+        return;
+      }
+
+      if (event.target.closest("[data-next]")) {
+        if (!validateStep(state.currentStep)) {
+          setStatus("Revise os campos destacados para avançar.", "error");
+          return;
+        }
+        state.completedSteps.add(state.currentStep);
+        const steps = visibleSteps();
+        const next = steps[steps.indexOf(state.currentStep) + 1];
+        if (next) showStep(next);
+        return;
+      }
+
+      if (event.target.closest("[data-prev]")) {
+        const steps = visibleSteps();
+        const previous = steps[steps.indexOf(state.currentStep) - 1];
+        if (previous) showStep(previous);
+        return;
+      }
+
+      if (event.target.closest("[data-finish]")) finishForm();
+    });
+
+    document.querySelectorAll("[data-step-target]").forEach(button => {
+      button.addEventListener("click", () => {
+        const target = button.dataset.stepTarget;
+        const steps = visibleSteps();
+        const currentIndex = steps.indexOf(state.currentStep);
+        const targetIndex = steps.indexOf(target);
+        if (targetIndex > currentIndex && !validateStep(state.currentStep)) {
+          setStatus("Revise os campos destacados antes de mudar de etapa.", "error");
+          return;
+        }
+        if (targetIndex > currentIndex) state.completedSteps.add(state.currentStep);
+        showStep(target);
+      });
+    });
+
+    document.getElementById("close-dialog").addEventListener("click", () => document.getElementById("json-dialog").close());
+    document.getElementById("download-json").addEventListener("click", downloadJson);
+
+    syncCourses();
+    ["stage11", "stage12", "event"].forEach(renderStageTable);
+    handleEventSection();
+    showStep("dados_gerais_projeto", { scroll: false });
+  </script>
+</body>
+</html>

@@ -28,11 +28,23 @@ import IdentificacaoRepresentanteLegal from "./secao-1-identificacao/identificac
 import IdentificacaoResponsavelTecnico from "./secao-1-identificacao/IdentificacaoResponsavelTecnico/IdentificacaoResponsavelTecnico"
 import { InformacoesDoProjeto } from "./informacoesDoProjeto/informacoesDoProjeto"
 import { AndamentoDoProjeto } from "./andamentoDoProjeto/andamentoDoProjeto"
+import {
+  DadosGeraisDoProjeto,
+  DetalhamentoCursos,
+  DespesasEtapa11,
+  DespesasEtapa12,
+  DespesasEventoFinal,
+} from "@/features/projetos/components/generalProjectData"
 
 export type ProjectFormSectionProps = { projectId?: string; readOnlyView?: boolean }
 
 const SECTIONS_WITHOUT_VISAO_GERAL: Record<string, ComponentType<ProjectFormSectionProps>> = {
   "informacoes-projeto": InformacoesDoProjeto,
+  "dados-gerais-projeto": DadosGeraisDoProjeto,
+  "detalhamento-cursos": DetalhamentoCursos,
+  "despesas-etapa-1-1": DespesasEtapa11,
+  "despesas-etapa-1-2": DespesasEtapa12,
+  "despesas-evento-final": DespesasEventoFinal,
   "identificacao-projeto": IdentificacaoProjeto,
   metas: Metas,
   objetivos: Objetivos,

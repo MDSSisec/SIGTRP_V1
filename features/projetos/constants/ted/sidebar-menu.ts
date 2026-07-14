@@ -1,10 +1,12 @@
 export type TedSidebarMenuItem = {
   title: string
   slug: string
+  disabled?: boolean
 }
 
 export type TedSidebarMenuGroup = {
   title: string
+  disabled?: boolean
   items: TedSidebarMenuItem[]
 }
 
@@ -18,7 +20,30 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
     ],
   },
   {
+    title: "Dados Gerais do Projeto",
+    items: [
+      { title: "Dados gerais do projeto", slug: "dados-gerais-projeto" },
+      { title: "Detalhamento dos cursos", slug: "detalhamento-cursos" },
+      {
+        title: "Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1",
+        slug: "despesas-etapa-1-1",
+        disabled: true,
+      },
+      {
+        title: "Estruturação e Equipamento dos Espaços — Etapa 1.2",
+        slug: "despesas-etapa-1-2",
+        disabled: true,
+      },
+      {
+        title: "Celebração, Certificação e Encerramento — Etapa Final",
+        slug: "despesas-evento-final",
+        disabled: true,
+      },
+    ],
+  },
+  {
     title: "Observações",
+    disabled: true,
     items: [
       { title: "Observações", slug: "observacoes" },
       { title: "Andamento do Projeto", slug: "andamento-projeto" },
@@ -26,6 +51,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "I - Identificação",
+    disabled: true,
     items: [
       { title: "1. Identificação do Projeto", slug: "identificacao-projeto" },
       { title: "2. Identificação do(a) proponente", slug: "identificacao-proponente" },
@@ -38,6 +64,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "II - Descrição do Projeto",
+    disabled: true,
     items: [
       {
         title: "5. Justificativa e Motivação para celebração do instrumento",
@@ -53,6 +80,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "III - Participantes e Abrangência do Projeto",
+    disabled: true,
     items: [
       {
         title: "12. Histórico e situação socioeconômica do território e da população a ser beneficiada",
@@ -76,6 +104,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "IV - Caracterização do(a) proponente",
+    disabled: true,
     items: [
       {
         title: "18. Outras informações julgadas apropriadas sobre o(a) proponente",
@@ -85,6 +114,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "V - Dados Financeiros",
+    disabled: true,
     items: [
       { title: "19. Valor total do projeto", slug: "valor-total" },
       { title: "20. Cronograma de desembolso", slug: "cronograma-desembolso" },
@@ -100,6 +130,7 @@ export const TED_SIDEBAR_MENU_GROUPS: TedSidebarMenuGroup[] = [
   },
   {
     title: "VI - Monitoramento e Avaliação",
+    disabled: true,
     items: [
       {
         title: "23. Procedimentos de monitoramento e avaliação da execução e resultados",

@@ -408,23 +408,18 @@ export async function handleProjetosRequest(
       const body = (await request.json()) as {
         tipoProjeto?: string
         nome?: string
-        valorTotal?: number
         responsavelInternoId?: string
         responsavelExternoId?: string
       }
 
       const tipoProjeto = normalizeProjetoTipo(body.tipoProjeto ?? "")
       const nome = body.nome?.trim() ?? ""
-      const valorTotal = body.valorTotal
       const responsavelInternoId = body.responsavelInternoId?.trim() ?? ""
       const responsavelExternoId = body.responsavelExternoId?.trim() ?? ""
 
       if (
         !tipoProjeto ||
         !nome ||
-        typeof valorTotal !== "number" ||
-        !Number.isFinite(valorTotal) ||
-        valorTotal < 0 ||
         !responsavelInternoId ||
         !responsavelExternoId
       ) {
@@ -437,7 +432,6 @@ export async function handleProjetosRequest(
       const projeto = await createProjeto({
         tipoProjeto,
         nome,
-        valorTotal,
         responsavelInternoId,
         responsavelExternoId,
         criadoPorId: sessionUser.id,

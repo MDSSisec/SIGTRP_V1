@@ -55,6 +55,11 @@ export function toTedSecaoReview(row: TedSecaoReviewRow): TedSecaoReview {
 
 /** Mapeia chave de SESSOES_VISAO_GERAL_TITLE → slug da seção. */
 export const TITLE_KEY_TO_SECAO_SLUG: Record<string, string> = {
+  TITLE_SESSAO_DADOS_GERAIS_PROJETO: "dados-gerais-projeto",
+  TITLE_SESSAO_DETALHAMENTO_CURSOS: "detalhamento-cursos",
+  TITLE_SESSAO_DESPESAS_ETAPA_1_1: "despesas-etapa-1-1",
+  TITLE_SESSAO_DESPESAS_ETAPA_1_2: "despesas-etapa-1-2",
+  TITLE_SESSAO_DESPESAS_EVENTO_FINAL: "despesas-evento-final",
   TITLE_SESSAO_IDENTIFICACAO_PROJETO: "identificacao-projeto",
   TITLE_SESSAO_IDENTIFICACAO_PROPOSTA: "identificacao-proponente",
   TITLE_SESSAO_IDENTIFICACAO_REPRESENTANTE_LEGAL: "identificacao-representante-legal",

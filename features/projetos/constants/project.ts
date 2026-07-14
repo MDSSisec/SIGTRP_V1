@@ -8,22 +8,18 @@ export const PROJETOS_FORM = {
   fields: {
     tipoProjeto: "Tipo do projeto",
     nome: "Nome do projeto",
-    valorTotal: "Valor total do projeto",
     responsavelInterno: "Responsável interno",
     responsavelExterno: "Responsável externo",
   },
   placeholders: {
     tipoProjeto: "Selecione o tipo do projeto",
     nome: "Ex.: Modernização da infraestrutura",
-    valorTotal: "R$ 0,00",
     responsavelInterno: "Selecione o responsável interno",
     responsavelExterno: "Selecione o responsável externo",
   },
   validation: {
     tipoProjeto: "Selecione o tipo do projeto.",
     nome: "Informe o nome do projeto.",
-    valorTotal: "Informe o valor total do projeto.",
-    valorTotalInvalid: "Informe um valor numérico válido.",
     responsavelInterno: "Selecione o responsável interno.",
     responsavelExterno: "Selecione o responsável externo.",
   },

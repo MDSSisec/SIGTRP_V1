@@ -12,10 +12,6 @@ import {
   PROJETO_TIPOS,
 } from "../../constants/project-types"
 import type { NewProjetoFormValues, ResponsavelOption } from "../../types"
-import {
-  formatCurrencyInput,
-  parseCurrencyInput,
-} from "../../utils/currency"
 import styles from "./popUpNewProject.module.css"
 
 export type PopUpNewProjectProps = {
@@ -30,7 +26,6 @@ export type PopUpNewProjectProps = {
 type FormState = {
   tipoProjeto: string
   nome: string
-  valorTotal: string
   responsavelInternoId: string
   responsavelExternoId: string
 }
@@ -38,7 +33,6 @@ type FormState = {
 const INITIAL_FORM: FormState = {
   tipoProjeto: "",
   nome: "",
-  valorTotal: "",
   responsavelInternoId: "",
   responsavelExternoId: "",
 }
@@ -93,18 +87,6 @@ export function PopUpNewProject({
       return
     }
 
-    const valorTotal = parseCurrencyInput(formValues.valorTotal)
-
-    if (!formValues.valorTotal.trim()) {
-      setSubmitError(PROJETOS_FORM.validation.valorTotal)
-      return
-    }
-
-    if (valorTotal === null || valorTotal < 0) {
-      setSubmitError(PROJETOS_FORM.validation.valorTotalInvalid)
-      return
-    }
-
     if (!formValues.responsavelInternoId) {
       setSubmitError(PROJETOS_FORM.validation.responsavelInterno)
       return
@@ -119,7 +101,6 @@ export function PopUpNewProject({
       await onSubmit({
         tipoProjeto,
         nome: formValues.nome.trim(),
-        valorTotal,
         responsavelInternoId: formValues.responsavelInternoId,
         responsavelExternoId: formValues.responsavelExternoId,
       })
@@ -192,54 +173,30 @@ export function PopUpNewProject({
               />
             </div>
 
-            <div className={styles.gridTwoColumns}>
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="projeto-tipo">
-                  {PROJETOS_FORM.fields.tipoProjeto}
-                </label>
-                <select
-                  id="projeto-tipo"
-                  className={styles.select}
-                  value={formValues.tipoProjeto}
-                  onChange={(event) =>
-                    handleChange("tipoProjeto", event.target.value)
-                  }
-                  disabled={isReadOnly}
-                  required
-                >
-                  <option value="">
-                    {PROJETOS_FORM.placeholders.tipoProjeto}
-                  </option>
-                  <option value={PROJETO_TIPOS.TED}>
-                    {formatProjetoTipoLabel(PROJETO_TIPOS.TED)}
-                  </option>
-                  <option value={PROJETO_TIPOS.EMENDA}>
-                    {formatProjetoTipoLabel(PROJETO_TIPOS.EMENDA)}
-                  </option>
-                </select>
-              </div>
-
-              <div className={styles.field}>
-                <label className={styles.label} htmlFor="projeto-valor-total">
-                  {PROJETOS_FORM.fields.valorTotal}
-                </label>
-                <Input
-                  id="projeto-valor-total"
-                  type="text"
-                  inputMode="numeric"
-                  autoComplete="off"
-                  value={formValues.valorTotal}
-                  onChange={(event) =>
-                    handleChange(
-                      "valorTotal",
-                      formatCurrencyInput(event.target.value),
-                    )
-                  }
-                  placeholder={PROJETOS_FORM.placeholders.valorTotal}
-                  disabled={isReadOnly}
-                  required
-                />
-              </div>
+            <div className={styles.field}>
+              <label className={styles.label} htmlFor="projeto-tipo">
+                {PROJETOS_FORM.fields.tipoProjeto}
+              </label>
+              <select
+                id="projeto-tipo"
+                className={styles.select}
+                value={formValues.tipoProjeto}
+                onChange={(event) =>
+                  handleChange("tipoProjeto", event.target.value)
+                }
+                disabled={isReadOnly}
+                required
+              >
+                <option value="">
+                  {PROJETOS_FORM.placeholders.tipoProjeto}
+                </option>
+                <option value={PROJETO_TIPOS.TED}>
+                  {formatProjetoTipoLabel(PROJETO_TIPOS.TED)}
+                </option>
+                <option value={PROJETO_TIPOS.EMENDA}>
+                  {formatProjetoTipoLabel(PROJETO_TIPOS.EMENDA)}
+                </option>
+              </select>
             </div>
 
             <div className={styles.gridTwoColumns}>

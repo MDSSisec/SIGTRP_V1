@@ -45,7 +45,7 @@ import infoStyles from "./informacoesDoProjeto.module.css"
 const VIEW_MODE_FIELD_CLASS =
   "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
 
-const ITENS_POR_COLUNA = 12
+const ITENS_POR_COLUNA = 15
 
 interface DadosInformacoesProjeto {
   etapaId: string
