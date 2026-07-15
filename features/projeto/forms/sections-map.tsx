@@ -6,6 +6,8 @@ import IdentificacaoProjeto from "./01-identificacao/identificacaoDoProjeto/iden
 import IdentificacaoProponente from "./01-identificacao/identificacaoDoProponente/identificacao-do-proponente"
 import IdentificacaoRepresentanteLegal from "./01-identificacao/identificacaoDoRepresentanteLegal/identificacao-do-representante-legal"
 import IdentificacaoResponsavelTecnico from "./01-identificacao/identificacaoDoResponsavelTecnico/identificacao-do-responsavel-tecnico"
+import { FormularioJustificativa } from "./02-descricao/descricaoDaJustificativaEMotivacao"
+import { FormularioObjetivos } from "./02-descricao/descricaoDosObjetivos"
 import { DadosGeraisDoProjeto } from "./dados-gerais-do-projeto/dados-gerais"
 import { DetalhamentoCursos } from "./dados-gerais-do-projeto/detalhamento-dos-cursos"
 import type { ProjectFormSectionProps } from "./types"
@@ -28,6 +30,8 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "identificacao-proponente": IdentificacaoProponente,
   "identificacao-representante-legal": IdentificacaoRepresentanteLegal,
   "identificacao-responsavel-tecnico": IdentificacaoResponsavelTecnico,
+  justificativa: FormularioJustificativa,
+  objetivos: FormularioObjetivos,
 }
 
 export function getFormSection(

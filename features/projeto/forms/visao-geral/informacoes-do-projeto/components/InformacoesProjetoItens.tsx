@@ -2,7 +2,7 @@
 
 import { AlertTriangle, Lock } from "lucide-react"
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
-import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projeto/constants/ted/secao-review"
+import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projeto/constants/secao-review"
 import type { TedSecaoReview } from "@/features/projeto/types/ted-secao-review"
 import { cn } from "@/lib/utils"
 

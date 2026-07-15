@@ -5,10 +5,10 @@ import { AlertTriangle, Lock, LockOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
-import { TED_IDENTIFICACAO_SECAO_SLUGS } from "@/features/projeto/constants/ted/secao-review"
+import { TED_SECOES_COM_REVIEW } from "@/features/projeto/constants/secao-review"
 import { cn } from "@/lib/utils"
 
-const SECOES_COM_REVIEW = new Set<string>(TED_IDENTIFICACAO_SECAO_SLUGS)
+const SECOES_COM_REVIEW = new Set<string>(TED_SECOES_COM_REVIEW)
 
 /** Botões de review no header, ao lado de "Voltar". */
 export function SecaoReviewHeaderActions() {

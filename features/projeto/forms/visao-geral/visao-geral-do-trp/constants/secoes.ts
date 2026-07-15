@@ -1,7 +1,7 @@
 import {
   SESSOES_VISAO_GERAL_SLUG,
   SESSOES_VISAO_GERAL_TITLE,
-} from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/visao-geral"
 
 /** Seções do TRP exibidas na visão geral (ordem do documento). */
 export const SECOES_VISAO_GERAL: { slug: string; title: string }[] = [

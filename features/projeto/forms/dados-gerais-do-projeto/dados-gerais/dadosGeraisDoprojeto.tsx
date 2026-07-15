@@ -1,7 +1,7 @@
 "use client"
 
 import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
-import { SESSOES_VISAO_GERAL_SUBTITLE, SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+import { SESSOES_VISAO_GERAL_SUBTITLE, SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 
 import type { ProjectFormSectionProps } from "../../types"
 import { DadosGeraisActions, DadosGeraisFields } from "./components"

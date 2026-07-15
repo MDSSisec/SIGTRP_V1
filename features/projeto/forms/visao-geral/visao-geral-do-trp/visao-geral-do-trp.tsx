@@ -2,7 +2,7 @@
 
 import StatusStepper from "@/components/StatusStepper"
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
-import { TITULO_DOCUMENTO_TRP } from "@/features/projeto/constants/ted/visao-geral"
+import { TITULO_DOCUMENTO_TRP } from "@/features/projeto/constants/visao-geral"
 
 import {
   VisaoGeralHeader,

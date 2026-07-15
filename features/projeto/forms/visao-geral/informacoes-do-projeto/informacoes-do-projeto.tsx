@@ -1,6 +1,6 @@
 "use client"
 
-import { DESCRICAO_INFORMACOES_PROJETO, TITULO_INFORMACOES_PROJETO } from "@/features/projeto/constants/ted/visao-geral"
+import { DESCRICAO_INFORMACOES_PROJETO, TITULO_INFORMACOES_PROJETO } from "@/features/projeto/constants/visao-geral"
 import { InformacoesProjetoActions, InformacoesProjetoFields, InformacoesProjetoItens } from "./components"
 import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { useInformacoesProjeto } from "./hooks/useInformacoesProjeto"

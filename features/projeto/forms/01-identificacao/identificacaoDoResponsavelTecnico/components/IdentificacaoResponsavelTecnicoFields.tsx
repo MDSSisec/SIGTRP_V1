@@ -3,12 +3,12 @@
 import type { ChangeEvent } from "react"
 
 import { Input } from "@/components/ui/input"
-import { COMUNS_LABELS } from "@/features/projeto/constants/ted/communs"
+import { COMUNS_LABELS } from "@/features/projeto/constants/communs"
 import {
   IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS,
   IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS,
-} from "@/features/projeto/constants/ted/identificacao-responsavel-tecnico"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/identificacao-responsavel-tecnico"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 
 import type { DadosIdentificacaoResponsavelTecnico } from "../types/responsavel-tecnico-form"

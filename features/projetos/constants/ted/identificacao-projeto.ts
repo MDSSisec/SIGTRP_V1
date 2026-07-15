@@ -2,4 +2,4 @@ export {
   IDENTIFICACAO_PROJETO_DESCRIPTIONS,
   IDENTIFICACAO_PROJETO_LABELS,
   IDENTIFICACAO_PROJETO_PLACEHOLDERS,
-} from "@/features/projeto/constants/ted/identificacao-projeto"
+} from "@/features/projeto/constants/identificacao-projeto"

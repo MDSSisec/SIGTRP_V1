@@ -7,7 +7,7 @@ import type { DadosGeraisProjetoState } from "@/features/projeto/types/general-p
 import {
   getDadosGeraisStepIndex,
   getDadosGeraisSteps,
-} from "@/features/projeto/constants/ted/dados-gerais-steps"
+} from "@/features/projeto/constants/dados-gerais-steps"
 import { useProjectData } from "@/features/projeto/contexts/project-data-context"
 
 import styles from "./dadosGeraisStatusStepper.module.css"

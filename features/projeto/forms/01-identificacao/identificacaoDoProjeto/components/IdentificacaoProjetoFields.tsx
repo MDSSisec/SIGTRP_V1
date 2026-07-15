@@ -8,8 +8,8 @@ import {
   IDENTIFICACAO_PROJETO_DESCRIPTIONS,
   IDENTIFICACAO_PROJETO_LABELS,
   IDENTIFICACAO_PROJETO_PLACEHOLDERS,
-} from "@/features/projeto/constants/ted/identificacao-projeto"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/identificacao-projeto"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 import { cn } from "@/lib/utils"
 
 import { VIEW_MODE_FIELD_CLASS } from "../constants/form"

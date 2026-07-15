@@ -5,4 +5,4 @@ export {
   TIPOS_ITEM_CURSO,
   type CatalogoItemCurso,
   type CatalogoTipoItemCurso,
-} from "@/features/projeto/constants/ted/catalogo-despesas-curso"
+} from "@/features/projeto/constants/catalogo-despesas-curso"

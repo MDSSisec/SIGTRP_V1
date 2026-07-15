@@ -3,4 +3,4 @@ export {
   getDadosGeraisStepIndex,
   getDadosGeraisSteps,
   type DadosGeraisStep,
-} from "@/features/projeto/constants/ted/dados-gerais-steps"
+} from "@/features/projeto/constants/dados-gerais-steps"

@@ -3,11 +3,11 @@
 import { FileDown } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { COMUNS_TITLES } from "@/features/projeto/constants/ted/communs"
+import { COMUNS_TITLES } from "@/features/projeto/constants/communs"
 import {
   DESCRICAO_VISAO_GERAL,
   TITULO_VISAO_GERAL,
-} from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/visao-geral"
 
 import styles from "../visao-geral-do-trp.module.css"
 

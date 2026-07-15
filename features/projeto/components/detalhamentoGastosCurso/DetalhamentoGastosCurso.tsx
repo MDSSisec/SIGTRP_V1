@@ -10,7 +10,7 @@ import {
   findItemCurso,
   findTipoItemCurso,
   TIPOS_ITEM_CURSO,
-} from "@/features/projeto/constants/ted/catalogo-despesas-curso"
+} from "@/features/projeto/constants/catalogo-despesas-curso"
 import {
   formatCurrencyInput,
   parseCurrencyInput,

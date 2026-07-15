@@ -4,7 +4,7 @@ import { formLayoutStyles } from "@/features/projeto/components/formShared/form-
 import {
   SESSOES_VISAO_GERAL_SUBTITLE,
   SESSOES_VISAO_GERAL_TITLE,
-} from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/visao-geral"
 
 import type { ProjectFormSectionProps } from "../../types"
 import {

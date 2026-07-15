@@ -10,6 +10,18 @@ export const TED_IDENTIFICACAO_SECAO_SLUGS = [
 export type TedIdentificacaoSecaoSlug =
   (typeof TED_IDENTIFICACAO_SECAO_SLUGS)[number]
 
+/**
+ * Seções do TED com fluxo de bloquear / marcar atenção.
+ * Inclui Identificação + seções de Descrição já habilitadas.
+ */
+export const TED_SECOES_COM_REVIEW = [
+  ...TED_IDENTIFICACAO_SECAO_SLUGS,
+  SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_JUSTIFICATIVA_MOTIVACAO,
+  SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_OBJETIVOS,
+] as const
+
+export type TedSecaoComReviewSlug = (typeof TED_SECOES_COM_REVIEW)[number]
+
 /** Mapeia chave de SESSOES_VISAO_GERAL_TITLE → slug da seção. */
 export const TITLE_KEY_TO_SECAO_SLUG: Record<string, string> = {
   TITLE_SESSAO_DADOS_GERAIS_PROJETO:

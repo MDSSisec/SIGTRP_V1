@@ -6,8 +6,8 @@ import { Input } from "@/components/ui/input"
 import {
   IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS,
   IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS,
-} from "@/features/projeto/constants/ted/identificacao-representante-legal"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+} from "@/features/projeto/constants/identificacao-representante-legal"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 
 import type { DadosIdentificacaoRepresentanteLegal } from "../types/representante-form"

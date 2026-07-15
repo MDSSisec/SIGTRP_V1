@@ -1,4 +1,4 @@
-import type { TedIdentificacaoSecaoSlug } from "@/features/projeto/constants/ted/secao-review"
+import type { TedIdentificacaoSecaoSlug } from "@/features/projeto/constants/secao-review"
 
 export type { TedIdentificacaoSecaoSlug }
 

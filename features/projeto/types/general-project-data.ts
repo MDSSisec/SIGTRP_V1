@@ -1,7 +1,7 @@
 import {
   DEFAULT_CURSO_DESPESA_PRESETS,
   findItemCurso,
-} from "@/features/projeto/constants/ted/catalogo-despesas-curso"
+} from "@/features/projeto/constants/catalogo-despesas-curso"
 
 export type DadosGeraisProjetoState = {
   custoTotalProjeto: string

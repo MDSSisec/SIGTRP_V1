@@ -22,13 +22,15 @@ export {
   TITULO_DOCUMENTO_TRP,
   TITULO_INFORMACOES_PROJETO,
   TITULO_VISAO_GERAL,
-} from "./ted/visao-geral"
+} from "./visao-geral"
 
-export { COMUNS_LABELS, COMUNS_TITLES } from "./ted/communs"
+export { COMUNS_LABELS, COMUNS_TITLES } from "./communs"
 
 export {
   IDENTIFICACAO_BLOCO_TO_SECAO_SLUG,
   TED_IDENTIFICACAO_SECAO_SLUGS,
+  TED_SECOES_COM_REVIEW,
   TITLE_KEY_TO_SECAO_SLUG,
   type TedIdentificacaoSecaoSlug,
-} from "./ted/secao-review"
+  type TedSecaoComReviewSlug,
+} from "./secao-review"

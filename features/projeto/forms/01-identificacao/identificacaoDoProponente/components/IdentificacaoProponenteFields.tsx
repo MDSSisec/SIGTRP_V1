@@ -1,6 +1,6 @@
 "use client"
 
-import { IDENTIFICACAO_PROPONENTE_LABELS, IDENTIFICACAO_PROPONENTE_PLACEHOLDERS } from "@/features/projeto/constants/ted/identificacao-proponente"
+import { IDENTIFICACAO_PROPONENTE_LABELS, IDENTIFICACAO_PROPONENTE_PLACEHOLDERS } from "@/features/projeto/constants/identificacao-proponente"
 import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 import { CEP_FEEDBACK, SELECT_CLASS_NAME, type CepStatus } from "../constants/form"
 import type { IbgeEstado, IbgeMunicipio } from "@/features/projeto/services"

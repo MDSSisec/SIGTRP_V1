@@ -6,7 +6,7 @@ import { useProjectData, useUpdateProjectData } from "@/features/projeto/context
 import { saveInformacoesProjeto, validateInformacoesProjeto } from "../action/saveInformacoesProjeto"
 import { getItensConcluidosFromTedIdentificacao } from "@/features/projeto/utils/ted-preenchimento"
 import { canEditProjetoInformacoes } from "@/features/projeto/domain/projeto.permissions"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react"
 import { buildEtapaSteps, resolveEtapaStepIndex } from "@/components/StatusStepper"
 import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
