@@ -234,5 +234,7 @@ export function useProponenteLocalidade({
     estados,
     municipios,
     carregandoMunicipios,
+    /** Libera UF/bairro/município somente com CEP completo (8 dígitos). */
+    isCepCompleto: dados.cep.replace(/\D/g, "").length >= 8,
   }
 }

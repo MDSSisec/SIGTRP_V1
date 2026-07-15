@@ -28,7 +28,6 @@ import type { NavMainItem } from "./nav-main"
 const GROUP_ICONS: Record<string, ReactNode> = {
   "Visão Geral do Projeto": <HomeIcon />,
   "Dados Gerais do Projeto": <ClipboardListIcon />,
-  Observações: <MessageCircleIcon />,
   "I - Identificação": <FingerprintIcon />,
   Identificação: <FingerprintIcon />,
   "II - Descrição do Projeto": <FileTextIcon />,
@@ -41,6 +40,7 @@ const GROUP_ICONS: Record<string, ReactNode> = {
   "VI - Monitoramento e Avaliação": <BarChart3Icon />,
   Monitoramento: <BarChart3Icon />,
   "Prestação de Contas": <ScaleIcon />,
+  Observações: <MessageCircleIcon />,
 }
 
 export { parseProjetoEditPath }

@@ -17,6 +17,11 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import { ChevronRightIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
@@ -81,7 +86,7 @@ export function NavMain({
           ) : (
             <SidebarMenuItem key={item.title} className={sectionClass}>
               <SidebarMenuButton
-                tooltip={item.title}
+                tooltip={{ children: item.title, hidden: false }}
                 isActive={item.isActive}
                 className={buttonClass}
                 render={<Link href={item.url} />}
@@ -146,7 +151,12 @@ function NavMainCollapsibleItem({
       render={<SidebarMenuItem className={sectionClass} />}
     >
       <CollapsibleTrigger
-        render={<SidebarMenuButton tooltip={item.title} className={buttonClass} />}
+        render={
+          <SidebarMenuButton
+            tooltip={{ children: item.title, hidden: false }}
+            className={buttonClass}
+          />
+        }
       >
         {item.icon}
         <span>{item.title}</span>
@@ -156,27 +166,73 @@ function NavMainCollapsibleItem({
         <SidebarMenuSub>
           {item.items?.map((subItem) => (
             <SidebarMenuSubItem key={subItem.title}>
-              {subItem.disabled ? (
-                <SidebarMenuSubButton
-                  aria-disabled
-                  className={cn(subButtonClass, "pointer-events-none opacity-40")}
-                  title="Seção bloqueada"
-                >
-                  <span>{subItem.title}</span>
-                </SidebarMenuSubButton>
-              ) : (
-                <SidebarMenuSubButton
-                  isActive={subItem.isActive}
-                  className={subButtonClass}
-                  render={<Link href={subItem.url} />}
-                >
-                  <span>{subItem.title}</span>
-                </SidebarMenuSubButton>
-              )}
+              <NavSubItem
+                title={subItem.title}
+                url={subItem.url}
+                isActive={subItem.isActive}
+                disabled={subItem.disabled}
+                className={subButtonClass}
+              />
             </SidebarMenuSubItem>
           ))}
         </SidebarMenuSub>
       </CollapsibleContent>
     </Collapsible>
+  )
+}
+
+type NavSubItemProps = {
+  title: string
+  url: string
+  isActive?: boolean
+  disabled?: boolean
+  className?: string
+}
+
+/** Subitem do menu com tooltip do título completo (textos longos truncam). */
+function NavSubItem({
+  title,
+  url,
+  isActive,
+  disabled,
+  className,
+}: NavSubItemProps) {
+  if (disabled) {
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <SidebarMenuSubButton
+              aria-disabled
+              className={cn(className, "pointer-events-none opacity-40")}
+            />
+          }
+        >
+          <span>{title}</span>
+        </TooltipTrigger>
+        <TooltipContent side="right" className="max-w-xs text-wrap">
+          Seção bloqueada
+        </TooltipContent>
+      </Tooltip>
+    )
+  }
+
+  return (
+    <Tooltip>
+      <TooltipTrigger
+        render={
+          <SidebarMenuSubButton
+            isActive={isActive}
+            className={className}
+            render={<Link href={url} />}
+          />
+        }
+      >
+        <span>{title}</span>
+      </TooltipTrigger>
+      <TooltipContent side="right" className="max-w-xs text-wrap">
+        {title}
+      </TooltipContent>
+    </Tooltip>
   )
 }

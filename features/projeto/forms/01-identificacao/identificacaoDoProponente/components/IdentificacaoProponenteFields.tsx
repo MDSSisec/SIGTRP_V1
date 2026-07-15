@@ -20,6 +20,9 @@ type IdentificacaoProponenteFieldsProps = {
   /** Estado atual da busca do CEP. */
   cepStatus: CepStatus
 
+  /** CEP com 8 dígitos — libera UF, bairro e município. */
+  isCepCompleto: boolean
+
   /** Lista de estados disponíveis. */
   estados: IbgeEstado[]
 
@@ -56,6 +59,7 @@ export function IdentificacaoProponenteFields({
   dados,
   isLocked,
   cepStatus,
+  isCepCompleto,
   estados,
   municipios,
   carregandoMunicipios,
@@ -63,6 +67,8 @@ export function IdentificacaoProponenteFields({
   onChange,
   onSelectChange,
 }: IdentificacaoProponenteFieldsProps) {
+  const isLocalidadeLocked = isLocked || !isCepCompleto
+
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>2. Identificação do(a) Proponente</h2>
@@ -200,10 +206,18 @@ export function IdentificacaoProponenteFields({
               name="uf"
               value={dados.ufIbge ?? ""}
               onChange={onSelectChange}
-              className={cn(SELECT_CLASS_NAME, fieldClass("ufIbge"))}
-              disabled={isLocked}
+              className={cn(
+                SELECT_CLASS_NAME,
+                fieldClass("ufIbge"),
+                !(dados.ufIbge ?? "") && "text-muted-foreground",
+              )}
+              disabled={isLocalidadeLocked}
             >
-              <option value="">Selecione a UF...</option>
+              <option value="">
+                {!isCepCompleto
+                  ? "Informe o CEP primeiro"
+                  : "Selecione a UF..."}
+              </option>
               {estados.map((estado) => (
                 <option key={estado.id} value={estado.id}>
                   {estado.sigla} - {estado.nome}
@@ -224,7 +238,10 @@ export function IdentificacaoProponenteFields({
               value={dados.bairro}
               onChange={onChange}
               className={fieldClass("bairro")}
-              disabled={isLocked}
+              disabled={isLocalidadeLocked}
+              placeholder={
+                !isCepCompleto ? "Informe o CEP primeiro" : undefined
+              }
             />
           </div>
 
@@ -241,15 +258,23 @@ export function IdentificacaoProponenteFields({
               name="municipio"
               value={dados.municipioIbge ?? ""}
               onChange={onSelectChange}
-              className={cn(SELECT_CLASS_NAME, fieldClass("municipioIbge"))}
-              disabled={isLocked || !dados.uf || carregandoMunicipios}
+              className={cn(
+                SELECT_CLASS_NAME,
+                fieldClass("municipioIbge"),
+                !(dados.municipioIbge ?? "") && "text-muted-foreground",
+              )}
+              disabled={
+                isLocalidadeLocked || !dados.uf || carregandoMunicipios
+              }
             >
               <option value="">
-                {!dados.uf
-                  ? "Selecione a UF primeiro"
-                  : carregandoMunicipios
-                    ? "Carregando municípios..."
-                    : "Selecione o município..."}
+                {!isCepCompleto
+                  ? "Informe o CEP primeiro"
+                  : !dados.uf
+                    ? "Selecione a UF primeiro"
+                    : carregandoMunicipios
+                      ? "Carregando municípios..."
+                      : "Selecione o município..."}
               </option>
               {municipios.map((municipio) => (
                 <option key={municipio.id} value={municipio.id}>

@@ -29,14 +29,6 @@ export const TED_MODELO_CONFIG: ModeloProjetoConfig = {
       ],
     },
     {
-      id: "observacoes",
-      title: "Observações",
-      sections: [
-        { id: "observacoes",        title: "Observações",           required: false, review: true },
-        { id: "andamento-projeto",  title: "Andamento do Projeto",  required: false, review: true },
-      ],
-    },
-    {
       id: "identificacao",
       title: "I - Identificação",
       sections: [
@@ -94,6 +86,14 @@ export const TED_MODELO_CONFIG: ModeloProjetoConfig = {
       sections: [
         { id: "procedimentos-monitoramento", title: "23. Procedimentos de monitoramento e avaliação da execução e resultados",  required: true, review: true },
         { id: "indicadores-eficiencia",      title: "24. Indicadores de eficiência e eficácia",                                 required: true, review: true },
+      ],
+    },
+    {
+      id: "observacoes",
+      title: "Observações",
+      sections: [
+        { id: "observacoes",        title: "Observações",           required: false, review: true },
+        { id: "andamento-projeto",  title: "Andamento do Projeto",  required: false, review: true },
       ],
     },
   ],

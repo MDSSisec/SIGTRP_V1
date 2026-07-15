@@ -25,6 +25,7 @@ function FormularioIdentificacaoProponente({
         dados={form.form}
         isLocked={form.ui.isLocked}
         cepStatus={form.localidade.cepStatus}
+        isCepCompleto={form.localidade.isCepCompleto}
         estados={form.localidade.estados}
         municipios={form.localidade.municipios}
         carregandoMunicipios={form.localidade.carregandoMunicipios}

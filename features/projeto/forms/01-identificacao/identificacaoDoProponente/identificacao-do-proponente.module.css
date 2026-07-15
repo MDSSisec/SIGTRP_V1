@@ -56,6 +56,36 @@
     color: var(--foreground);
 }
 
+/* Vazio = cinza claro; preenchido = preto (via color acima) */
+.input::placeholder,
+.input:disabled::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
+}
+
+/* Datas vazias ficam cinza; com valor, pretas */
+.input[type="date"][value=""]::-webkit-datetime-edit,
+.input[type="date"][value=""]::-webkit-datetime-edit-fields-wrapper,
+.input[type="date"][value=""]::-webkit-datetime-edit-text,
+.input[type="date"][value=""]::-webkit-datetime-edit-month-field,
+.input[type="date"][value=""]::-webkit-datetime-edit-day-field,
+.input[type="date"][value=""]::-webkit-datetime-edit-year-field,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit-fields-wrapper,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit-text,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit-month-field,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit-day-field,
+.input[type="date"][value=""]:disabled::-webkit-datetime-edit-year-field {
+    color: var(--muted-foreground);
+    opacity: 1;
+}
+
+.input[type="date"]:not([value=""])::-webkit-datetime-edit,
+.input[type="date"]:not([value=""]):disabled::-webkit-datetime-edit {
+    color: var(--foreground);
+    opacity: 1;
+}
+
 :global(.dark) .input {
     background: oklch(0.22 0.006 264) !important;
 }
@@ -64,6 +94,12 @@
     background: oklch(0.22 0.006 264) !important;
     opacity: 1;
     color: var(--foreground);
+}
+
+:global(.dark) .input::placeholder,
+:global(.dark) .input:disabled::placeholder {
+    color: var(--muted-foreground);
+    opacity: 1;
 }
 
 .input:focus,

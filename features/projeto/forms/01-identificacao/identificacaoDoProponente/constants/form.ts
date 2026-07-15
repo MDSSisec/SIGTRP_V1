@@ -2,10 +2,11 @@
  * Classe aplicada aos campos em modo somente leitura.
  *
  * Mantém o fundo branco e impede que o estado `disabled`
- * altere a aparência visual do componente.
+ * altere a aparência. Placeholder vazio = cinza; valor preenchido = preto.
  */
 export const VIEW_MODE_FIELD_CLASS =
-  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground"
+  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground " +
+  "placeholder:text-muted-foreground disabled:placeholder:text-muted-foreground"
 
 /**
  * Classe base utilizada pelos elementos `<select>`

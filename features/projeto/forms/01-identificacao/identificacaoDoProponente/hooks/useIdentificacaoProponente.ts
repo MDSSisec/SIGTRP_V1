@@ -81,6 +81,22 @@ export function useIdentificacaoProponente({
       else if (name === "cep") {
         value = formatCEP(value)
         localidade.resetCepStatus()
+
+        const digits = value.replace(/\D/g, "")
+        setDadosFormulario((prev) => ({
+          ...prev,
+          cep: value,
+          ...(digits.length < 8
+            ? {
+                uf: "",
+                ufIbge: null,
+                municipio: "",
+                municipioIbge: null,
+                bairro: "",
+              }
+            : {}),
+        }))
+        return
       }
 
       setDadosFormulario((prev) => ({ ...prev, [name]: value }))
@@ -163,6 +179,7 @@ export function useIdentificacaoProponente({
       estados: localidade.estados,
       municipios: localidade.municipios,
       carregandoMunicipios: localidade.carregandoMunicipios,
+      isCepCompleto: localidade.isCepCompleto,
     },
     review: {
       fieldClass: review.fieldClass,
