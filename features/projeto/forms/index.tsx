@@ -7,7 +7,7 @@ import {
   SECTIONS_WITHOUT_VISAO_GERAL,
   type ProjectFormSectionProps,
 } from "./sections-map"
-import { VisaoGeralDoProjeto } from "./visao-geral/visao-geral-do-trp/visaa-geral-do-trp"
+import { VisaoGeralDoProjeto } from "./visao-geral/visao-geral-do-trp"
 
 export type { ProjectFormSectionProps }
 export { BlankSecao }

@@ -1,39 +1,6 @@
-import { getDbPool } from "@/lib/db"
-
-export type ProjectStageRow = {
-  id: string
-  ordem: number
-  nome: string
-}
-
-export async function listProjectStages(): Promise<ProjectStageRow[]> {
-  const pool = getDbPool()
-
-  const result = await pool.query<ProjectStageRow>(
-    `
-      SELECT id, ordem, nome
-      FROM "SIGTRP_TB_PROJECT_STAGES"
-      ORDER BY ordem ASC
-    `,
-  )
-
-  return result.rows
-}
-
-export async function findProjectStageById(
-  id: string,
-): Promise<ProjectStageRow | null> {
-  const pool = getDbPool()
-
-  const result = await pool.query<ProjectStageRow>(
-    `
-      SELECT id, ordem, nome
-      FROM "SIGTRP_TB_PROJECT_STAGES"
-      WHERE id = $1
-      LIMIT 1
-    `,
-    [id],
-  )
-
-  return result.rows[0] ?? null
-}
+export {
+  findProjectStageById,
+  findProjectStageByOrdem,
+  listProjectStages,
+  type ProjectStageRow,
+} from "@/features/projeto/repositories/project-stages.repository"

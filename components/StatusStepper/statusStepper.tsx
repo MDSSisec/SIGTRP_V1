@@ -7,10 +7,8 @@ import { Collapsible, CollapsibleTrigger } from "@/components/ui/collapsible";
 import styles from "./statusStepper.module.css";
 
 export type StatusItem = {
-  /** Título completo (tooltip e rótulo no trigger). */
+  /** Título completo exibido no stepper e no trigger. */
   title: string;
-  /** Rótulo curto sob o ícone; se omitido, usa `title`. */
-  shortTitle?: string;
   icon: LucideIcon;
 };
 
@@ -64,7 +62,7 @@ function StepperContent({
                   }`}
                   title={step.title}
                 >
-                  {step.shortTitle ?? step.title}
+                  {step.title}
                 </span>
               </div>
 

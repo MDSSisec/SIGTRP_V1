@@ -1,32 +1,55 @@
 import type { LucideIcon } from "lucide-react"
 import {
-  AlertCircle,
-  CheckCircle2,
-  CircleCheck,
-  ClipboardCheck,
-  FileEdit,
+  BadgeCheck,
+  ClipboardList,
+  FilePenLine,
+  FilePlus2,
   FileSignature,
+  FileText,
   Flag,
-  PlayCircle,
-  Send,
-  ThumbsUp,
 } from "lucide-react"
 
 import type { StatusItem } from "./statusStepper"
 
-/** Ícones ciclados por ordem quando as etapas vêm do banco. */
-const ETAPA_ICONS: LucideIcon[] = [
-  FileEdit,
-  Send,
-  ThumbsUp,
-  FileSignature,
-  PlayCircle,
-  CheckCircle2,
-  ClipboardCheck,
-  CircleCheck,
-  AlertCircle,
-  Flag,
+/**
+ * Ícones por ordem do catálogo SIGTRP_TB_PROJECT_STAGES.
+ *
+ * 1 Projeto Criado
+ * 2 Preenchimento dos Dados Gerais
+ * 3 Preenchimento do TRP
+ * 4 Correção do TRP
+ * 5 TRP Aprovado
+ * 6 Instrumento Celebrado
+ */
+const ETAPA_ICON_BY_ORDEM: Record<number, LucideIcon> = {
+  1: FilePlus2,
+  2: ClipboardList,
+  3: FileText,
+  4: FilePenLine,
+  5: BadgeCheck,
+  6: FileSignature,
+}
+
+const ETAPA_ICON_BY_NOME_KEYWORD: Array<{ match: RegExp; icon: LucideIcon }> = [
+  { match: /criado/i, icon: FilePlus2 },
+  { match: /dados\s+gerais/i, icon: ClipboardList },
+  { match: /corre(c|ç)(a|ã)o/i, icon: FilePenLine },
+  { match: /aprovad/i, icon: BadgeCheck },
+  { match: /celebrado|instrumento/i, icon: FileSignature },
+  { match: /preenchimento.*trp|trp/i, icon: FileText },
 ]
+
+const FALLBACK_ICON = Flag
+
+function resolveEtapaIcon(ordem: number, nome: string): LucideIcon {
+  const byOrdem = ETAPA_ICON_BY_ORDEM[ordem]
+  if (byOrdem) return byOrdem
+
+  const byName = ETAPA_ICON_BY_NOME_KEYWORD.find(({ match }) =>
+    match.test(nome),
+  )
+  return byName?.icon ?? FALLBACK_ICON
+}
 
 export type ProjetoEtapaStepSource = {
   id?: string
@@ -34,26 +57,15 @@ export type ProjetoEtapaStepSource = {
   ordem: number
 }
 
-function shortenEtapaTitle(nome: string): string {
-  const trimmed = nome.trim()
-  if (trimmed.length <= 28) return trimmed
-
-  const cutoff = trimmed.slice(0, 28)
-  const lastSpace = cutoff.lastIndexOf(" ")
-  const base = lastSpace > 12 ? cutoff.slice(0, lastSpace) : cutoff
-  return `${base}…`
-}
-
-/** Mapeia SIGTRP_TB_PROJECT_STAGES → itens do stepper. */
+/** Mapeia SIGTRP_TB_PROJECT_STAGES → itens do stepper (título completo + ícone). */
 export function buildEtapaSteps(
   etapas: ProjetoEtapaStepSource[],
 ): StatusItem[] {
   return [...etapas]
     .sort((a, b) => a.ordem - b.ordem)
-    .map((etapa, index) => ({
-      title: etapa.nome,
-      shortTitle: shortenEtapaTitle(etapa.nome),
-      icon: ETAPA_ICONS[index % ETAPA_ICONS.length],
+    .map((etapa) => ({
+      title: etapa.nome.trim(),
+      icon: resolveEtapaIcon(etapa.ordem, etapa.nome),
     }))
 }
 

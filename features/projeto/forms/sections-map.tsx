@@ -9,7 +9,7 @@ import IdentificacaoResponsavelTecnico from "./01-identificacao/identificacaoDoR
 import { DadosGeraisDoProjeto } from "./dados-gerais-do-projeto/dados-gerais"
 import { DetalhamentoCursos } from "./dados-gerais-do-projeto/detalhamento-dos-cursos"
 import type { ProjectFormSectionProps } from "./types"
-import { InformacoesDoProjeto } from "./visao-geral/informacoes-do-projeto/informacoes-do-projeto"
+import { InformacoesDoProjeto } from "./visao-geral/informacoes-do-projeto"
 
 export type { ProjectFormSectionProps }
 
