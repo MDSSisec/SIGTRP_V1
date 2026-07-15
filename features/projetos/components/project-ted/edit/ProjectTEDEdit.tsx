@@ -14,7 +14,7 @@ import {
   DEFAULT_FORM_SECTION,
   PROJECT_FORM_SECTIONS,
 } from "@/features/projetos/components/project-ted/forms"
-import { SecaoReviewHeaderActions } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { SecaoReviewHeaderActions } from "@/features/projeto/components/formShared/secao-review-actions"
 import { PROJETO_TIPOS } from "@/features/projetos/constants/project-types"
 import { useBreadcrumb } from "@/features/projetos/contexts/breadcrumb-context"
 import { ProjectDataProvider } from "@/features/projetos/contexts/project-data-context"

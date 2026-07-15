@@ -1,6 +1,6 @@
 "use client"
 
-import { SecaoReviewBanner } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 
 import type { ProjectFormSectionProps } from "../../types"
 import {

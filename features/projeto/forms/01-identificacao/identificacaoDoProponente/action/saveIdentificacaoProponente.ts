@@ -1,6 +1,6 @@
-import { notifyFormSaveError, notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
-import { saveTedIdentificacaoProponente } from "@/features/projetos/services"
+import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { saveTedIdentificacaoProponente } from "@/features/projeto/services"
 import type { DadosIdentificacaoProponente } from "../types/proponente-form"
 
 type SaveIdentificacaoProponenteResult =
@@ -47,7 +47,7 @@ export async function saveIdentificacaoProponente(
       payload,
     )
 
-    notifyFormSaveSuccess("Proponente salvo com sucesso!")
+    notifySuccess("Proponente salvo com sucesso!")
 
     return {
       ok: true,
@@ -56,7 +56,7 @@ export async function saveIdentificacaoProponente(
   } catch (error) {
     return {
       ok: false,
-      error: notifyFormSaveError(
+      error: notifyError(
         error,
         "Não foi possível salvar o proponente.",
       ),

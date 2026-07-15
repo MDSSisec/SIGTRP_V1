@@ -1,8 +1,10 @@
 "use client"
 
-import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
-import styles from "../identificacao-do-proponente.module.css"
 import { Check, Pencil, X } from "lucide-react"
+
+import { Button } from "@/components/ui/button"
+
+import styles from "../identificacao-do-proponente.module.css"
 
 type IdentificacaoProponenteActionsProps = {
   /** Indica se o formulário está em modo de edição. */
@@ -57,34 +59,23 @@ export function IdentificacaoProponenteActions({
       )}
 
       {showEditButton && (
-        <GenericButton
-          variant="editar"
-          icon={Pencil}
-          onClick={onEdit}
-        >
+        <Button variant="outline" onClick={onEdit}>
+          <Pencil className="size-4" />
           Editar
-        </GenericButton>
+        </Button>
       )}
 
       {showSaveActions && (
         <>
-          <GenericButton
-            variant="outline"
-            icon={X}
-            disabled={isSaving}
-            onClick={onCancel}
-          >
+          <Button variant="outline" disabled={isSaving} onClick={onCancel}>
+            <X className="size-4" />
             Cancelar
-          </GenericButton>
+          </Button>
 
-          <GenericButton
-            variant="salvar"
-            icon={Check}
-            disabled={isSaving}
-            onClick={onSave}
-          >
+          <Button disabled={isSaving} onClick={onSave}>
+            <Check className="size-4" />
             {isSaving ? "Salvando..." : "Salvar"}
-          </GenericButton>
+          </Button>
         </>
       )}
     </div>

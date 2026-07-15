@@ -3,6 +3,7 @@
 import { Check, Pencil, X } from "lucide-react"
 import { useEffect, useMemo, useState } from "react"
 
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import {
@@ -12,16 +13,11 @@ import {
 import type {
   CursoDespesaRow,
   CursoDetalhamentoDados,
-} from "@/features/projetos/components/generalProjectData/types"
-import { createDefaultCursoDespesas } from "@/features/projetos/components/generalProjectData/types"
-import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
-import { FORM_INPUT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
-import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
-import {
-  notifyFormSaveError,
-  notifyFormSaveSuccess,
-} from "@/features/projetos/components/project-ted/shared/form-save-toast"
-import { parseCurrencyInput } from "@/features/projetos/utils/currency"
+} from "@/features/projeto/types/general-project-data"
+import { createDefaultCursoDespesas } from "@/features/projeto/types/general-project-data"
+import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
+import { parseCurrencyInput } from "@/features/projeto/utils/currency"
 import { cn } from "@/lib/utils"
 
 import styles from "./CursoDetalhamentoForm.module.css"
@@ -238,10 +234,10 @@ export function CursoDetalhamentoForm({
     try {
       await onSave(draft)
       setIsEditing(false)
-      notifyFormSaveSuccess(`Curso ${courseNumber} salvo com sucesso!`)
+      notifySuccess(`Curso ${courseNumber} salvo com sucesso!`)
     } catch (error) {
       setSaveError(
-        notifyFormSaveError(
+        notifyError(
           error,
           `Não foi possível salvar o Curso ${courseNumber}.`,
         ),
@@ -280,7 +276,6 @@ export function CursoDetalhamentoForm({
                   handleFieldChange(field.key, event.target.value)
                 }
                 className={cn(
-                  FORM_INPUT_CLASS,
                   field.suffix && styles.inputWithSuffix,
                   isViewMode && VIEW_MODE_FIELD_CLASS,
                 )}
@@ -363,31 +358,20 @@ export function CursoDetalhamentoForm({
               </p>
             ) : null}
             {!isEditing ? (
-              <GenericButton
-                variant="editar"
-                icon={Pencil}
-                onClick={() => setIsEditing(true)}
-              >
+              <Button variant="outline" onClick={() => setIsEditing(true)}>
+                <Pencil className="size-4" />
                 Editar
-              </GenericButton>
+              </Button>
             ) : (
               <>
-                <GenericButton
-                  variant="outline"
-                  icon={X}
-                  disabled={isSaving}
-                  onClick={handleCancel}
-                >
+                <Button variant="outline" disabled={isSaving} onClick={handleCancel}>
+                  <X className="size-4" />
                   Cancelar
-                </GenericButton>
-                <GenericButton
-                  variant="salvar"
-                  icon={Check}
-                  disabled={isSaving}
-                  onClick={() => void handleSave()}
-                >
+                </Button>
+                <Button disabled={isSaving} onClick={() => void handleSave()}>
+                  <Check className="size-4" />
                   {isSaving ? "Salvando..." : "Salvar"}
-                </GenericButton>
+                </Button>
               </>
             )}
           </div>

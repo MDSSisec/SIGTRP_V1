@@ -1,9 +1,9 @@
 import {
-  notifyFormSaveError,
-  notifyFormSaveSuccess,
-} from "@/features/projetos/components/project-ted/shared/form-save-toast"
-import { saveTedIdentificacaoResponsavelTecnico } from "@/features/projetos/services"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+  notifyError,
+  notifySuccess,
+} from "@/features/projeto/utils/notify"
+import { saveTedIdentificacaoResponsavelTecnico } from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 
 import type { DadosIdentificacaoResponsavelTecnico } from "../types/responsavel-tecnico-form"
 
@@ -24,12 +24,12 @@ export async function saveIdentificacaoResponsavelTecnico(
       responsavelTecnicoEmail: dados.email,
     })
 
-    notifyFormSaveSuccess("Responsável técnico salvo com sucesso!")
+    notifySuccess("Responsável técnico salvo com sucesso!")
     return { ok: true, data }
   } catch (error) {
     return {
       ok: false,
-      error: notifyFormSaveError(
+      error: notifyError(
         error,
         "Não foi possível salvar o responsável técnico.",
       ),

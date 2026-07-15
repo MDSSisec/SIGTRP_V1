@@ -17,7 +17,7 @@ import { COMUNS_TITLES } from "@/features/projetos/constants/ted/communs"
 import type { StatusProjeto } from "@/features/projetos/constants/ted/project"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
 import { STATUS_PROJETO_STEPS, getProjectStepIndex } from "@/features/projetos/services/project-ted.service"
-import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { exportVisaoGeralToPdf } from "./export-visao-geral-pdf"
 import styles from "./visaoGeralDoProjeto.module.css"
 

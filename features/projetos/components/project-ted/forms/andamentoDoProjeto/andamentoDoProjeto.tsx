@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react"
 import { DataTable, type TableColumn } from "@/features/projetos/components/project-ted/shared/data-table"
-import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { SECAO_SLUG_TO_TITLE } from "@/features/projetos/constants/ted/visao-geral"
 
 type ProjectFormSectionProps = { projectId?: string; readOnlyView?: boolean }

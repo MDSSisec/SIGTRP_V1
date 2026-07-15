@@ -2,7 +2,7 @@
 
 import React, { useMemo } from "react"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import styles from "@/features/projetos/components/project-ted/shared/data-table.module.css"
 
 type Props = { projectId?: string }
@@ -180,77 +180,81 @@ export function DetalhamentoOrcamento({ projectId: _projectId }: Props) {
         21. Detalhamento do orçamento de bens e serviços com memória de cálculo por meta, etapa e tipo de despesa
       </h2>
       {data.length > 0 ? (
-        <div className={`w-full overflow-x-auto ${styles.wrapper}`}>
-          <div className={styles.tableContainer}>
-            <table className={styles.table}>
-              <colgroup>
-                <col className="min-w-0" />
-                <col className="min-w-0" />
-                <col className="min-w-0" />
-                <col className="min-w-0" />
-                <col className="min-w-0" />
-                <col className="min-w-0" />
-                <col style={{ minWidth: "8rem", width: "1%" }} />
-                <col style={{ minWidth: "9rem", width: "1%" }} />
-                <col className="min-w-0" />
-              </colgroup>
-              <thead className={styles.thead}>
-                <tr>
-                  {COLUMNS.map((col) => (
-                    <th
-                      key={col.id}
-                      className={`${styles.th} ${styles[col.align]} ${col.id === "valorUnitario" || col.id === "valorTotal" ? "whitespace-nowrap" : ""}`}
-                    >
-                      {col.label}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((row) => (
-                  <tr key={row.rowKey} className={styles.row}>
-                    {row.metaRowSpan > 0 ? (
-                      <td
-                        rowSpan={row.metaRowSpan}
-                        className={`${styles.td} ${styles.left} align-top bg-white dark:bg-neutral-900`}
-                      >
-                        {row.meta}
-                      </td>
-                    ) : null}
-                    {row.etapaRowSpan > 0 ? (
-                      <td
-                        rowSpan={row.etapaRowSpan}
-                        className={`${styles.td} ${styles.left} align-top bg-white dark:bg-neutral-900`}
-                      >
-                        {row.descricaoEtapa}
-                      </td>
-                    ) : row.tipo === "total_etapa" || row.tipo === "total_projeto" ? (
-                      <td className={`${styles.td} ${styles.left}`}>{renderCell(row, "descricaoEtapa")}</td>
-                    ) : null}
-                    {row.tipo === "total_projeto" ? (
-                      <>
-                        <td colSpan={6} className={`${styles.td} ${styles.left} font-bold uppercase`}>
-                          {row.itemDespesa}
-                        </td>
-                        <td className={`${styles.td} ${styles.left} font-bold whitespace-nowrap`}>{row.valorTotal ? `R$ ${row.valorTotal}` : ""}</td>
-                        <td className={`${styles.td} ${styles.left}`}>{row.fonteRecurso}</td>
-                      </>
-                    ) : (
-                      <>
-                        <td className={`${styles.td} ${styles.left}`}>{renderCell(row, "itemDespesa")}</td>
-                        <td className={`${styles.td} ${styles.left}`}>{row.codigo}</td>
-                        <td className={`${styles.td} ${styles.center}`}>{row.unidade}</td>
-                        <td className={`${styles.td} ${styles.center}`}>{row.quantidade}</td>
-                        <td className={`${styles.td} ${styles.left} whitespace-nowrap`}>{renderCell(row, "valorUnitario")}</td>
-                        <td className={`${styles.td} ${styles.left} whitespace-nowrap`}>{renderCell(row, "valorTotal")}</td>
-                        <td className={`${styles.td} ${styles.left}`}>{row.fonteRecurso}</td>
-                      </>
-                    )}
-                  </tr>
+        <div className={styles.wrapper}>
+          <table className={styles.table}>
+            <colgroup>
+              <col className="min-w-0" />
+              <col className="min-w-0" />
+              <col className="min-w-0" />
+              <col className="min-w-0" />
+              <col className="min-w-0" />
+              <col className="min-w-0" />
+              <col style={{ minWidth: "8rem", width: "1%" }} />
+              <col style={{ minWidth: "9rem", width: "1%" }} />
+              <col className="min-w-0" />
+            </colgroup>
+            <thead>
+              <tr>
+                {COLUMNS.map((col) => (
+                  <th
+                    key={col.id}
+                    className={`${styles[`align-${col.align}`]} ${col.id === "valorUnitario" || col.id === "valorTotal" ? "whitespace-nowrap" : ""}`}
+                  >
+                    {col.label}
+                  </th>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((row) => (
+                <tr key={row.rowKey}>
+                  {row.metaRowSpan > 0 ? (
+                    <td
+                      rowSpan={row.metaRowSpan}
+                      className={`${styles["align-left"]} align-top bg-white dark:bg-neutral-900`}
+                    >
+                      {row.meta}
+                    </td>
+                  ) : null}
+                  {row.etapaRowSpan > 0 ? (
+                    <td
+                      rowSpan={row.etapaRowSpan}
+                      className={`${styles["align-left"]} align-top bg-white dark:bg-neutral-900`}
+                    >
+                      {row.descricaoEtapa}
+                    </td>
+                  ) : row.tipo === "total_etapa" || row.tipo === "total_projeto" ? (
+                    <td className={styles["align-left"]}>{renderCell(row, "descricaoEtapa")}</td>
+                  ) : null}
+                  {row.tipo === "total_projeto" ? (
+                    <>
+                      <td colSpan={6} className={`${styles["align-left"]} font-bold uppercase`}>
+                        {row.itemDespesa}
+                      </td>
+                      <td className={`${styles["align-left"]} font-bold whitespace-nowrap`}>
+                        {row.valorTotal ? `R$ ${row.valorTotal}` : ""}
+                      </td>
+                      <td className={styles["align-left"]}>{row.fonteRecurso}</td>
+                    </>
+                  ) : (
+                    <>
+                      <td className={styles["align-left"]}>{renderCell(row, "itemDespesa")}</td>
+                      <td className={styles["align-left"]}>{row.codigo}</td>
+                      <td className={styles["align-center"]}>{row.unidade}</td>
+                      <td className={styles["align-center"]}>{row.quantidade}</td>
+                      <td className={`${styles["align-left"]} whitespace-nowrap`}>
+                        {renderCell(row, "valorUnitario")}
+                      </td>
+                      <td className={`${styles["align-left"]} whitespace-nowrap`}>
+                        {renderCell(row, "valorTotal")}
+                      </td>
+                      <td className={styles["align-left"]}>{row.fonteRecurso}</td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       ) : (
         <p className={formLayoutStyles.subtitle}>Nenhum dado de detalhamento no projeto.</p>

@@ -3,10 +3,10 @@
 import { toIdentificacaoProponenteForm, VAZIO_IDENTIFICACAO_PROPONENTE, type DadosIdentificacaoProponente } from "../types/proponente-form"
 import { useIdentificacaoProponenteReview } from "./useIdentificacaoProponenteReview"
 import { saveIdentificacaoProponente } from "../action/saveIdentificacaoProponente"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 import { formatCEP, formatCNPJ, formatTelefone } from "../utils/formatters"
 import { useCallback, useEffect, useState, type ChangeEvent } from "react"
-import { fetchTedIdentificacao } from "@/features/projetos/services"
+import { fetchTedIdentificacao } from "@/features/projeto/services"
 import { useProponenteLocalidade } from "./useProponenteLocalidade"
 import { useAsyncData } from "@/hooks/use-async-data"
 

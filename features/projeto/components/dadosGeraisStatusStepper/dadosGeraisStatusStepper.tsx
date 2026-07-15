@@ -3,12 +3,12 @@
 import { useMemo } from "react"
 
 import StatusStepper from "@/components/StatusStepper/statusStepper"
-import type { DadosGeraisProjetoState } from "@/features/projetos/components/generalProjectData/types"
+import type { DadosGeraisProjetoState } from "@/features/projeto/types/general-project-data"
 import {
   getDadosGeraisStepIndex,
   getDadosGeraisSteps,
-} from "@/features/projetos/constants/ted/dados-gerais-steps"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
+} from "@/features/projeto/constants/ted/dados-gerais-steps"
+import { useProjectData } from "@/features/projeto/contexts/project-data-context"
 
 import styles from "./dadosGeraisStatusStepper.module.css"
 

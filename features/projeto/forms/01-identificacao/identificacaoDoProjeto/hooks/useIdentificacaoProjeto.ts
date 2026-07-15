@@ -10,9 +10,9 @@ import {
 import {
   useProjectData,
   useUpdateProjectData,
-} from "@/features/projetos/contexts/project-data-context"
-import { fetchTedIdentificacao } from "@/features/projetos/services"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+} from "@/features/projeto/contexts/project-data-context"
+import { fetchTedIdentificacao } from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveIdentificacaoProjeto } from "../action/saveIdentificacaoProjeto"

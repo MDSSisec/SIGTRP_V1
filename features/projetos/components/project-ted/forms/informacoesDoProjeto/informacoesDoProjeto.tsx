@@ -31,7 +31,7 @@ import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projetos/constants/ted/secao
 import { getItensConcluidosFromTedIdentificacao } from "@/features/projetos/utils/ted-preenchimento"
 import type { ProjectModelData } from "@/features/projetos/types/ted"
 import type { Projeto, ResponsavelOption } from "@/features/projetos/types"
-import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 import { canEditProjetoInformacoes } from "@/features/projetos/domain/projetos.permissions"
 import { useTedSecaoReviews } from "@/features/projetos/hooks/use-ted-secao-reviews"

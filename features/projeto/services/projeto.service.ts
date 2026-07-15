@@ -50,6 +50,32 @@ export async function deleteProjeto(id: string) {
   await parseApiResponse<{ success: boolean }>(response)
 }
 
+export type UpdateProjetoInformacoesInput = {
+  etapaId?: string
+  responsavelInternoId: string
+  responsavelExternoId: string
+}
+
+type UpdateProjetoResponse = {
+  projeto: Projeto
+}
+
+export async function updateProjetoInformacoes(
+  id: string,
+  data: UpdateProjetoInformacoesInput,
+) {
+  const response = await fetch(`/api/projetos/${id}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  })
+
+  const result = await parseApiResponse<UpdateProjetoResponse>(response)
+  return result.projeto
+}
+
 export async function fetchResponsaveisInternos() {
   const response = await fetch("/api/projetos/responsaveis/internos")
   const data = await parseApiResponse<ResponsaveisResponse>(response)

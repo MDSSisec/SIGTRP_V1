@@ -1,6 +1,6 @@
 "use client"
 
-import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
 import { cn } from "@/lib/utils"
 
 import {

@@ -16,7 +16,7 @@ import type {
 import { createDefaultCursoDespesas } from "@/features/projetos/components/generalProjectData/types"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import { FORM_INPUT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
-import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import {
   notifyFormSaveError,
   notifyFormSaveSuccess,

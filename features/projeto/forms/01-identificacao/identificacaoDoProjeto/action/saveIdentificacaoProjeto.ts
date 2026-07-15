@@ -1,9 +1,9 @@
 import {
-    notifyFormSaveError,
-    notifyFormSaveSuccess,
-  } from "@/features/projetos/components/project-ted/shared/form-save-toast"
-  import { saveTedIdentificacaoProjeto } from "@/features/projetos/services"
-  import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+    notifyError,
+    notifySuccess,
+  } from "@/features/projeto/utils/notify"
+  import { saveTedIdentificacaoProjeto } from "@/features/projeto/services"
+  import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
   
   import type { DadosIdentificacaoProjeto } from "../types/identificacao-form"
   
@@ -43,7 +43,7 @@ import {
     try {
       const data = await saveTedIdentificacaoProjeto(projectId, formData)
   
-      notifyFormSaveSuccess(
+      notifySuccess(
         "Identificação do projeto salva com sucesso!",
       )
   
@@ -52,7 +52,7 @@ import {
         data,
       }
     } catch (error) {
-      const message = notifyFormSaveError(
+      const message = notifyError(
         error,
         "Não foi possível salvar a identificação do projeto.",
       )

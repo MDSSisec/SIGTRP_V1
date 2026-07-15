@@ -1,9 +1,9 @@
 import {
-  notifyFormSaveError,
-  notifyFormSaveSuccess,
-} from "@/features/projetos/components/project-ted/shared/form-save-toast"
-import { saveTedIdentificacaoRepresentante } from "@/features/projetos/services"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+  notifyError,
+  notifySuccess,
+} from "@/features/projeto/utils/notify"
+import { saveTedIdentificacaoRepresentante } from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 
 import type { DadosIdentificacaoRepresentanteLegal } from "../types/representante-form"
 
@@ -26,12 +26,12 @@ export async function saveIdentificacaoRepresentante(
       representanteEmail: dados.email,
     })
 
-    notifyFormSaveSuccess("Representante legal salvo com sucesso!")
+    notifySuccess("Representante legal salvo com sucesso!")
     return { ok: true, data }
   } catch (error) {
     return {
       ok: false,
-      error: notifyFormSaveError(
+      error: notifyError(
         error,
         "Não foi possível salvar o representante legal.",
       ),

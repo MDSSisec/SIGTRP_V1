@@ -1,13 +1,20 @@
-import { toast } from "sonner"
+import {
+  notifySuccess,
+  notifyError,
+} from "@/features/projeto/utils/notify"
 
-export const FORM_SAVE_SUCCESS_MESSAGE = "Alterações salvas com sucesso!"
+export const FORM_SAVE_SUCCESS_MESSAGE =
+  "Alterações salvas com sucesso!"
 
-export function notifyFormSaveSuccess(message = FORM_SAVE_SUCCESS_MESSAGE) {
-  toast.success(message)
+export function notifyFormSaveSuccess(
+  message = FORM_SAVE_SUCCESS_MESSAGE,
+): void {
+  notifySuccess(message)
 }
 
-export function notifyFormSaveError(error: unknown, fallback: string) {
-  const message = error instanceof Error ? error.message : fallback
-  toast.error(message)
-  return message
+export function notifyFormSaveError(
+  error: unknown,
+  fallback: string,
+): string {
+  return notifyError(error, fallback)
 }

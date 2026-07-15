@@ -3,13 +3,13 @@
 import type { ChangeEvent } from "react"
 
 import { Input } from "@/components/ui/input"
-import { COMUNS_LABELS } from "@/features/projetos/constants/ted/communs"
+import { COMUNS_LABELS } from "@/features/projeto/constants/ted/communs"
 import {
   IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS,
   IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS,
-} from "@/features/projetos/constants/ted/identificacao-responsavel-tecnico"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
-import { CampoReviewLabel } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+} from "@/features/projeto/constants/ted/identificacao-responsavel-tecnico"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
+import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 
 import type { DadosIdentificacaoResponsavelTecnico } from "../types/responsavel-tecnico-form"
 import styles from "../identificacao-do-responsavel-tecnico.module.css"

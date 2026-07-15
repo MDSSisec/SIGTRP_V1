@@ -1,81 +1,27 @@
 "use client"
 
-import { useMemo } from "react"
-
-import { CursoDetalhamentoForm } from "@/features/projeto/components/cursoDetalhamentoForm"
-import { DadosGeraisStatusStepper } from "@/features/projeto/components/dadosGeraisStatusStepper"
-import type {
-  CursoDetalhamentoDados,
-  DadosGeraisProjetoState,
-} from "@/features/projetos/components/generalProjectData/types"
-import { syncCursosByQuantidade } from "@/features/projetos/components/generalProjectData/types"
+import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import {
-  FormSectionCard,
-  formLayoutStyles,
-} from "@/features/projetos/components/project-ted/shared/form-section"
+  SESSOES_VISAO_GERAL_SUBTITLE,
+  SESSOES_VISAO_GERAL_TITLE,
+} from "@/features/projeto/constants/ted/visao-geral"
+
 import type { ProjectFormSectionProps } from "../../types"
 import {
-  useProjectData,
-  useUpdateProjectData,
-} from "@/features/projetos/contexts/project-data-context"
-import { SESSOES_VISAO_GERAL_SLUG, SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
-import styles from "./detalhamentoDosCursos.module.css"
+  DetalhamentoCursosEmpty,
+  DetalhamentoCursosList,
+} from "./components"
+import { useDetalhamentoCursos } from "./hooks/useDetalhamentoCursos"
 
-function readDadosGerais(
-  projectData: Record<string, unknown> | null | undefined,
-): DadosGeraisProjetoState | null {
-  const raw = projectData?.dadosGeraisProjeto
-  if (!raw || typeof raw !== "object") return null
-
-  const data = raw as Partial<DadosGeraisProjetoState>
-  const quantidade = Number(data.quantidadeCursos)
-  if (!Number.isInteger(quantidade) || quantidade < 1) return null
-
-  return {
-    custoTotalProjeto: String(data.custoTotalProjeto ?? ""),
-    quantidadeCursos: quantidade,
-    possuiEventoCertificacao: Boolean(data.possuiEventoCertificacao),
-  }
-}
-
-function readCursos(
-  projectData: Record<string, unknown> | null | undefined,
-): CursoDetalhamentoDados[] {
-  const raw = projectData?.detalhamentoCursos
-  if (!Array.isArray(raw)) return []
-  return raw as CursoDetalhamentoDados[]
-}
-
-export function DetalhamentoCursos({ readOnlyView }: ProjectFormSectionProps) {
-  const projectData = useProjectData()
-  const updateProjectData = useUpdateProjectData()
-
-  const dadosGerais = useMemo(
-    () => readDadosGerais(projectData as Record<string, unknown> | null),
-    [projectData],
-  )
-
-  const quantidadeCursos = dadosGerais?.quantidadeCursos ?? 0
-
-  const cursos = useMemo(() => {
-    if (!quantidadeCursos) return []
-
-    return syncCursosByQuantidade(
-      readCursos(projectData as Record<string, unknown> | null),
-      quantidadeCursos,
-    )
-  }, [projectData, quantidadeCursos])
-
-  function handleSaveCurso(index: number, value: CursoDetalhamentoDados) {
-    const nextCursos = syncCursosByQuantidade(
-      readCursos(projectData as Record<string, unknown> | null),
-      quantidadeCursos,
-    ).map((curso, cursoIndex) => (cursoIndex === index ? value : curso))
-
-    updateProjectData({
-      detalhamentoCursos: nextCursos,
-    })
-  }
+/**
+ * Formulário da seção "Detalhamento dos cursos".
+ *
+ * Compõe a UI e delega a lógica a `useDetalhamentoCursos`.
+ */
+export function DetalhamentoCursos({
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const form = useDetalhamentoCursos({ readOnlyView })
 
   return (
     <div className={formLayoutStyles.page}>
@@ -84,35 +30,18 @@ export function DetalhamentoCursos({ readOnlyView }: ProjectFormSectionProps) {
           {SESSOES_VISAO_GERAL_TITLE.TITLE_SESSAO_DETALHAMENTO_CURSOS}
         </h2>
         <p className={formLayoutStyles.subtitle}>
-          Preencha os dados gerais e, quando necessário, adicione despesas
-          específicas de cada curso. Cada curso pode ser editado e salvo
-          individualmente.
+          {SESSOES_VISAO_GERAL_SUBTITLE.SUBTITLE_SESSAO_DETALHAMENTO_CURSOS}
         </p>
       </div>
 
-      <DadosGeraisStatusStepper
-        activeSlug={SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_DETALHAMENTO_CURSOS}
-      />
-
-      {!quantidadeCursos ? (
-        <FormSectionCard>
-          <p className={styles.emptyMessage}>
-            Informe e salve a quantidade de cursos em{" "}
-            <strong>Dados gerais do projeto</strong> para liberar os formulários.
-          </p>
-        </FormSectionCard>
+      {!form.ui.hasCursos ? (
+        <DetalhamentoCursosEmpty />
       ) : (
-        <div className={styles.list}>
-          {cursos.map((curso, index) => (
-            <CursoDetalhamentoForm
-              key={curso.id}
-              courseNumber={index + 1}
-              value={curso}
-              readOnlyView={readOnlyView}
-              onSave={(value) => handleSaveCurso(index, value)}
-            />
-          ))}
-        </div>
+        <DetalhamentoCursosList
+          cursos={form.form.cursos}
+          readOnlyView={readOnlyView}
+          onSaveCurso={form.actions.saveCurso}
+        />
       )}
     </div>
   )

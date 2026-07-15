@@ -3,7 +3,7 @@
 import {
   FormSectionCard,
   formLayoutStyles,
-} from "@/features/projetos/components/project-ted/shared/form-section"
+} from "@/features/projeto/components/formShared/form-section"
 import type { ProjectFormSectionProps } from "@/features/projetos/components/project-ted/forms/sections-map"
 import { SESSOES_VISAO_GERAL_SLUG } from "@/features/projetos/constants/ted/visao-geral"
 

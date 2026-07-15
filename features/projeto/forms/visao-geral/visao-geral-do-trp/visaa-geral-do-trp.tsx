@@ -6,19 +6,19 @@ import StatusStepper, {
   buildEtapaSteps,
   resolveEtapaStepIndex,
 } from "@/components/StatusStepper"
-import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { Button } from "@/components/ui/button"
 import {
   DESCRICAO_VISAO_GERAL,
   SESSOES_VISAO_GERAL_SLUG,
   SESSOES_VISAO_GERAL_TITLE,
   TITULO_DOCUMENTO_TRP,
   TITULO_VISAO_GERAL,
-} from "@/features/projetos/constants/ted/visao-geral"
+} from "@/features/projeto/constants/ted/visao-geral"
 import { getFormSection } from "../../sections-map"
 import type { ProjectFormSectionProps } from "../../types"
-import { COMUNS_TITLES } from "@/features/projetos/constants/ted/communs"
-import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { COMUNS_TITLES } from "@/features/projeto/constants/ted/communs"
+import { useProjectData } from "@/features/projeto/contexts/project-data-context"
+import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { fetchProjectStages } from "@/features/projeto/services"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { exportVisaoGeralToPdf } from "./export-visao-geral-pdf"
@@ -130,15 +130,15 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
       <div className={styles.header}>
         <div className={styles.headerTop}>
           <h2 className={styles.title}>{TITULO_VISAO_GERAL}</h2>
-          <GenericButton
+          <Button
             variant="outline"
             size="sm"
-            icon={FileDown}
             onClick={handleExportPDF}
             disabled={isExporting || !projectId}
           >
+            <FileDown className="size-4" />
             {isExporting ? "Exportando..." : COMUNS_TITLES.TITLE_EXPORTAR_PDF}
-          </GenericButton>
+          </Button>
         </div>
         <p className={styles.description}>{DESCRICAO_VISAO_GERAL}</p>
       </div>

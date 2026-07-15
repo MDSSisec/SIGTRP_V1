@@ -3,13 +3,13 @@
 import type { ChangeEvent } from "react"
 
 import { Input } from "@/components/ui/input"
-import { CampoReviewLabel } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 import {
   IDENTIFICACAO_PROJETO_DESCRIPTIONS,
   IDENTIFICACAO_PROJETO_LABELS,
   IDENTIFICACAO_PROJETO_PLACEHOLDERS,
-} from "@/features/projetos/constants/ted/identificacao-projeto"
-import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projetos/constants/ted/visao-geral"
+} from "@/features/projeto/constants/ted/identificacao-projeto"
+import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/ted/visao-geral"
 import { cn } from "@/lib/utils"
 
 import { VIEW_MODE_FIELD_CLASS } from "../constants/form"

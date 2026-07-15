@@ -1,0 +1,15 @@
+export const IDENTIFICACAO_RESPONSAVEL_TECNICO_LABELS = {
+  LABEL_CARGO: "Cargo",
+  LABEL_NOME: "Nome",
+  LABEL_TELEFONE: "Telefone",
+  LABEL_CELULAR: "Celular",
+  LABEL_EMAIL: "E-mail",
+} as const
+
+export const IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS = {
+  PLACEHOLDER_NOME: "Informe o nome",
+  PLACEHOLDER_CARGO: "Informe o cargo",
+  PLACEHOLDER_TELEFONE: "(00) 00000-0000",
+  PLACEHOLDER_CELULAR: "(00) 00000-0000",
+  PLACEHOLDER_EMAIL: "email@exemplo.gov.br",
+} as const

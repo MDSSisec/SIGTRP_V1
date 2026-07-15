@@ -4,7 +4,7 @@ import { useEffect, useMemo } from "react"
 import { useParams, useSearchParams } from "next/navigation"
 
 import { useAsyncData } from "@/hooks/use-async-data"
-import { useBreadcrumb } from "@/features/projetos/contexts/breadcrumb-context"
+import { useBreadcrumb } from "@/features/projeto/contexts/breadcrumb-context"
 import {
   getModeloConfig,
   resolveModeloSecao,

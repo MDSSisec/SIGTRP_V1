@@ -1,0 +1,213 @@
+.card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #f5f5f5;
+  padding: 1.5rem;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+:global(.dark) .card {
+  background: oklch(0.29 0.006 264);
+  border-color: oklch(0.36 0.006 264);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+}
+
+.pageTitle {
+  margin: 0;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  align-self: flex-start;
+}
+
+.pageHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.formGrid {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.label {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.grid2 {
+  display: grid;
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .grid2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.input {
+  width: 100%;
+  min-width: 0;
+  background: #ffffff !important;
+}
+
+:global(.dark) .input {
+  background: oklch(0.22 0.006 264) !important;
+}
+
+.input:disabled,
+.input[readonly],
+.textarea:disabled,
+.textarea[readonly],
+.select:disabled {
+  background: #ffffff !important;
+}
+
+:global(.dark) .input:disabled,
+:global(.dark) .input[readonly],
+:global(.dark) .textarea:disabled,
+:global(.dark) .textarea[readonly],
+:global(.dark) .select:disabled {
+  background: oklch(0.22 0.006 264) !important;
+}
+
+.textarea {
+  width: 100%;
+  min-width: 0;
+  min-height: 6rem;
+  resize: vertical;
+  border-radius: 0.375rem;
+  border: 1px solid var(--input);
+  background: #ffffff;
+  color: var(--foreground);
+  padding: 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  outline: none;
+}
+
+:global(.dark) .textarea {
+  background: oklch(0.22 0.006 264);
+  border-color: oklch(0.35 0.006 264);
+}
+
+.textarea:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
+}
+
+.select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.25rem;
+  border-radius: 0.375rem;
+  border: 1px solid var(--input);
+  background: #ffffff;
+  color: var(--foreground);
+  padding: 0.375rem 0.75rem;
+  font-size: 0.875rem;
+  outline: none;
+  cursor: pointer;
+}
+
+:global(.dark) .select {
+  background: oklch(0.22 0.006 264);
+  border-color: oklch(0.35 0.006 264);
+}
+
+.select:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
+}
+
+.innerCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  padding: 1rem;
+}
+
+:global(.dark) .innerCard {
+  background: oklch(0.25 0.006 264);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
+
+.page {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+@media (max-width: 767px) {
+  .card {
+    gap: 1.25rem;
+    padding: 1rem;
+  }
+
+  .innerCard {
+    padding: 0.75rem;
+  }
+
+  .actions {
+    padding-top: 1rem;
+  }
+}

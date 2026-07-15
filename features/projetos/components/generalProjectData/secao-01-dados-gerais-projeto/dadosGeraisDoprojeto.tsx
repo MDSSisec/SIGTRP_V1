@@ -18,7 +18,7 @@ import {
 import {
   FormSectionCard,
   formLayoutStyles,
-} from "@/features/projetos/components/project-ted/shared/form-section"
+} from "@/features/projeto/components/formShared/form-section"
 import {
   notifyFormSaveError,
   notifyFormSaveSuccess,

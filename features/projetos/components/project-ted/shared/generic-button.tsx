@@ -14,15 +14,25 @@ type GenericButtonVariant =
   | "editar"
   | "salvar"
 
-type GenericButtonProps = Omit<React.ComponentProps<typeof Button>, "variant"> & {
+type GenericButtonProps = Omit<
+  React.ComponentProps<typeof Button>,
+  "variant"
+> & {
   variant?: GenericButtonVariant
   icon?: LucideIcon
 }
 
-function mapVariant(variant: GenericButtonVariant | undefined) {
-  if (variant === "editar") return "outline"
-  if (variant === "salvar") return "default"
-  return variant ?? "default"
+function mapVariant(
+  variant?: GenericButtonVariant,
+): React.ComponentProps<typeof Button>["variant"] {
+  switch (variant) {
+    case "editar":
+      return "outline"
+    case "salvar":
+      return "default"
+    default:
+      return variant ?? "default"
+  }
 }
 
 export function GenericButton({
@@ -33,8 +43,12 @@ export function GenericButton({
   ...props
 }: GenericButtonProps) {
   return (
-    <Button className={cn(className)} variant={mapVariant(variant)} {...props}>
-      {Icon ? <Icon className="size-4" /> : null}
+    <Button
+      className={cn(className)}
+      variant={mapVariant(variant)}
+      {...props}
+    >
+      {Icon && <Icon className="size-4" />}
       {children}
     </Button>
   )

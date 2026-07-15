@@ -14,7 +14,7 @@ import {
   fetchMunicipiosByUf,
   type IbgeEstado,
   type IbgeMunicipio,
-} from "@/features/projetos/services"
+} from "@/features/projeto/services"
 
 import type { CepStatus } from "../constants/form"
 import type { DadosIdentificacaoProponente } from "../types/proponente-form"

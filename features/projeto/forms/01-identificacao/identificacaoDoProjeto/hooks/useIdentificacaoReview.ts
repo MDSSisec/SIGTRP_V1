@@ -1,7 +1,7 @@
 "use client"
 
-import { useCampoAtencaoClass } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
-import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
+import { useCampoAtencaoClass } from "@/features/projeto/components/formShared/secao-review-actions"
+import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
 
 type UseIdentificacaoReviewOptions = {
   /** Indica que a tela inteira está em modo somente leitura. */

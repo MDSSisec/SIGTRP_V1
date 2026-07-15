@@ -1,6 +1,6 @@
 "use client"
 
-import { SecaoReviewBanner } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import { IdentificacaoProponenteActions, IdentificacaoProponenteFields } from "./components"
 import { useIdentificacaoProponente } from "./hooks/useIdentificacaoProponente"
 import styles from "./identificacao-do-proponente.module.css"

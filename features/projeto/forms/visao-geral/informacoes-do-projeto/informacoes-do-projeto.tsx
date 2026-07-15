@@ -2,39 +2,38 @@
 
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { AlertTriangle, Check, Lock, Pencil, X } from "lucide-react"
+import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import StatusStepper, {
   buildEtapaSteps,
   resolveEtapaStepIndex,
 } from "@/components/StatusStepper"
-import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
   formatProjetoTipoLabel,
   normalizeProjetoTipo,
   PROJETO_TIPOS,
-} from "@/features/projetos/constants/project-types"
-import { useProjectData, useUpdateProjectData } from "@/features/projetos/contexts/project-data-context"
+} from "@/features/projeto/constants/projeto-tipos"
+import { useProjectData, useUpdateProjectData } from "@/features/projeto/contexts/project-data-context"
 import {
   SESSOES_VISAO_GERAL_TITLE,
   TITULO_INFORMACOES_PROJETO,
   DESCRICAO_INFORMACOES_PROJETO,
-} from "@/features/projetos/constants/ted/visao-geral"
+} from "@/features/projeto/constants/ted/visao-geral"
 import { fetchProjectStages } from "@/features/projeto/services"
 import {
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
   fetchTedIdentificacao,
   updateProjetoInformacoes,
-} from "@/features/projetos/services"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
-import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projetos/constants/ted/secao-review"
-import { getItensConcluidosFromTedIdentificacao } from "@/features/projetos/utils/ted-preenchimento"
-import type { ProjectModelData } from "@/features/projetos/types/ted"
-import type { Projeto, ResponsavelOption } from "@/features/projetos/types"
-import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
-import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS, FORM_SELECT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
-import { canEditProjetoInformacoes } from "@/features/projetos/domain/projetos.permissions"
-import { useTedSecaoReviews } from "@/features/projetos/hooks/use-ted-secao-reviews"
+} from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projeto/constants/ted/secao-review"
+import { getItensConcluidosFromTedIdentificacao } from "@/features/projeto/utils/ted-preenchimento"
+import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { Projeto, ResponsavelOption } from "@/features/projeto/types"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { canEditProjetoInformacoes } from "@/features/projeto/domain/projeto.permissions"
+import { useTedSecaoReviews } from "@/features/projeto/hooks/useTedSecaoReviews"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
@@ -259,7 +258,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                 value={tipoProjetoLabel}
                 readOnly
                 tabIndex={-1}
-                className={cn(FORM_INPUT_CLASS, VIEW_MODE_FIELD_CLASS)}
+                className={cn(formLayoutStyles.input, VIEW_MODE_FIELD_CLASS)}
               />
             </div>
             <div className={formLayoutStyles.fieldGroup}>
@@ -272,7 +271,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                 value={dados.etapaId}
                 onChange={handleChange}
                 className={cn(
-                  FORM_SELECT_CLASS,
+                  formLayoutStyles.select,
                   isViewMode && VIEW_MODE_FIELD_CLASS,
                 )}
                 disabled={isInfoLocked}
@@ -301,7 +300,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                 value={dados.responsavelInternoId}
                 onChange={handleChange}
                 className={cn(
-                  FORM_SELECT_CLASS,
+                  formLayoutStyles.select,
                   isViewMode && VIEW_MODE_FIELD_CLASS,
                 )}
                 disabled={isResponsaveisLocked}
@@ -324,7 +323,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                 value={dados.responsavelExternoId}
                 onChange={handleChange}
                 className={cn(
-                  FORM_SELECT_CLASS,
+                  formLayoutStyles.select,
                   isViewMode && VIEW_MODE_FIELD_CLASS,
                 )}
                 disabled={isResponsaveisLocked}
@@ -361,7 +360,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                           type="checkbox"
                           checked={preenchido}
                           readOnly
-                          className={`${FORM_CHECKBOX_CLASS} mt-0.5 shrink-0`}
+                          className="mt-0.5 size-4 shrink-0 rounded-sm border border-input accent-[var(--primary)]"
                         />
                         <span
                           className={cn(
@@ -401,14 +400,14 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
               <p className="mr-auto text-sm text-destructive">{saveError}</p>
             ) : null}
             {!isEditing ? (
-              <GenericButton variant="editar" icon={Pencil} onClick={() => setIsEditing(true)}>
+              <Button variant="outline" onClick={() => setIsEditing(true)}>
+                <Pencil className="size-4" />
                 Editar
-              </GenericButton>
+              </Button>
             ) : (
               <>
-                <GenericButton
+                <Button
                   variant="outline"
-                  icon={X}
                   disabled={isSaving}
                   onClick={() => {
                     setDados(getDadosIniciais(projectData))
@@ -416,16 +415,13 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
                     setIsEditing(false)
                   }}
                 >
+                  <X className="size-4" />
                   Cancelar
-                </GenericButton>
-                <GenericButton
-                  variant="salvar"
-                  icon={Check}
-                  disabled={isSaving}
-                  onClick={() => void handleSave()}
-                >
+                </Button>
+                <Button disabled={isSaving} onClick={() => void handleSave()}>
+                  <Check className="size-4" />
                   {isSaving ? "Salvando..." : "Salvar"}
-                </GenericButton>
+                </Button>
               </>
             )}
           </div>

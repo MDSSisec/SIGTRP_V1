@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import { notifyFormSaveSuccess } from "@/features/projetos/components/project-ted/shared/form-save-toast"
-import { FormSectionCard, formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { FORM_CHECKBOX_CLASS, FORM_INPUT_CLASS } from "@/features/projetos/components/project-ted/shared/form-fields"
 
 const OPCOES = [

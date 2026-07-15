@@ -2,11 +2,11 @@
 
 import { useMemo, type ReactNode } from "react"
 
-import { CronogramaProvider } from "@/features/projetos/components/project-ted/forms/secao-2-descricao/CronogramaContext/CronogramaContext"
-import type { CronogramaData } from "@/features/projetos/components/project-ted/forms/secao-2-descricao/etapas-cronograma/types"
-import { ProjectDataProvider } from "@/features/projetos/contexts/project-data-context"
-import { TedReviewProvider } from "@/features/projetos/contexts/ted-review-context"
-import { mapModeloCronogramaToForm } from "@/features/projetos/services/project-ted.service"
+import { CronogramaProvider } from "@/features/projeto/contexts/cronograma/CronogramaContext"
+import type { CronogramaData } from "@/features/projeto/contexts/cronograma/types"
+import { ProjectDataProvider } from "@/features/projeto/contexts/project-data-context"
+import { TedReviewProvider } from "@/features/projeto/contexts/ted-review-context"
+import { mapModeloCronogramaToForm } from "@/features/projeto/services/project-ted.service"
 
 import { PROJETO_TIPOS } from "../../constants/projeto-tipos"
 import type { Projeto } from "../../types"

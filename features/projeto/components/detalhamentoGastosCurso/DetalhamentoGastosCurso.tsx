@@ -4,21 +4,17 @@ import { PlusIcon, Trash2Icon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import type { CursoDespesaRow } from "@/features/projetos/components/generalProjectData/types"
-import { createEmptyDespesa } from "@/features/projetos/components/generalProjectData/types"
+import type { CursoDespesaRow } from "@/features/projeto/types/general-project-data"
+import { createEmptyDespesa } from "@/features/projeto/types/general-project-data"
 import {
   findItemCurso,
   findTipoItemCurso,
   TIPOS_ITEM_CURSO,
-} from "@/features/projetos/constants/ted/catalogo-despesas-curso"
-import {
-  FORM_INPUT_CLASS,
-  FORM_SELECT_CLASS,
-} from "@/features/projetos/components/project-ted/shared/form-fields"
+} from "@/features/projeto/constants/ted/catalogo-despesas-curso"
 import {
   formatCurrencyInput,
   parseCurrencyInput,
-} from "@/features/projetos/utils/currency"
+} from "@/features/projeto/utils/currency"
 import { cn } from "@/lib/utils"
 
 import styles from "./DetalhamentoGastosCurso.module.css"
@@ -145,7 +141,6 @@ export function DetalhamentoGastosCurso({
                   <td>
                     <select
                       className={cn(
-                        FORM_SELECT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -166,7 +161,6 @@ export function DetalhamentoGastosCurso({
                   <td>
                     <select
                       className={cn(
-                        FORM_SELECT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -193,7 +187,6 @@ export function DetalhamentoGastosCurso({
                   <td>
                     <select
                       className={cn(
-                        FORM_SELECT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -216,7 +209,6 @@ export function DetalhamentoGastosCurso({
                   <td>
                     <select
                       className={cn(
-                        FORM_SELECT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -245,7 +237,6 @@ export function DetalhamentoGastosCurso({
                       value={row.quantidadeItens}
                       disabled={disabled}
                       className={cn(
-                        FORM_INPUT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -265,7 +256,6 @@ export function DetalhamentoGastosCurso({
                       value={row.valorUnitario}
                       disabled={disabled}
                       className={cn(
-                        FORM_INPUT_CLASS,
                         styles.control,
                         isViewMode && VIEW_MODE_FIELD_CLASS,
                       )}
@@ -282,11 +272,7 @@ export function DetalhamentoGastosCurso({
                       readOnly
                       tabIndex={-1}
                       value={formatCurrencyAmount(valorTotal)}
-                      className={cn(
-                        FORM_INPUT_CLASS,
-                        styles.control,
-                        VIEW_MODE_FIELD_CLASS,
-                      )}
+                      className={cn(styles.control, VIEW_MODE_FIELD_CLASS)}
                       disabled
                     />
                   </td>

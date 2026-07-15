@@ -28,7 +28,7 @@ import { useTedReview } from "@/features/projetos/contexts/ted-review-context"
 import {
   CampoReviewLabel,
   SecaoReviewBanner,
-} from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+} from "@/features/projeto/components/formShared/secao-review-actions"
 import type { ProjectFormSectionProps } from "../../sections-map"
 
 /** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */

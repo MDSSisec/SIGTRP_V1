@@ -4,7 +4,7 @@ import Link from "next/link"
 import { ArrowLeftIcon } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { SecaoReviewHeaderActions } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { SecaoReviewHeaderActions } from "@/features/projeto/components/formShared/secao-review-actions"
 
 import { PROJETOS_ROUTE } from "../../constants"
 import { PROJETOS_TEXT } from "../../constants/projetos.text"

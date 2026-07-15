@@ -1,4 +1,4 @@
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 
 import { formatCpf, formatTelefone } from "../utils/formatters"
 

@@ -2,7 +2,7 @@
 
 import { Check, Pencil, X } from "lucide-react"
 
-import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
+import { Button } from "@/components/ui/button"
 
 import styles from "../identidicacao-do-projeto.module.css"
 
@@ -56,34 +56,23 @@ export function IdentificacaoProjetoActions({
       )}
 
       {!isEditing && canStartEditing && (
-        <GenericButton
-          variant="editar"
-          icon={Pencil}
-          onClick={onEdit}
-        >
+        <Button variant="outline" onClick={onEdit}>
+          <Pencil className="size-4" />
           Editar
-        </GenericButton>
+        </Button>
       )}
 
       {isEditing && (
         <>
-          <GenericButton
-            variant="outline"
-            icon={X}
-            disabled={isSaving}
-            onClick={onCancel}
-          >
+          <Button variant="outline" disabled={isSaving} onClick={onCancel}>
+            <X className="size-4" />
             Cancelar
-          </GenericButton>
+          </Button>
 
-          <GenericButton
-            variant="salvar"
-            icon={Check}
-            disabled={isSaving}
-            onClick={onSave}
-          >
+          <Button disabled={isSaving} onClick={onSave}>
+            <Check className="size-4" />
             {isSaving ? "Salvando..." : "Salvar"}
-          </GenericButton>
+          </Button>
         </>
       )}
     </div>

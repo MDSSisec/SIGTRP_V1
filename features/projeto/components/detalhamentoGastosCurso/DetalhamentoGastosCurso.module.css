@@ -67,10 +67,46 @@
 }
 
 .control {
+  width: 100%;
   min-width: 8.5rem;
   min-height: 2.25rem;
+  box-sizing: border-box;
+  border-radius: 0.375rem !important;
+  border: 1px solid var(--input) !important;
+  background: #ffffff !important;
+  color: var(--foreground);
   font-size: 0.8rem !important;
+  line-height: 1.25;
   padding: 0.35rem 0.55rem !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  outline: none;
+}
+
+.control:focus,
+.control:focus-visible {
+  border-color: var(--ring) !important;
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
+}
+
+.control:disabled,
+.control[readonly] {
+  background: #ffffff !important;
+  opacity: 0.75;
+}
+
+:global(.dark) .control {
+  background: oklch(0.22 0.006 264) !important;
+  border-color: oklch(0.35 0.006 264) !important;
+}
+
+:global(.dark) .control:disabled,
+:global(.dark) .control[readonly] {
+  background: oklch(0.22 0.006 264) !important;
+}
+
+select.control {
+  cursor: pointer;
+  appearance: auto;
 }
 
 .removeButton {

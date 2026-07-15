@@ -7,8 +7,8 @@ import {
   type ChangeEvent,
 } from "react"
 
-import { fetchTedIdentificacao } from "@/features/projetos/services"
-import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
+import { fetchTedIdentificacao } from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveIdentificacaoResponsavelTecnico } from "../action/saveIdentificacaoResponsavelTecnico"

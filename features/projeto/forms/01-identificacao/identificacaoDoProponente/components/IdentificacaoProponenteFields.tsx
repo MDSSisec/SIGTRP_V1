@@ -1,9 +1,9 @@
 "use client"
 
-import { IDENTIFICACAO_PROPONENTE_LABELS, IDENTIFICACAO_PROPONENTE_PLACEHOLDERS } from "@/features/projetos/constants/ted/identificacao-proponente"
-import { CampoReviewLabel } from "@/features/projetos/components/project-ted/shared/secao-review-actions"
+import { IDENTIFICACAO_PROPONENTE_LABELS, IDENTIFICACAO_PROPONENTE_PLACEHOLDERS } from "@/features/projeto/constants/ted/identificacao-proponente"
+import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 import { CEP_FEEDBACK, SELECT_CLASS_NAME, type CepStatus } from "../constants/form"
-import type { IbgeEstado, IbgeMunicipio } from "@/features/projetos/services"
+import type { IbgeEstado, IbgeMunicipio } from "@/features/projeto/services"
 import type { DadosIdentificacaoProponente } from "../types/proponente-form"
 import styles from "../identificacao-do-proponente.module.css"
 import { Input } from "@/components/ui/input"
