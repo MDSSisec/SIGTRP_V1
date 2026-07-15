@@ -50,7 +50,7 @@ export function buildProjetoMenuItems(
 }
 
 /**
- * Filtra os projetos por etapa (status) e texto pesquisado.
+ * Filtra os projetos por etapa do projeto e texto pesquisado.
  */
 export function filterProjetos(
   projetos: Projeto[],

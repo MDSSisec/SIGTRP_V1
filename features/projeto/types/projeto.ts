@@ -5,7 +5,8 @@
 import type { ProjetoTipo } from "../constants/projeto-tipos"
 
 /**
- * Status do projeto = nome da etapa em SIGTRP_TB_PROJECT_STAGES.
+ * Nome da etapa do projeto (SIGTRP_TB_PROJECT_STAGES.nome).
+ * @deprecated Prefer `etapaNome` / `ProjetoEtapa`.
  */
 export type ProjetoStatus = string
 
@@ -40,7 +41,10 @@ export type Projeto = {
    */
   responsavel: string
 
-  /** Nome da etapa atual (SIGTRP_TB_PROJECT_STAGES.nome). */
+  /**
+   * Alias legado do nome da etapa (SIGTRP_TB_PROJECT_STAGES.nome).
+   * Preferir `etapaNome`.
+   */
   status: ProjetoStatus
 
   /**

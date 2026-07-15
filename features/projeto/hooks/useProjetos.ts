@@ -17,7 +17,7 @@ import {
  *
  * Centraliza:
  * - carregamento da lista;
- * - etapas do banco (status);
+ * - etapas do banco (SIGTRP_TB_PROJECT_STAGES);
  * - filtros;
  * - pesquisa;
  * - geração do menu;

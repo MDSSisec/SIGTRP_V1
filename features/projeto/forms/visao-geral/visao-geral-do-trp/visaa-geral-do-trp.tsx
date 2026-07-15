@@ -2,7 +2,10 @@
 
 import React, { useLayoutEffect, useMemo, useRef, useState } from "react"
 import { FileDown } from "lucide-react"
-import StatusStepper from "@/components/StatusStepper/statusStepper"
+import StatusStepper, {
+  buildEtapaSteps,
+  resolveEtapaStepIndex,
+} from "@/components/StatusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
   DESCRICAO_VISAO_GERAL,
@@ -12,12 +15,12 @@ import {
   TITULO_VISAO_GERAL,
 } from "@/features/projetos/constants/ted/visao-geral"
 import { getFormSection } from "../../sections-map"
-import type { ProjectFormSectionProps } from "../../sections-map"
+import type { ProjectFormSectionProps } from "../../types"
 import { COMUNS_TITLES } from "@/features/projetos/constants/ted/communs"
-import type { StatusProjeto } from "@/features/projetos/constants/ted/project"
 import { useProjectData } from "@/features/projetos/contexts/project-data-context"
-import { STATUS_PROJETO_STEPS, getProjectStepIndex } from "@/features/projetos/services/project-ted.service"
 import { formLayoutStyles } from "@/features/projetos/components/project-ted/shared/form-section"
+import { fetchProjectStages } from "@/features/projeto/services"
+import { useAsyncData } from "@/hooks/use-async-data"
 import { exportVisaoGeralToPdf } from "./export-visao-geral-pdf"
 import styles from "./visao-geral-do-trp.module.css"
 
@@ -89,11 +92,21 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
   const pdfExportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
 
-  const status = (projectData?.status as StatusProjeto | undefined) ?? "TRP em Elaboração"
+  const { data: etapas } = useAsyncData(fetchProjectStages, {
+    initialData: [],
+    errorMessage: "Não foi possível carregar as etapas do projeto.",
+  })
+
+  const etapaSteps = useMemo(() => buildEtapaSteps(etapas), [etapas])
 
   const currentStep = useMemo(
-    () => getProjectStepIndex(projectData ?? { status }),
-    [projectData, status],
+    () =>
+      resolveEtapaStepIndex(etapas, {
+        etapaOrdem: projectData?.etapaOrdem,
+        etapaNome: projectData?.status,
+        status: projectData?.status,
+      }),
+    [etapas, projectData?.etapaOrdem, projectData?.status],
   )
 
   const handleExportPDF = async () => {
@@ -136,12 +149,12 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
         className={styles.pdfExportRoot}
       >
         <div className={styles.statusCard}>
-          {projectId && (
+          {projectId && etapaSteps.length > 0 && (
             <StatusStepper
-              steps={STATUS_PROJETO_STEPS}
+              steps={etapaSteps}
               currentStep={currentStep}
               collapsible
-              collapsibleLabel="Status do projeto"
+              collapsibleLabel="Etapa do projeto"
               forceExpanded={isExporting}
             />
           )}

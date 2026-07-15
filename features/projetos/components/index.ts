@@ -1,3 +1,6 @@
 export { ProjetosTable } from "./projetos-table"
-export { ProjetoStatusBadge } from "./statusBadge/status-badge"
+export {
+  ProjetoEtapaBadge,
+  ProjetoStatusBadge,
+} from "@/features/projeto/components/etapaBadge"
 export { ProjectTEDEditContent } from "./project-ted"

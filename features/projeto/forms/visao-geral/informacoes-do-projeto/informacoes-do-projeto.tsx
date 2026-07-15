@@ -3,7 +3,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { AlertTriangle, Check, Lock, Pencil, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import StatusStepper from "@/components/StatusStepper/statusStepper"
+import StatusStepper, {
+  buildEtapaSteps,
+  resolveEtapaStepIndex,
+} from "@/components/StatusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
   formatProjetoTipoLabel,
@@ -16,13 +19,11 @@ import {
   TITULO_INFORMACOES_PROJETO,
   DESCRICAO_INFORMACOES_PROJETO,
 } from "@/features/projetos/constants/ted/visao-geral"
+import { fetchProjectStages } from "@/features/projeto/services"
 import {
-  fetchProjectStages,
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
   fetchTedIdentificacao,
-  getProjectStepIndex,
-  STATUS_PROJETO_STEPS,
   updateProjetoInformacoes,
 } from "@/features/projetos/services"
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
@@ -38,7 +39,7 @@ import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
 import { cn } from "@/lib/utils"
-import type { ProjectFormSectionProps } from "../../sections-map"
+import type { ProjectFormSectionProps } from "../../types"
 import infoStyles from "./informacoes-do-projeto.module.css"
 
 /** Em modo visualização: fundo branco e opacidade plena para o texto se destacar. */
@@ -164,7 +165,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
     }
 
     if (canEditInfo && !dados.etapaId) {
-      setSaveError("Selecione o status do projeto.")
+      setSaveError("Selecione a etapa do projeto.")
       return
     }
 
@@ -191,9 +192,16 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
     }
   }
 
+  const etapaSteps = useMemo(() => buildEtapaSteps(etapas), [etapas])
+
   const currentStep = useMemo(
-    () => getProjectStepIndex(projectData ?? {}),
-    [projectData],
+    () =>
+      resolveEtapaStepIndex(etapas, {
+        etapaOrdem: projectData?.etapaOrdem,
+        etapaNome: projectData?.status,
+        status: projectData?.status,
+      }),
+    [etapas, projectData?.etapaOrdem, projectData?.status],
   )
 
   const tipoProjetoLabel = useMemo(
@@ -221,13 +229,13 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
         <p className={formLayoutStyles.subtitle}>{DESCRICAO_INFORMACOES_PROJETO}</p>
       </div>
 
-      {projectId && (
+      {projectId && etapaSteps.length > 0 && (
         <div className={infoStyles.statusCard}>
           <StatusStepper
-            steps={STATUS_PROJETO_STEPS}
+            steps={etapaSteps}
             currentStep={currentStep}
             collapsible
-            collapsibleLabel="Status do projeto"
+            collapsibleLabel="Etapa do projeto"
           />
         </div>
       )}
@@ -237,7 +245,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
           <h2 className={formLayoutStyles.title}>Informações do Projeto</h2>
           {!canEditInfo && !readOnlyView ? (
             <p className="text-sm text-muted-foreground">
-              Apenas administradores ou gestores internos do MDS podem alterar o status do projeto.
+              Apenas administradores ou gestores internos do MDS podem alterar a etapa do projeto.
             </p>
           ) : null}
           <div className={formLayoutStyles.grid2}>
@@ -256,7 +264,7 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
             </div>
             <div className={formLayoutStyles.fieldGroup}>
               <Label htmlFor="etapaId" className={formLayoutStyles.label}>
-                Status
+                Etapa do projeto
               </Label>
               <select
                 id="etapaId"

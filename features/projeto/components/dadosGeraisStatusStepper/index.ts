@@ -1,0 +1,1 @@
+export { DadosGeraisStatusStepper } from "./dadosGeraisStatusStepper"

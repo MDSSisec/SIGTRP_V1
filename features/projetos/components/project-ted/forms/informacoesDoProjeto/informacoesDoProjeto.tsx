@@ -3,7 +3,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react"
 import { AlertTriangle, Check, Lock, Pencil, X } from "lucide-react"
 import { Label } from "@/components/ui/label"
-import StatusStepper from "@/components/StatusStepper/statusStepper"
+import StatusStepper, {
+  buildEtapaSteps,
+  resolveEtapaStepIndex,
+} from "@/components/StatusStepper"
 import { GenericButton } from "@/features/projetos/components/project-ted/shared/generic-button"
 import {
   formatProjetoTipoLabel,
@@ -21,8 +24,6 @@ import {
   fetchResponsaveisExternos,
   fetchResponsaveisInternos,
   fetchTedIdentificacao,
-  getProjectStepIndex,
-  STATUS_PROJETO_STEPS,
   updateProjetoInformacoes,
 } from "@/features/projetos/services"
 import type { TedIdentificacao } from "@/features/projetos/types/ted-identificacao"
@@ -191,9 +192,16 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
     }
   }
 
+  const etapaSteps = useMemo(() => buildEtapaSteps(etapas), [etapas])
+
   const currentStep = useMemo(
-    () => getProjectStepIndex(projectData ?? {}),
-    [projectData],
+    () =>
+      resolveEtapaStepIndex(etapas, {
+        etapaOrdem: projectData?.etapaOrdem,
+        etapaNome: projectData?.status,
+        status: projectData?.status,
+      }),
+    [etapas, projectData?.etapaOrdem, projectData?.status],
   )
 
   const tipoProjetoLabel = useMemo(
@@ -221,13 +229,13 @@ export function InformacoesDoProjeto({ projectId, readOnlyView }: ProjectFormSec
         <p className={formLayoutStyles.subtitle}>{DESCRICAO_INFORMACOES_PROJETO}</p>
       </div>
 
-      {projectId && (
+      {projectId && etapaSteps.length > 0 && (
         <div className={infoStyles.statusCard}>
           <StatusStepper
-            steps={STATUS_PROJETO_STEPS}
+            steps={etapaSteps}
             currentStep={currentStep}
             collapsible
-            collapsibleLabel="Status do projeto"
+            collapsibleLabel="Etapa do projeto"
           />
         </div>
       )}

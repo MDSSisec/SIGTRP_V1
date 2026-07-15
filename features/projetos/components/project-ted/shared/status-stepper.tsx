@@ -1,2 +1,11 @@
-export { default } from "@/components/StatusStepper/statusStepper"
-export type { StatusItem } from "@/components/StatusStepper/statusStepper"
+export {
+  default,
+  buildEtapaSteps,
+  getEtapaStepIndex,
+  resolveEtapaStepIndex,
+} from "@/components/StatusStepper"
+export type {
+  StatusItem,
+  EtapaItem,
+  ProjetoEtapaStepSource,
+} from "@/components/StatusStepper"

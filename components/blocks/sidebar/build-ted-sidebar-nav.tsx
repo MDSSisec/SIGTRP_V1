@@ -59,6 +59,10 @@ export function parseProjetoTedPath(
   return { projectId: match[1] }
 }
 
+/**
+ * Monta o menu de edição a partir de `features/projeto/config/modelos`
+ * (mesma árvore de `features/projeto/forms`). Conteúdo vazio → página em branco.
+ */
 export function buildProjetoEditNavItems(
   projectId: string,
   tipoProjeto: ProjetoTipo,

@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table"
 import type { Projeto } from "../../types"
 import { getProjetoEditPath } from "../../utils/projeto-routes"
-import { ProjetoStatusBadge } from "../statusBadge"
+import { ProjetoEtapaBadge } from "../etapaBadge"
 
 type ProjetosTableProps = {
   projetos: Projeto[]
@@ -68,7 +68,7 @@ export function ProjetosTable({
           <TableRow>
             <TableHead>Nome do Projeto</TableHead>
             <TableHead>Responsável</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Etapa do Projeto</TableHead>
             <TableHead>Tipo</TableHead>
             <TableHead className="text-right">Ações</TableHead>
           </TableRow>
@@ -95,8 +95,8 @@ export function ProjetosTable({
                   <TableCell className="font-medium">{projeto.nome}</TableCell>
                   <TableCell>{projeto.responsavel}</TableCell>
                   <TableCell>
-                    <ProjetoStatusBadge
-                      status={projeto.etapaNome}
+                    <ProjetoEtapaBadge
+                      etapa={projeto.etapaNome}
                       ordem={projeto.etapaOrdem}
                     />
                   </TableCell>

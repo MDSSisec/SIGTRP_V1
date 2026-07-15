@@ -14,6 +14,9 @@ export type StatusItem = {
   icon: LucideIcon;
 };
 
+/** Alias semântico: steps = etapas do projeto (SIGTRP_TB_PROJECT_STAGES). */
+export type EtapaItem = StatusItem;
+
 type StatusStepperProps = {
   steps: StatusItem[];
   currentStep: number;
@@ -124,7 +127,7 @@ export default function StatusStepper({
   steps,
   currentStep,
   collapsible = false,
-  collapsibleLabel = "Status do projeto",
+  collapsibleLabel = "Etapa do projeto",
   forceExpanded = false,
 }: StatusStepperProps) {
   const [open, setOpen] = useState(true);
