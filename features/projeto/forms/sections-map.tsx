@@ -6,6 +6,7 @@ import IdentificacaoProjeto from "./01-identificacao/identificacaoDoProjeto/iden
 import IdentificacaoProponente from "./01-identificacao/identificacaoDoProponente/identificacao-do-proponente"
 import IdentificacaoRepresentanteLegal from "./01-identificacao/identificacaoDoRepresentanteLegal/identificacao-do-representante-legal"
 import IdentificacaoResponsavelTecnico from "./01-identificacao/identificacaoDoResponsavelTecnico/identificacao-do-responsavel-tecnico"
+import { FormularioGestao } from "./02-descricao/descricaoDaGestaoDoProjeto"
 import { FormularioJustificativa } from "./02-descricao/descricaoDaJustificativaEMotivacao"
 import { FormularioEtapasCronograma } from "./02-descricao/descricaoDasEtapasECronogramas"
 import { FormularioMetas } from "./02-descricao/descricaoDasMetas"
@@ -40,6 +41,7 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "etapas-cronograma": FormularioEtapasCronograma,
   metodologia: FormularioMetodologia,
   "resultados-esperados": FormularioResultados,
+  "gestao-projeto": FormularioGestao,
 }
 
 export function getFormSection(
