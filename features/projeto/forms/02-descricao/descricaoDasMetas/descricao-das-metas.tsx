@@ -10,13 +10,17 @@ import styles from "./descricao-das-metas.module.css"
 /**
  * Formulário da seção "Metas".
  *
- * Compõe a UI e delega a lógica a `useMetas`.
+ * Responsável apenas por compor a interface da seção,
+ * delegando toda a lógica de negócio ao hook `useMetas`.
  */
 export function FormularioMetas({
   projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
-  const form = useMetas({ projectId, readOnlyView })
+  const form = useMetas({
+    projectId,
+    readOnlyView,
+  })
 
   return (
     <div className={styles.container}>
@@ -32,7 +36,7 @@ export function FormularioMetas({
         onRemover={form.actions.removerMeta}
       />
 
-      {!readOnlyView ? (
+      {!readOnlyView && (
         <MetasActions
           isEditing={form.ui.isEditing}
           isSaving={form.ui.isSaving}
@@ -42,7 +46,7 @@ export function FormularioMetas({
           onCancel={form.actions.cancel}
           onSave={() => void form.actions.save()}
         />
-      ) : null}
+      )}
     </div>
   )
 }

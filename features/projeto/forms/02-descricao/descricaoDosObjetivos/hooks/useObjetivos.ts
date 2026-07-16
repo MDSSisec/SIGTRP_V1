@@ -12,6 +12,7 @@ import {
   useUpdateProjectData,
 } from "@/features/projeto/contexts/project-data-context"
 
+import { OBJETIVO_GERAL_MAX_LENGTH } from "../constants/form"
 import { saveObjetivos } from "../action/saveObjetivos"
 import {
   toObjetivosForm,
@@ -63,7 +64,7 @@ export function useObjetivos({
       setSaveError(null)
       setDadosFormulario((prev) => ({
         ...prev,
-        objetivoGeral: event.target.value,
+        objetivoGeral: event.target.value.slice(0, OBJETIVO_GERAL_MAX_LENGTH),
       }))
     },
     [],

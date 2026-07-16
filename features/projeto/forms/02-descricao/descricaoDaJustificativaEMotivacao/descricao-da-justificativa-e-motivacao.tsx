@@ -8,10 +8,14 @@ import { useJustificativa } from "./hooks/useJustificativa"
 import styles from "./descricao-da-justificativa-e-motivacao.module.css"
 
 /**
- * Formulário da seção "Justificativa e Motivação".
+ * Seção "Justificativa e Motivação".
  *
- * Compõe a UI e delega a lógica a `useJustificativa`.
- */
+ * Responsabilidades:
+ * - renderizar o banner de revisão;
+ * - exibir os campos da justificativa;
+ * - renderizar as ações de edição;
+ * - delegar toda a lógica para `useJustificativa`.
+*/
 export function FormularioJustificativa({
   projectId,
   readOnlyView,

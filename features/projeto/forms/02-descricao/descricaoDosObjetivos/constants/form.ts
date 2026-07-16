@@ -7,6 +7,9 @@ export const VIEW_MODE_FIELD_CLASS =
 export const ATTENTION_FIELD_CLASS =
   "!border-destructive !ring-2 !ring-destructive/30 bg-destructive/5"
 
+/** Limite de caracteres do Objetivo Geral (6.1). */
+export const OBJETIVO_GERAL_MAX_LENGTH = 500
+
 /** Chave de revisão do objetivo específico por índice. */
 export function objetivoEspecificoCampoKey(indice: number) {
   return `objetivoEspecifico-${indice}`

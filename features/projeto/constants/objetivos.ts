@@ -10,7 +10,7 @@ export const OBJETIVOS_LABELS = {
 } as const
 
 export const OBJETIVOS_PLACEHOLDERS = {
-  PLACEHOLDER_OBJETIVO_GERAL: "Descreva o objetivo geral do projeto.",
+  PLACEHOLDER_OBJETIVO_GERAL: "Promover a capacitação de pessoas em situação de vulnerabilidade no (Município/Região/Estado) de .................., inscritas no Cadastro Único de Programas Sociais do Governo Federal - CadÚnico, com vistas à empregabilidade ou ao empreendedorismo, possibilitando-lhes inclusão socioeconômica.",
   PLACEHOLDER_OBJETIVO_ESPECIFICO:
     "Ex: Realizar 10 oficinas de capacitação",
 } as const

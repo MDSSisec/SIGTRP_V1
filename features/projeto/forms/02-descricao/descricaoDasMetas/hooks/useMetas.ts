@@ -30,72 +30,105 @@ type UseMetasOptions = {
  * - aplica regras de revisão.
  */
 export function useMetas({ projectId, readOnlyView }: UseMetasOptions) {
+  // contexts
   const { data, replaceMetas } = useCronograma()
   const projectData = useProjectData()
   const updateProjectData = useUpdateProjectData()
 
+  // states
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
   const [dadosFormulario, setDadosFormulario] =
     useState<DadosMetas>(VAZIO_METAS)
 
-  const review = useMetasReview({
+  // review
+  const { isLocked, isViewMode, canStartEditing, fieldClass } = useMetasReview({
     readOnlyView,
     isEditing,
   })
 
-  const resetForm = useCallback(() => {
+  // helpers
+  const clearError = useCallback(() => {
+    setSaveError(null)
+  }, [])
+
+  const loadCurrentData = useCallback(() => {
     setDadosFormulario(toMetasForm(data.metas))
   }, [data.metas])
 
+  // effects
   useEffect(() => {
-    if (!isEditing) resetForm()
-  }, [isEditing, resetForm])
+    if (!isEditing) {
+      loadCurrentData()
+    }
+  }, [isEditing, loadCurrentData])
 
-  const handleTituloChange = useCallback((indice: number, valor: string) => {
-    setSaveError(null)
-    setDadosFormulario((prev) => ({
-      metas: prev.metas.map((meta, i) =>
-        i === indice ? { ...meta, titulo: valor } : meta,
-      ),
-    }))
-  }, [])
+  // actions
+  const handleTituloChange = useCallback(
+    (indice: number, valor: string) => {
+      clearError()
+
+      setDadosFormulario((prev) => {
+        const metas = prev.metas.map((meta, index) =>
+          index === indice
+            ? {
+                ...meta,
+                titulo: valor,
+              }
+            : meta,
+        )
+
+        return { metas }
+      })
+    },
+    [clearError],
+  )
 
   const adicionarMeta = useCallback(() => {
-    setSaveError(null)
+    clearError()
+
     setDadosFormulario((prev) => ({
       metas: [...prev.metas, createEmptyMeta()],
     }))
-  }, [])
+  }, [clearError])
 
-  const removerMeta = useCallback((indice: number) => {
-    setSaveError(null)
-    setDadosFormulario((prev) => {
-      if (prev.metas.length <= 1) return prev
-      return {
-        metas: prev.metas.filter((_, i) => i !== indice),
-      }
-    })
-  }, [])
+  const removerMeta = useCallback(
+    (indice: number) => {
+      clearError()
+
+      setDadosFormulario((prev) => {
+        if (prev.metas.length <= 1) {
+          return prev
+        }
+
+        const metas = prev.metas.filter((_, index) => index !== indice)
+
+        return { metas }
+      })
+    },
+    [clearError],
+  )
 
   const startEditing = useCallback(() => {
-    setDadosFormulario(toMetasForm(data.metas))
+    loadCurrentData()
+    clearError()
     setIsEditing(true)
-    setSaveError(null)
-  }, [data.metas])
+  }, [clearError, loadCurrentData])
 
   const cancel = useCallback(() => {
-    resetForm()
-    setSaveError(null)
+    loadCurrentData()
+    clearError()
     setIsEditing(false)
-  }, [resetForm])
+  }, [clearError, loadCurrentData])
 
   const save = useCallback(async () => {
-    if (!projectId) return
+    if (!projectId) {
+      return
+    }
 
     setIsSaving(true)
-    setSaveError(null)
+    clearError()
 
     try {
       const result = await saveMetas({
@@ -116,6 +149,7 @@ export function useMetas({ projectId, readOnlyView }: UseMetasOptions) {
       setIsSaving(false)
     }
   }, [
+    clearError,
     projectId,
     dadosFormulario,
     replaceMetas,
@@ -123,20 +157,24 @@ export function useMetas({ projectId, readOnlyView }: UseMetasOptions) {
     projectData?.etapas_cronograma,
   ])
 
+  // return
   return {
     form: dadosFormulario,
+
     review: {
-      fieldClass: review.fieldClass,
+      fieldClass,
     },
+
     ui: {
       isEditing,
       isSaving,
       saveError,
-      isLocked: review.isLocked,
-      isViewMode: review.isViewMode,
-      canStartEditing: review.canStartEditing,
-      canManageList: isEditing && !review.isLocked,
+      isLocked,
+      isViewMode,
+      canStartEditing,
+      canManageList: isEditing && !isLocked,
     },
+
     actions: {
       handleTituloChange,
       adicionarMeta,

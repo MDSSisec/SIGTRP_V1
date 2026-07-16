@@ -10,6 +10,7 @@ import {
   METAS_PLACEHOLDERS,
   METAS_TEXT,
   METAS_TITLE,
+  METAS_TITLE_SUBTITLE,
 } from "@/features/projeto/constants/metas"
 
 import { metaCampoKey } from "../constants/form"
@@ -41,7 +42,12 @@ export function MetasFields({
   return (
     <section className={styles.section}>
       <div className={styles.header}>
-        <h2 className={styles.title}>{METAS_TITLE.TITLE_METAS}</h2>
+        <div className={styles.headerText}>
+          <h2 className={styles.title}>{METAS_TITLE.TITLE_METAS}</h2>
+          <h3 className={styles.subtitle}>
+            {METAS_TITLE_SUBTITLE.TITLE_METAS_SUBTITLE}
+          </h3>
+        </div>
         {canManageList ? (
           <Button variant="outline" size="sm" onClick={onAdicionar}>
             <Plus className="size-4" />

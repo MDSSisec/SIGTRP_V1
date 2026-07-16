@@ -107,6 +107,42 @@
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 30%, transparent);
 }
 
+.textareaWrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.textareaWithCounter {
+  padding-bottom: 1.75rem;
+}
+
+.charCounter {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.5rem;
+  pointer-events: none;
+  font-size: 0.75rem;
+  line-height: 1;
+  color: var(--muted-foreground);
+  background: color-mix(in oklch, #ffffff 92%, transparent);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+
+:global(.dark) .charCounter {
+  background: color-mix(in oklch, oklch(0.22 0.006 264) 92%, transparent);
+}
+
+.charCounterWarn {
+  color: oklch(0.55 0.14 55);
+}
+
+.charCounterLimit {
+  color: var(--destructive);
+  font-weight: 500;
+}
+
 .actions {
   display: flex;
   flex-wrap: wrap;

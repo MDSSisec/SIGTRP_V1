@@ -12,8 +12,12 @@ import {
   OBJETIVOS_TEXT,
   OBJETIVOS_TITLE,
 } from "@/features/projeto/constants/objetivos"
+import { cn } from "@/lib/utils"
 
-import { objetivoEspecificoCampoKey } from "../constants/form"
+import {
+  OBJETIVO_GERAL_MAX_LENGTH,
+  objetivoEspecificoCampoKey,
+} from "../constants/form"
 import styles from "../descricao-dos-objetivos.module.css"
 import type { DadosObjetivos } from "../types/objetivos-form"
 
@@ -53,16 +57,34 @@ export function ObjetivosFields({
         >
           {OBJETIVOS_LABELS.LABEL_OBJETIVO_GERAL}
         </CampoReviewLabel>
-        <textarea
-          id="objetivoGeral"
-          name="objetivoGeral"
-          value={dados.objetivoGeral}
-          onChange={onObjetivoGeralChange}
-          rows={4}
-          placeholder={OBJETIVOS_PLACEHOLDERS.PLACEHOLDER_OBJETIVO_GERAL}
-          className={fieldClass("objetivoGeral")}
-          disabled={isLocked}
-        />
+        <div className={styles.textareaWrap}>
+          <textarea
+            id="objetivoGeral"
+            name="objetivoGeral"
+            value={dados.objetivoGeral}
+            onChange={onObjetivoGeralChange}
+            rows={5}
+            maxLength={OBJETIVO_GERAL_MAX_LENGTH}
+            placeholder={OBJETIVOS_PLACEHOLDERS.PLACEHOLDER_OBJETIVO_GERAL}
+            className={cn(
+              fieldClass("objetivoGeral"),
+              styles.textareaWithCounter,
+            )}
+            disabled={isLocked}
+          />
+          <span
+            className={cn(
+              styles.charCounter,
+              dados.objetivoGeral.length >= OBJETIVO_GERAL_MAX_LENGTH * 0.9 &&
+                styles.charCounterWarn,
+              dados.objetivoGeral.length >= OBJETIVO_GERAL_MAX_LENGTH &&
+                styles.charCounterLimit,
+            )}
+            aria-live="polite"
+          >
+            {dados.objetivoGeral.length}/{OBJETIVO_GERAL_MAX_LENGTH}
+          </span>
+        </div>
       </div>
 
       <div className={styles.section}>

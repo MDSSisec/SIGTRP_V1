@@ -1,15 +1,32 @@
 import type { ProjectModelData } from "@/features/projeto/types"
 
-/** Estado do formulário de Justificativa e Motivação. */
+/**
+ * Estado utilizado pelo formulário da seção
+ * "Descrição da Justificativa e Motivação".
+ */
 export type DadosJustificativa = {
+  /** Caracterização dos interesses recíprocos entre as partes. */
   caracterizacaoInteresses: string
+
+  /** Público-alvo beneficiado pelo projeto. */
   publicoAlvo: string
+
+  /** Problema que motivou a elaboração da proposta. */
   problema: string
+
+  /** Resultados esperados após a execução do projeto. */
   resultadosEsperados: string
+
+  /** Relação da proposta com os objetivos e diretrizes do programa. */
   relacaoPrograma: string
 }
 
-/** Estado inicial vazio. */
+/**
+ * Estado inicial do formulário.
+ *
+ * Utilizado durante a criação de um novo projeto ou enquanto
+ * os dados ainda não foram carregados.
+ */
 export const VAZIO_JUSTIFICATIVA: DadosJustificativa = {
   caracterizacaoInteresses: "",
   publicoAlvo: "",
@@ -19,30 +36,55 @@ export const VAZIO_JUSTIFICATIVA: DadosJustificativa = {
 }
 
 /**
- * Converte `descricao_projeto` do contexto para o formato do formulário.
+ * Converte os dados armazenados em `descricao_projeto`
+ * para o formato utilizado pelo formulário.
+ *
+ * A função também mantém compatibilidade com versões antigas,
+ * priorizando os novos campos e utilizando os campos internos de
+ * `justificativa_motivacao` quando necessário.
  */
 export function toJustificativaForm(
   projectData: ProjectModelData | null | undefined,
 ): DadosJustificativa {
-  const d = projectData?.descricao_projeto
-  const j = d?.justificativa_motivacao
+  const descricaoProjeto = projectData?.descricao_projeto
+  const justificativa = descricaoProjeto?.justificativa_motivacao
 
-  if (!d && !j) return VAZIO_JUSTIFICATIVA
+  if (!descricaoProjeto && !justificativa) {
+    return VAZIO_JUSTIFICATIVA
+  }
 
   return {
     caracterizacaoInteresses:
-      j?.caracterizacao_interesses_reciprocos ?? "",
-    publicoAlvo: d?.publico_alvo ?? j?.publico_alvo ?? "",
-    problema: d?.problema ?? j?.problema ?? "",
+      justificativa?.caracterizacao_interesses_reciprocos ?? "",
+
+    publicoAlvo:
+      descricaoProjeto?.publico_alvo ??
+      justificativa?.publico_alvo ??
+      "",
+
+    problema:
+      descricaoProjeto?.problema ??
+      justificativa?.problema ??
+      "",
+
     resultadosEsperados:
-      d?.resultados_esperados ?? j?.resultados_esperados ?? "",
+      descricaoProjeto?.resultados_esperados ??
+      justificativa?.resultados_esperados ??
+      "",
+
     relacaoPrograma:
-      d?.relacao_proposta_programa ?? j?.relacao_proposta_programa ?? "",
+      descricaoProjeto?.relacao_proposta_programa ??
+      justificativa?.relacao_proposta_programa ??
+      "",
   }
 }
 
 /**
- * Monta o patch de `descricao_projeto` a partir do formulário.
+ * Converte os dados do formulário para o formato esperado
+ * pelo contexto do projeto.
+ *
+ * Preserva as propriedades existentes em `descricao_projeto`
+ * e atualiza apenas os campos relacionados à justificativa.
  */
 export function toDescricaoProjetoPatch(
   dados: DadosJustificativa,
@@ -50,15 +92,20 @@ export function toDescricaoProjetoPatch(
 ): NonNullable<ProjectModelData["descricao_projeto"]> {
   return {
     ...current,
+
     publico_alvo: dados.publicoAlvo,
     problema: dados.problema,
     resultados_esperados: dados.resultadosEsperados,
     relacao_proposta_programa: dados.relacaoPrograma,
+
     justificativa_motivacao: {
       ...(typeof current?.justificativa_motivacao === "object"
         ? current.justificativa_motivacao
         : {}),
-      caracterizacao_interesses_reciprocos: dados.caracterizacaoInteresses,
+
+      caracterizacao_interesses_reciprocos:
+        dados.caracterizacaoInteresses,
+
       publico_alvo: dados.publicoAlvo,
       problema: dados.problema,
       resultados_esperados: dados.resultadosEsperados,
