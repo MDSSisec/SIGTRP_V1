@@ -15,6 +15,8 @@ type CronogramaContextType = {
   addMeta: () => void
   updateMeta: (index: number, meta: MetaCronograma) => void
   removeMeta: (index: number) => void
+  /** Substitui a lista de metas (ex.: salvar/cancelar do formulário). */
+  replaceMetas: (metas: MetaCronograma[]) => void
 }
 
 const CronogramaContext = createContext<CronogramaContextType | undefined>(undefined)
@@ -44,8 +46,14 @@ export function CronogramaProvider({
     }))
   }
 
+  const replaceMetas = (metas: MetaCronograma[]) => {
+    setData({ metas })
+  }
+
   return (
-    <CronogramaContext.Provider value={{ data, addMeta, updateMeta, removeMeta }}>
+    <CronogramaContext.Provider
+      value={{ data, addMeta, updateMeta, removeMeta, replaceMetas }}
+    >
       {children}
     </CronogramaContext.Provider>
   )

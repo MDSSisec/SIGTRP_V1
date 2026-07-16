@@ -7,6 +7,7 @@ import IdentificacaoProponente from "./01-identificacao/identificacaoDoProponent
 import IdentificacaoRepresentanteLegal from "./01-identificacao/identificacaoDoRepresentanteLegal/identificacao-do-representante-legal"
 import IdentificacaoResponsavelTecnico from "./01-identificacao/identificacaoDoResponsavelTecnico/identificacao-do-responsavel-tecnico"
 import { FormularioJustificativa } from "./02-descricao/descricaoDaJustificativaEMotivacao"
+import { FormularioMetas } from "./02-descricao/descricaoDasMetas"
 import { FormularioObjetivos } from "./02-descricao/descricaoDosObjetivos"
 import { DadosGeraisDoProjeto } from "./dados-gerais-do-projeto/dados-gerais"
 import { DetalhamentoCursos } from "./dados-gerais-do-projeto/detalhamento-dos-cursos"
@@ -32,6 +33,7 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "identificacao-responsavel-tecnico": IdentificacaoResponsavelTecnico,
   justificativa: FormularioJustificativa,
   objetivos: FormularioObjetivos,
+  metas: FormularioMetas,
 }
 
 export function getFormSection(

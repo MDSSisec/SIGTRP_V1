@@ -1,0 +1,92 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--input);
+  background: #f5f5f5;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  padding: 1.5rem;
+}
+
+:global(.dark) .container {
+  background: oklch(0.29 0.006 264);
+  border-color: oklch(0.36 0.006 264);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.5rem;
+}
+
+.title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--foreground);
+  margin: 0;
+}
+
+.emptyText {
+  font-size: 0.875rem;
+  color: var(--muted-foreground);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.itemCard {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+}
+
+:global(.dark) .itemCard {
+  background: oklch(0.25 0.006 264);
+}
+
+.label {
+  font-weight: 500;
+  color: var(--foreground);
+}
+
+.input {
+  background: #ffffff !important;
+  min-width: 0;
+}
+
+:global(.dark) .input {
+  background: oklch(0.22 0.006 264) !important;
+}
+
+.cardActions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5rem;
+}
