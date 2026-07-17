@@ -1,5 +1,5 @@
 export const METAS_TITLE = {
-  TITLE_METAS: "Metas",
+  TITLE_METAS: "7. Metas",
 } as const
 
 export const METAS_PLACEHOLDER = {

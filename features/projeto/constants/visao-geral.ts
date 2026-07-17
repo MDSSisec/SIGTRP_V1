@@ -21,6 +21,7 @@ export const SESSOES_VISAO_GERAL_SLUG = {
   SLUG_SESSAO_POVOS_COMUNIDADES_TRADICIONAIS: "povos-comunidades-tradicionais",
   SLUG_SESSAO_PERFIL_SOCIO_OCUPACIONAL: "perfil-socio-ocupacional",
   SLUG_SESSAO_SERVICOS_ACESSADOS: "servicos-acessados",
+  SLUG_SESSAO_PUBLICOS_BENEFICIARIOS_E_SERVICOS: "publico-beneficiario-e-servicos",
   SLUG_SESSAO_OUTRAS_INFORMACOES_PROPOSTA: "outras-informacoes-proponente",
   SLUG_SESSAO_VALOR_TOTAL: "valor-total",
   SLUG_SESSAO_CRONOGRAMA_DESENBOLSO: "cronograma-desembolso",

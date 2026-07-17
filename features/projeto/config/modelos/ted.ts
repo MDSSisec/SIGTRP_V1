@@ -1,4 +1,14 @@
 import type { ModeloProjetoConfig } from "./types"
+import { POVOS_OU_COMUNIDADE_TRADICIONAIS_TITLE } from "@/features/projeto/constants/povos-ou-comunidades-tradicionais"
+import { JUSTIFICATIVA_TITLE } from "@/features/projeto/constants/justificativa"
+import { OBJETIVOS_TITLE } from "@/features/projeto/constants/objetivos"
+import { METAS_TITLE } from "@/features/projetos/constants/ted/metas"
+import { ETAPAS_CRONOGRAMA_TITLE } from "../../constants/etapas-cronograma"
+import { METODOLOGIA_TITLE } from "../../constants/metodologia"
+import { GESTAO_TITLE } from "../../constants/gestao-projeto"
+import { RESULTADOS_TITLE } from "../../constants/resultados"
+import { PUBLICO_BENEFICIARIO_ESERVICOS_TITLE } from "../../constants/publico-beneficiario-e-servico"
+
 
 /**
  * TED — formulário TRP completo (grupos atuais do sidebar).
@@ -42,13 +52,13 @@ export const TED_MODELO_CONFIG: ModeloProjetoConfig = {
       id: "descricao",
       title: "II - Descrição do Projeto",
       sections: [
-        { id: "justificativa",       title: "5. Justificativa e Motivação para celebração do instrumento",  required: true, review: true },
-        { id: "objetivos",           title: "6. Objetivos",                                                 required: true, review: true },
-        { id: "metas",               title: "7. Metas",                                                     required: true, review: true },
-        { id: "etapas-cronograma",   title: "8. Etapas e cronograma de execução",                           required: true, review: true },
-        { id: "metodologia",         title: "9. Metodologia",                                               required: true, review: true },
-        { id: "resultados-esperados",title: "10. Resultados Esperados",                                     required: true, review: true },
-        { id: "gestao-projeto",      title: "11. Gestão do Projeto",                                        required: true, review: true },
+        { id: "justificativa",       title: JUSTIFICATIVA_TITLE.TITLE_JUSTIFICATIVA_MOTIVACAO,  required: true, review: true },
+        { id: "objetivos",           title: OBJETIVOS_TITLE.TITLE_OBJETIVOS,                    required: true, review: true },
+        { id: "metas",               title: METAS_TITLE.TITLE_METAS,                            required: true, review: true },
+        { id: "etapas-cronograma",   title: ETAPAS_CRONOGRAMA_TITLE.TITLE,                      required: true, review: true },
+        { id: "metodologia",         title: METODOLOGIA_TITLE.TITLE,                            required: true, review: true },
+        { id: "resultados-esperados",title: RESULTADOS_TITLE.TITLE,                             required: true, review: true },
+        { id: "gestao-projeto",      title: GESTAO_TITLE.TITLE,                                 required: true, review: true },
       ],
     },
     {
@@ -58,9 +68,9 @@ export const TED_MODELO_CONFIG: ModeloProjetoConfig = {
         { id: "historico-situacao-territorio",  title: "12. Histórico e situação socioeconômica do território e da população a ser beneficiada",  required: true, review: true },
         { id: "base-territorial",               title: "13. Detalhamento da base territorial do projeto",                                         required: true, review: true },
         { id: "publico-beneficiario",           title: "14. Público beneficiário do projeto",                                                     required: true, review: true },
-        { id: "povos-comunidades-tradicionais", title: "15. Informe se o público faz parte de algum destes povos ou comunidades tradicionais",    required: true, review: true },
+        { id: "povos-comunidades-tradicionais", title: POVOS_OU_COMUNIDADE_TRADICIONAIS_TITLE.TITLE,                                              required: true, review: true },
         { id: "perfil-socio-ocupacional",       title: "16. Informe o perfil sócio-ocupacional predominante do público beneficiário",             required: true, review: true },
-        { id: "servicos-acessados",             title: "17. Informe se o público beneficiário está acessando alguns dos seguintes serviços",      required: true, review: true },
+        { id: "publico-beneficiario-e-servicos",title: PUBLICO_BENEFICIARIO_ESERVICOS_TITLE.TITLE,                                                required: true, review: true },
       ],
     },
     {

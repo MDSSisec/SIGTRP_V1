@@ -1,2 +1,2 @@
-export { FormularioGestao } from "./descricao-da-gestao-do-projeto"
+export { default as FormularioGestao } from "./descricao-da-gestao-do-projeto"
 export { default } from "./descricao-da-gestao-do-projeto"
