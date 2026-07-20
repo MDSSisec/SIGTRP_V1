@@ -62,7 +62,9 @@ export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
   const projectData = useProjectData()
   const pdfExportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
-  const [local, setLocal] = useState(VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK)
+  const [local, setLocal] = useState<string>(
+    VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK,
+  )
 
   const { data: etapas } = useAsyncData(fetchProjectStages, {
     initialData: [],
