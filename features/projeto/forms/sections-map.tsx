@@ -31,6 +31,12 @@ import { FormularioPovosOuComunidadesTradicionais } from "./03-participantes/pov
 import { FormularioPerfilSocioOcupacional } from "./03-participantes/perfilSocioOcupacional"
 import { FormularioPublicoBeneficiarioEServicos } from "./03-participantes/publicoBeneficiarioEServicos"
 import { FormularioOutrasInformacoesProponente } from "./04-caracterizacao/outrasInformacoesDoProponente"
+import { FormularioValorTotalDoProjeto } from "./05-dados-financeiro/valorTotalDoProjeto"
+import { FormularioCronogramaDeDesembolso } from "./05-dados-financeiro/cronogramaDeDesembolso"
+import { FormularioDetalhamentoDoOrcamento } from "./05-dados-financeiro/detalhamentoDoOrcamento"
+import { FormularioResumoDoPlanoDeAplicacao } from "./05-dados-financeiro/resumoDoPlanoDeAplicacao"
+import { FormularioProcedimentosDeMonitoramento } from "./06-monitoramento/procedimentosDeMonitoramento"
+import { FormularioIndicadoresDeEficiencia } from "./06-monitoramento/indicadoresDeEficiencia"
 
 export type { ProjectFormSectionProps }
 
@@ -61,6 +67,12 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "publico-beneficiario-e-servicos": FormularioPublicoBeneficiarioEServicos,
   "servicos-acessados": FormularioPublicoBeneficiarioEServicos,
   "outras-informacoes-proponente": FormularioOutrasInformacoesProponente,
+  "valor-total": FormularioValorTotalDoProjeto,
+  "cronograma-desembolso": FormularioCronogramaDeDesembolso,
+  "detalhamento-orcamento": FormularioDetalhamentoDoOrcamento,
+  "resumo-plano-aplicacao": FormularioResumoDoPlanoDeAplicacao,
+  "procedimentos-monitoramento": FormularioProcedimentosDeMonitoramento,
+  "indicadores-eficiencia": FormularioIndicadoresDeEficiencia,
 }
 export function getFormSection(
   slug: string,

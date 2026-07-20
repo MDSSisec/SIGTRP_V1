@@ -1,26 +1,42 @@
 "use client"
 
 import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
-import { HISTORICO_SITUACAO_TITLE } from "@/features/projeto/constants/historico-situacao"
 
 import type { ProjectFormSectionProps } from "../../types"
+import {
+  HistoricoSituacaoActions,
+  HistoricoSituacaoFields,
+} from "./components"
+import { useHistoricoSituacao } from "./hooks/useHistoricoSituacao"
 import styles from "./historico-e-situacao.module.css"
 
 /**
- * Seção "Histórico e situação socioeconômica do território".
- *
- * Estrutura mínima (título + card) até os campos serem definidos.
- * Bloquear / Marcar atenção / Voltar para projetos ficam no header
- * da tela de edição (via `TED_SECOES_COM_REVIEW`).
+ * Formulário da seção "Histórico e situação socioeconômica do território".
  */
-export function FormularioHistoricoSituacao(_props: ProjectFormSectionProps) {
+export function FormularioHistoricoSituacao({
+  readOnlyView,
+}: ProjectFormSectionProps) {
+  const form = useHistoricoSituacao({ readOnlyView })
+
   return (
     <div className={styles.container}>
       <SecaoReviewBanner />
 
-      <section className={styles.section}>
-        <h2 className={styles.title}>{HISTORICO_SITUACAO_TITLE.TITLE}</h2>
-      </section>
+      <HistoricoSituacaoFields
+        dados={form.form}
+        isLocked={form.ui.isLocked}
+        onChange={form.actions.setTexto}
+      />
+
+      {!readOnlyView ? (
+        <HistoricoSituacaoActions
+          isEditing={form.ui.isEditing}
+          canStartEditing={form.ui.canStartEditing}
+          onEdit={form.actions.startEditing}
+          onCancel={form.actions.cancel}
+          onSave={form.actions.save}
+        />
+      ) : null}
     </div>
   )
 }

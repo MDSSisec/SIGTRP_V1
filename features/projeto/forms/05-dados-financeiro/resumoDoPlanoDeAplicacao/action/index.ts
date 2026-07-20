@@ -1,0 +1,1 @@
+﻿export { saveResumoPlanoAplicacao } from "./saveResumoPlanoAplicacao"

@@ -5,6 +5,7 @@ import { formLayoutStyles } from "@/features/projeto/components/formShared/form-
 import { TITULO_DOCUMENTO_TRP } from "@/features/projeto/constants/visao-geral"
 
 import {
+  VisaoGeralAssinatura,
   VisaoGeralHeader,
   VisaoGeralSections,
 } from "./components"
@@ -50,6 +51,12 @@ export function VisaoGeralDoProjeto({ projectId }: ProjectFormSectionProps) {
         </div>
 
         <VisaoGeralSections projectId={projectId} />
+
+        <VisaoGeralAssinatura
+          local={view.meta.assinatura.local}
+          nome={view.meta.assinatura.nome}
+          cargo={view.meta.assinatura.cargo}
+        />
       </div>
     </div>
   )

@@ -1,13 +1,20 @@
 "use client"
 
-import { useCallback, useMemo, useRef, useState } from "react"
+import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 
 import {
   buildEtapaSteps,
   resolveEtapaStepIndex,
 } from "@/components/StatusStepper"
+import { VISAO_GERAL_ASSINATURA } from "@/features/projeto/constants/visao-geral"
 import { useProjectData } from "@/features/projeto/contexts/project-data-context"
-import { fetchProjectStages } from "@/features/projeto/services"
+import {
+  fetchEstados,
+  fetchMunicipiosByUf,
+  fetchProjectStages,
+  fetchTedIdentificacao,
+} from "@/features/projeto/services"
+import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { exportVisaoGeralToPdf } from "../utils/export-visao-geral-pdf"
@@ -17,20 +24,80 @@ type UseVisaoGeralDoTrpOptions = {
 }
 
 /**
+ * Resolve município/UF a partir dos códigos IBGE do proponente.
+ */
+async function resolveLocalProponente(
+  identificacao: TedIdentificacao | null,
+): Promise<string> {
+  const ufIbge = identificacao?.proponenteUfIbge
+  const municipioIbge = identificacao?.proponenteMunicipioIbge
+
+  if (ufIbge == null || municipioIbge == null) {
+    return VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK
+  }
+
+  const estados = await fetchEstados()
+  const estado = estados.find((item) => item.id === ufIbge)
+  if (!estado) {
+    return VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK
+  }
+
+  const municipios = await fetchMunicipiosByUf(estado.sigla)
+  const municipio = municipios.find((item) => item.id === municipioIbge)
+  if (!municipio) {
+    return VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK
+  }
+
+  return `${municipio.nome}/${estado.sigla}.`
+}
+
+/**
  * Lógica da Visão Geral do TRP.
  *
  * - carrega etapas e resolve o stepper;
+ * - carrega dados do representante legal e local do proponente;
  * - controla exportação PDF.
  */
 export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
   const projectData = useProjectData()
   const pdfExportRef = useRef<HTMLDivElement>(null)
   const [isExporting, setIsExporting] = useState(false)
+  const [local, setLocal] = useState(VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK)
 
   const { data: etapas } = useAsyncData(fetchProjectStages, {
     initialData: [],
     errorMessage: "Não foi possível carregar as etapas do projeto.",
   })
+
+  const loadIdentificacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchTedIdentificacao(projectId)
+  }, [projectId])
+
+  const { data: identificacao } = useAsyncData(loadIdentificacao, {
+    initialData: null as TedIdentificacao | null,
+    errorMessage:
+      "Não foi possível carregar os dados do representante legal.",
+    loadOnMount: Boolean(projectId),
+  })
+
+  useEffect(() => {
+    let cancelled = false
+
+    void resolveLocalProponente(identificacao)
+      .then((valor) => {
+        if (!cancelled) setLocal(valor)
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setLocal(VISAO_GERAL_ASSINATURA.LOCAL_VALOR_FALLBACK)
+        }
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [identificacao])
 
   const etapaSteps = useMemo(() => buildEtapaSteps(etapas), [etapas])
 
@@ -42,6 +109,19 @@ export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
         status: projectData?.status,
       }),
     [etapas, projectData?.etapaOrdem, projectData?.status],
+  )
+
+  const assinatura = useMemo(
+    () => ({
+      local,
+      nome:
+        identificacao?.representanteNome?.trim() ||
+        VISAO_GERAL_ASSINATURA.NOME_REPRESENTANTE_FALLBACK,
+      cargo:
+        identificacao?.representanteCargo?.trim() ||
+        VISAO_GERAL_ASSINATURA.CARGO_FUNCAO_FALLBACK,
+    }),
+    [local, identificacao?.representanteNome, identificacao?.representanteCargo],
   )
 
   const exportPdf = useCallback(async () => {
@@ -67,6 +147,7 @@ export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
       projectId,
       etapaSteps,
       currentStep,
+      assinatura,
     },
     ui: {
       isExporting,

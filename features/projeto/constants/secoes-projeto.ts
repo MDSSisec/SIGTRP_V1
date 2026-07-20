@@ -184,27 +184,27 @@ export const PROJETO_SECOES = {
   detalhamentoOrcamento: {
     titleKey: "TITLE_SESSAO_DETALHAMENTO_ORCAMENTO",
     slug: "detalhamento-orcamento",
-    title: "21. Detalhamento do orçamento",
+    title: "21. Detalhamento do Orçamento de Bens com Memória de Cálculo por Meta, Etapa e Tipo de Despesa",
     sidebarTitle:
       "21. Detalhamento do orçamento de bens e serviços com memória de cálculo por meta, etapa e tipo de despesa",
   },
   resumoPlanoAplicacao: {
     titleKey: "TITLE_SESSAO_RESUMO_PLANO_APLICACAO",
     slug: "resumo-plano-aplicacao",
-    title: "22. Resumo do plano de aplicação",
+    title: "22. Resumo do Plano de Aplicação por Elemento de Despesa",
     sidebarTitle: "22. Resumo do plano de aplicação por elemento de despesa",
   },
   procedimentosMonitoramento: {
     titleKey: "TITLE_SESSAO_PROCEDIMENTOS_MONITORAMENTO",
     slug: "procedimentos-monitoramento",
-    title: "23. Procedimentos de monitoramento e avaliação",
+    title: "23. Procedimentos de Monitoramento e Avaliação da Execução e Resultados",
     sidebarTitle:
       "23. Procedimentos de monitoramento e avaliação da execução e resultados",
   },
   indicadoresEficiencia: {
     titleKey: "TITLE_SESSAO_INDICADORES_EFICIENCIA",
     slug: "indicadores-eficiencia",
-    title: "24. Indicadores de eficiência e eficácia",
+    title: "24. Indicadores de Eficiência e Eficácia",
   },
   observacoes: {
     titleKey: "TITLE_SESSAO_OBSERVACOES",

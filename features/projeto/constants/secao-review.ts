@@ -36,6 +36,12 @@ export const TED_SECOES_COM_REVIEW = [
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_PERFIL_SOCIO_OCUPACIONAL,
   PROJETO_SECOES.publicoBeneficiarioEServicos.slug,
   PROJETO_SECOES.outrasInformacoesProponente.slug,
+  PROJETO_SECOES.valorTotal.slug,
+  PROJETO_SECOES.cronogramaDesembolso.slug,
+  PROJETO_SECOES.detalhamentoOrcamento.slug,
+  PROJETO_SECOES.resumoPlanoAplicacao.slug,
+  PROJETO_SECOES.procedimentosMonitoramento.slug,
+  PROJETO_SECOES.indicadoresEficiencia.slug,
 ] as const
 
 export type TedSecaoComReviewSlug = (typeof TED_SECOES_COM_REVIEW)[number]

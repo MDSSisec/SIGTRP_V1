@@ -232,3 +232,46 @@
     cursor: default;
     opacity: 1;
 }
+
+.assinaturaMeta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    align-items: flex-start;
+}
+
+.assinaturaLinha {
+    margin: 0;
+    font-size: 0.875rem;
+    line-height: 1.5;
+    color: var(--foreground);
+}
+
+.assinaturaLabel {
+    font-weight: 700;
+}
+
+.assinaturaBloco {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 0.25rem;
+    padding-top: 1rem;
+}
+
+.assinaturaNome {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--foreground);
+}
+
+.assinaturaCargo {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 400;
+    line-height: 1.4;
+    color: var(--foreground);
+}

@@ -17,3 +17,12 @@ export const DESCRICAO_INFORMACOES_PROJETO =
   "Defina o status, os responsáveis e acompanhe o preenchimento das seções do TRP."
 export const TITULO_DOCUMENTO_TRP =
   "TERMO DE REFERÊNCIA DE PROJETO - TRP (Portaria MDS nº 1.131, de 25 de novembro de 2025)"
+
+export const VISAO_GERAL_ASSINATURA = {
+  LOCAL_LABEL: "Local:",
+  LOCAL_VALOR_FALLBACK: "município/UF.",
+  DATA_LABEL: "Data:",
+  DATA_VALOR: "na data da assinatura eletrônica.",
+  NOME_REPRESENTANTE_FALLBACK: "Nome do representante legal do(a) proponente",
+  CARGO_FUNCAO_FALLBACK: "Cargo/Função",
+} as const
