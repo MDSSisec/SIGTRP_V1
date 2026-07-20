@@ -4,9 +4,9 @@ import { Check, Pencil, X } from "lucide-react"
 
 import { GenericButton } from "@/features/projeto/components/genericButton/generic-button"
 
-import styles from "../publico-beneficiario-do-projeto.module.css"
+import styles from "../outras-informacoes-do-proponente.module.css"
 
-type PublicoBeneficiarioActionsProps = {
+type OutrasInformacoesActionsProps = {
   isEditing: boolean
   isSaving: boolean
   saveError: string | null
@@ -16,7 +16,7 @@ type PublicoBeneficiarioActionsProps = {
   onSave: () => void
 }
 
-export function PublicoBeneficiarioActions({
+export function OutrasInformacoesActions({
   isEditing,
   isSaving,
   saveError,
@@ -24,7 +24,7 @@ export function PublicoBeneficiarioActions({
   onEdit,
   onCancel,
   onSave,
-}: PublicoBeneficiarioActionsProps) {
+}: OutrasInformacoesActionsProps) {
   return (
     <div className={styles.actions}>
       {saveError ? (

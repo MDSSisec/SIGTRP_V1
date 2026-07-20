@@ -35,10 +35,12 @@ export function FormularioPublicoBeneficiarioDoProjeto({
       {!readOnlyView ? (
         <PublicoBeneficiarioActions
           isEditing={form.ui.isEditing}
+          isSaving={form.ui.isSaving}
+          saveError={form.ui.saveError}
           canStartEditing={form.ui.canStartEditing}
           onEdit={form.actions.startEditing}
           onCancel={form.actions.cancel}
-          onSave={form.actions.save}
+          onSave={() => void form.actions.save()}
         />
       ) : null}
     </div>

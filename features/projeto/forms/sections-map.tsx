@@ -30,6 +30,7 @@ import { FormularioPublicoBeneficiarioDoProjeto } from "./03-participantes/publi
 import { FormularioPovosOuComunidadesTradicionais } from "./03-participantes/povosOuComunidadesTradicionais"
 import { FormularioPerfilSocioOcupacional } from "./03-participantes/perfilSocioOcupacional"
 import { FormularioPublicoBeneficiarioEServicos } from "./03-participantes/publicoBeneficiarioEServicos"
+import { FormularioOutrasInformacoesProponente } from "./04-caracterizacao/outrasInformacoesDoProponente"
 
 export type { ProjectFormSectionProps }
 
@@ -58,6 +59,8 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "povos-comunidades-tradicionais": FormularioPovosOuComunidadesTradicionais,
   "perfil-socio-ocupacional": FormularioPerfilSocioOcupacional,
   "publico-beneficiario-e-servicos": FormularioPublicoBeneficiarioEServicos,
+  "servicos-acessados": FormularioPublicoBeneficiarioEServicos,
+  "outras-informacoes-proponente": FormularioOutrasInformacoesProponente,
 }
 export function getFormSection(
   slug: string,

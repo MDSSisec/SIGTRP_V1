@@ -1,6 +1,6 @@
 import { ADMIN_ROUTE } from "@/features/admin"
 import { DASHBOARD_ROUTE } from "@/features/dashboard"
-import { PROJETOS_ROUTE } from "@/features/projetos"
+import { PROJETOS_ROUTE } from "@/features/projeto"
 import type { PublicUser } from "@/features/login/types"
 
 export const SIDEBAR_NAV = {

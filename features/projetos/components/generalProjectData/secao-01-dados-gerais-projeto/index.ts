@@ -1,1 +1,0 @@
-export { DadosGeraisDoProjeto } from "./dadosGeraisDoprojeto"

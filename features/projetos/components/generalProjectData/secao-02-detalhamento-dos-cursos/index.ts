@@ -1,1 +1,0 @@
-export { DetalhamentoCursos } from "./detalhamentoDosCursos"

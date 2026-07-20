@@ -18,12 +18,8 @@ export function ScreenEditProjeto() {
     children: null,
   }
 
-  const hasData = Boolean(
-    screen.projeto &&
-      screen.modelo &&
-      screen.secao &&
-      screen.FormSection,
-  )
+  const { projeto, modelo, secao, FormSection } = screen
+  const hasData = Boolean(projeto && modelo && secao && FormSection)
 
   if (!screen.isLoading && !hasData) {
     return (
@@ -35,24 +31,22 @@ export function ScreenEditProjeto() {
     )
   }
 
-  if (!hasData) {
+  if (!projeto || !modelo || !secao || !FormSection) {
     return <AsyncLoadState {...loadProps} />
   }
-
-  const Section = screen.FormSection
 
   return (
     <AsyncLoadState {...loadProps}>
       <EditProviders
-        projeto={screen.projeto}
+        projeto={projeto}
         projectId={screen.projectId}
-        secaoId={screen.secao.id}
+        secaoId={secao.id}
       >
         <div className={styles.pageWrapper}>
-          <EditProjetoHeader tipoProjeto={screen.projeto.tipoProjeto} />
+          <EditProjetoHeader tipoProjeto={projeto.tipoProjeto} />
 
           <div className={styles.formContainer}>
-            <Section projectId={screen.projectId} />
+            <FormSection projectId={screen.projectId} />
           </div>
         </div>
       </EditProviders>

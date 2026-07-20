@@ -13,9 +13,18 @@ export { PROJETOS_FORM } from "./project"
 export { PROJETOS_TEXT } from "./projetos.text"
 
 export {
+  buildTedMenuGroups,
+  PROJETO_SECOES,
+  PROJETO_SECOES_TRP_VISAO_GERAL,
+  SECAO_SLUG_TO_TITLE,
+  SECOES_VISAO_GERAL,
+  TED_MENU_GRUPOS,
+  type ProjetoSecaoId,
+} from "./secoes-projeto"
+
+export {
   DESCRICAO_INFORMACOES_PROJETO,
   DESCRICAO_VISAO_GERAL,
-  SECAO_SLUG_TO_TITLE,
   SESSOES_VISAO_GERAL_SLUG,
   SESSOES_VISAO_GERAL_SUBTITLE,
   SESSOES_VISAO_GERAL_TITLE,

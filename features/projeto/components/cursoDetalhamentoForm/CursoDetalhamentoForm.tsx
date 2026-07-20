@@ -15,7 +15,7 @@ import type {
   CursoDetalhamentoDados,
 } from "@/features/projeto/types/general-project-data"
 import { createDefaultCursoDespesas } from "@/features/projeto/types/general-project-data"
-import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
 import { parseCurrencyInput } from "@/features/projeto/utils/currency"
 import { cn } from "@/lib/utils"
@@ -248,135 +248,131 @@ export function CursoDetalhamentoForm({
   }
 
   return (
-    <article className={styles.card}>
-      <header className={styles.header}>
-        <div className={styles.headerText}>
-          <h3 className={styles.courseTitle}>Curso {courseNumber}</h3>
-          <span className={styles.hint}>Campos obrigatórios marcados com *</span>
-        </div>
-      </header>
-
-      <div className={styles.body}>
-        <h4 className={styles.subsectionTitle}>2.1 — Dados gerais do curso</h4>
-
-        <div className={styles.fieldsGrid}>
-          {COURSE_FIELDS.map((field) => {
-            const fieldId = `curso-${courseNumber}-${field.key}`
-            const input = (
-              <Input
-                id={fieldId}
-                name={fieldId}
-                type={field.type ?? "text"}
-                inputMode={field.type === "number" ? "numeric" : undefined}
-                min={field.min}
-                max={field.max}
-                maxLength={field.maxLength}
-                value={draft[field.key]}
-                onChange={(event) =>
-                  handleFieldChange(field.key, event.target.value)
-                }
-                className={cn(
-                  field.suffix && styles.inputWithSuffix,
-                  isViewMode && VIEW_MODE_FIELD_CLASS,
-                )}
-                disabled={isLocked}
-                required
-              />
-            )
-
-            return (
-              <div
-                key={field.key}
-                className={cn(
-                  formLayoutStyles.fieldGroup,
-                  field.full ? styles.fieldFull : undefined,
-                )}
-              >
-                <Label htmlFor={fieldId} className={styles.required}>
-                  {field.label}
-                </Label>
-                {field.suffix ? (
-                  <div className={styles.suffixWrap}>
-                    {input}
-                    <span className={styles.suffix}>{field.suffix}</span>
-                  </div>
-                ) : (
-                  input
-                )}
-              </div>
-            )
-          })}
-        </div>
-
-        <div className={styles.divider} />
-
-        <div className={styles.summaryStrip}>
-          <div className={styles.summaryCard}>
-            <span>Total de itens</span>
-            <strong>{summary.totalItens}</strong>
-          </div>
-          <div className={styles.summaryCard}>
-            <span>Valor total</span>
-            <strong>{summary.valorTotalFormatado}</strong>
-          </div>
-          <div className={styles.summaryCard}>
-            <span>Valor Kit Participante por Aluno</span>
-            <strong>{summary.kitParticipantePorAluno}</strong>
-          </div>
-          {summary.temEpi ? (
-            <div className={styles.summaryCard}>
-              <span>Valor EPI por Aluno</span>
-              <strong>{summary.epiPorAluno}</strong>
-            </div>
-          ) : null}
-          {summary.temInsumos ? (
-            <div className={styles.summaryCard}>
-              <span>Valor Insumo por Aluno</span>
-              <strong>{summary.insumosPorAluno}</strong>
-            </div>
-          ) : null}
-          {summary.temKitTrabalho ? (
-            <div className={styles.summaryCard}>
-              <span>Valor Kit Trabalho por Aluno</span>
-              <strong>{summary.kitTrabalhoPorAluno}</strong>
-            </div>
-          ) : null}
-        </div>
-
-        <DetalhamentoGastosCurso
-          despesas={draft.despesas}
-          onChange={handleDespesasChange}
-          disabled={isLocked}
-          isViewMode={isViewMode}
-        />
-
-        {!readOnlyView && (
-          <div className={styles.actions}>
-            {saveError ? (
-              <p className={styles.saveError} role="alert">
-                {saveError}
-              </p>
-            ) : null}
-            {!isEditing ? (
-              <Button variant="outline" onClick={() => setIsEditing(true)}>
-                <Pencil className="size-4" />
-                Editar
-              </Button>
-            ) : (
-              <>
-                <Button variant="outline" disabled={isSaving} onClick={handleCancel}>
-                  <X className="size-4" />
-                  Cancelar
-                </Button>
-                <Button disabled={isSaving} onClick={() => void handleSave()}>
-                  <Check className="size-4" />
-                  {isSaving ? "Salvando..." : "Salvar"}
-                </Button>
-              </>
-            )}
-          </div>
-        )}
+    <FormSectionCard className={styles.courseCard}>
+      <div className={styles.header}>
+        <h3 className={styles.courseTitle}>Curso {courseNumber}</h3>
+        <span className={styles.hint}>Campos obrigatórios marcados com *</span>
       </div>
-    </article>
+
+      <h4 className={styles.subsectionTitle}>2.1 — Dados gerais do curso</h4>
+
+      <div className={styles.fieldsGrid}>
+        {COURSE_FIELDS.map((field) => {
+          const fieldId = `curso-${courseNumber}-${field.key}`
+          const input = (
+            <Input
+              id={fieldId}
+              name={fieldId}
+              type={field.type ?? "text"}
+              inputMode={field.type === "number" ? "numeric" : undefined}
+              min={field.min}
+              max={field.max}
+              maxLength={field.maxLength}
+              value={draft[field.key]}
+              onChange={(event) =>
+                handleFieldChange(field.key, event.target.value)
+              }
+              className={cn(
+                field.suffix && styles.inputWithSuffix,
+                isViewMode && VIEW_MODE_FIELD_CLASS,
+              )}
+              disabled={isLocked}
+              required
+            />
+          )
+
+          return (
+            <div
+              key={field.key}
+              className={cn(
+                formLayoutStyles.fieldGroup,
+                field.full ? styles.fieldFull : undefined,
+              )}
+            >
+              <Label htmlFor={fieldId} className={styles.required}>
+                {field.label}
+              </Label>
+              {field.suffix ? (
+                <div className={styles.suffixWrap}>
+                  {input}
+                  <span className={styles.suffix}>{field.suffix}</span>
+                </div>
+              ) : (
+                input
+              )}
+            </div>
+          )
+        })}
+      </div>
+
+      <div className={styles.divider} />
+
+      <div className={styles.summaryStrip}>
+        <div className={styles.summaryCard}>
+          <span>Total de itens</span>
+          <strong>{summary.totalItens}</strong>
+        </div>
+        <div className={styles.summaryCard}>
+          <span>Valor total</span>
+          <strong>{summary.valorTotalFormatado}</strong>
+        </div>
+        <div className={styles.summaryCard}>
+          <span>Valor Kit Participante por Aluno</span>
+          <strong>{summary.kitParticipantePorAluno}</strong>
+        </div>
+        {summary.temEpi ? (
+          <div className={styles.summaryCard}>
+            <span>Valor EPI por Aluno</span>
+            <strong>{summary.epiPorAluno}</strong>
+          </div>
+        ) : null}
+        {summary.temInsumos ? (
+          <div className={styles.summaryCard}>
+            <span>Valor Insumo por Aluno</span>
+            <strong>{summary.insumosPorAluno}</strong>
+          </div>
+        ) : null}
+        {summary.temKitTrabalho ? (
+          <div className={styles.summaryCard}>
+            <span>Valor Kit Trabalho por Aluno</span>
+            <strong>{summary.kitTrabalhoPorAluno}</strong>
+          </div>
+        ) : null}
+      </div>
+
+      <DetalhamentoGastosCurso
+        despesas={draft.despesas}
+        onChange={handleDespesasChange}
+        disabled={isLocked}
+        isViewMode={isViewMode}
+      />
+
+      {!readOnlyView && (
+        <div className={styles.actions}>
+          {saveError ? (
+            <p className={styles.saveError} role="alert">
+              {saveError}
+            </p>
+          ) : null}
+          {!isEditing ? (
+            <Button variant="outline" onClick={() => setIsEditing(true)}>
+              <Pencil className="size-4" />
+              Editar
+            </Button>
+          ) : (
+            <>
+              <Button variant="outline" disabled={isSaving} onClick={handleCancel}>
+                <X className="size-4" />
+                Cancelar
+              </Button>
+              <Button disabled={isSaving} onClick={() => void handleSave()}>
+                <Check className="size-4" />
+                {isSaving ? "Salvando..." : "Salvar"}
+              </Button>
+            </>
+          )}
+        </div>
+      )}
+    </FormSectionCard>
   )
 }

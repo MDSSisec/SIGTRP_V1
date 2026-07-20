@@ -7,6 +7,7 @@ import {
   type DadosPublicoBeneficiario,
 } from "../types/publico-beneficiario-form"
 import { calcularValores, sanitizeQuantidadeInput } from "../utils/formatters"
+import { usePublicoBeneficiarioReview } from "./usePublicoBeneficiarioReview"
 
 type UsePublicoBeneficiarioOptions = {
   readOnlyView?: boolean
@@ -14,15 +15,13 @@ type UsePublicoBeneficiarioOptions = {
 
 /**
  * Lógica do formulário de Público beneficiário.
- *
- * - controla edição local;
- * - calcula indiretos e totais.
  */
 export function usePublicoBeneficiario({
   readOnlyView,
 }: UsePublicoBeneficiarioOptions) {
-  // states
   const [isEditing, setIsEditing] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
   const [dados, setDados] = useState<DadosPublicoBeneficiario>(
     VAZIO_PUBLICO_BENEFICIARIO,
   )
@@ -30,14 +29,15 @@ export function usePublicoBeneficiario({
     VAZIO_PUBLICO_BENEFICIARIO,
   )
 
-  // helpers
-  const isLocked = Boolean(readOnlyView) || !isEditing
-  const canStartEditing = !readOnlyView
+  const review = usePublicoBeneficiarioReview({
+    readOnlyView,
+    isEditing,
+  })
 
   const valores = useMemo(() => calcularValores(dados), [dados])
 
-  // actions
   const setHomensDiretos = useCallback((value: string) => {
+    setSaveError(null)
     setDados((prev) => ({
       ...prev,
       homensDiretos: sanitizeQuantidadeInput(value),
@@ -45,6 +45,7 @@ export function usePublicoBeneficiario({
   }, [])
 
   const setMulheresDiretos = useCallback((value: string) => {
+    setSaveError(null)
     setDados((prev) => ({
       ...prev,
       mulheresDiretos: sanitizeQuantidadeInput(value),
@@ -53,32 +54,43 @@ export function usePublicoBeneficiario({
 
   const startEditing = useCallback(() => {
     setRascunho({ ...dados })
+    setSaveError(null)
     setIsEditing(true)
   }, [dados])
 
   const cancel = useCallback(() => {
     setDados({ ...rascunho })
+    setSaveError(null)
     setIsEditing(false)
   }, [rascunho])
 
-  const save = useCallback(() => {
-    setIsEditing(false)
+  const save = useCallback(async () => {
+    setIsSaving(true)
+    setSaveError(null)
+
+    try {
+      // TODO: integrar API quando disponível
+      setIsEditing(false)
+    } catch {
+      setSaveError("Não foi possível salvar o público beneficiário.")
+    } finally {
+      setIsSaving(false)
+    }
   }, [])
 
-  // return
   return {
     form: dados,
-
     meta: {
       valores,
     },
-
     ui: {
       isEditing,
-      isLocked,
-      canStartEditing,
+      isSaving,
+      saveError,
+      isLocked: review.isLocked,
+      isViewMode: review.isViewMode,
+      canStartEditing: review.canStartEditing,
     },
-
     actions: {
       setHomensDiretos,
       setMulheresDiretos,

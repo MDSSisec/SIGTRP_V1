@@ -15,7 +15,7 @@ import type { ResponsavelOption } from "@/features/projeto/types"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
 import { useAsyncData } from "@/hooks/use-async-data"
-import { ITENS_POR_COLUNA } from "../constants/form"
+import { ITENS_DADOS_GERAIS_TITLE_KEYS } from "../constants/form"
 
 type UseInformacoesProjetoOptions = {
   projectId?: string
@@ -175,9 +175,14 @@ export function useInformacoesProjeto({
     [identificacao],
   )
 
-  const [itensColunaEsquerda, itensColunaDireita] = useMemo(() => {
+  const { itensDadosGerais, itensDadosTrp } = useMemo(() => {
     const itens = getItensPreenchidos()
-    return [itens.slice(0, ITENS_POR_COLUNA), itens.slice(ITENS_POR_COLUNA)]
+    const dadosGeraisKeys = new Set<string>(ITENS_DADOS_GERAIS_TITLE_KEYS)
+
+    return {
+      itensDadosGerais: itens.filter(([key]) => dadosGeraisKeys.has(key)),
+      itensDadosTrp: itens.filter(([key]) => !dadosGeraisKeys.has(key)),
+    }
   }, [])
 
   return {
@@ -190,8 +195,8 @@ export function useInformacoesProjeto({
       tipoProjetoLabel,
       responsaveisInternos,
       responsaveisExternos,
-      itensColunaEsquerda,
-      itensColunaDireita,
+      itensDadosGerais,
+      itensDadosTrp,
       itensConcluidos,
       getReview,
       secaoTemAtencao,

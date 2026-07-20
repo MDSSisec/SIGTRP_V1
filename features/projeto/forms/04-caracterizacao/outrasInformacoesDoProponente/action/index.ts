@@ -1,0 +1,1 @@
+export { saveOutrasInformacoesProponente } from "./saveOutrasInformacoesProponente"

@@ -1,4 +1,5 @@
 import type { ModeloProjetoConfig } from "./types"
+import { PROJETO_SECOES } from "@/features/projeto/constants/secoes-projeto"
 
 /**
  * Convênio — recorte inicial (inclui prestacao, ainda placeholder).
@@ -21,11 +22,36 @@ export const CONVENIO_MODELO_CONFIG: ModeloProjetoConfig = {
       id: "dados-gerais",
       title: "Dados Gerais do Projeto",
       sections: [
-        { id: "dados-gerais-projeto",  title: "Dados gerais do projeto",                                           required: true, review: true },
-        { id: "detalhamento-cursos",   title: "Detalhamento dos cursos",                                           required: true, review: true },
-        { id: "despesas-etapa-1-1",    title: "Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1",   required: true, review: true },
-        { id: "despesas-etapa-1-2",    title: "Estruturação e Equipamento dos Espaços — Etapa 1.2",                required: true, review: true },
-        { id: "despesas-evento-final", title: "Celebração, Certificação e Encerramento — Etapa Final",             required: true, review: true },
+        {
+          id: PROJETO_SECOES.dadosGeraisProjeto.slug,
+          title: PROJETO_SECOES.dadosGeraisProjeto.title,
+          required: true,
+          review: true,
+        },
+        {
+          id: PROJETO_SECOES.detalhamentoCursos.slug,
+          title: PROJETO_SECOES.detalhamentoCursos.title,
+          required: true,
+          review: true,
+        },
+        {
+          id: PROJETO_SECOES.despesasEtapa11.slug,
+          title: PROJETO_SECOES.despesasEtapa11.title,
+          required: true,
+          review: true,
+        },
+        {
+          id: PROJETO_SECOES.despesasEtapa12.slug,
+          title: PROJETO_SECOES.despesasEtapa12.title,
+          required: true,
+          review: true,
+        },
+        {
+          id: PROJETO_SECOES.despesasEventoFinal.slug,
+          title: PROJETO_SECOES.despesasEventoFinal.title,
+          required: true,
+          review: true,
+        },
       ],
     },
     {
@@ -60,7 +86,12 @@ export const CONVENIO_MODELO_CONFIG: ModeloProjetoConfig = {
         { id: "publico-beneficiario",           title: "14. Público beneficiário do projeto",                                                     required: true, review: true },
         { id: "povos-comunidades-tradicionais", title: "15. Informe se o público faz parte de algum destes povos ou comunidades tradicionais",    required: true, review: true },
         { id: "perfil-socio-ocupacional",       title: "16. Informe o perfil sócio-ocupacional predominante do público beneficiário",             required: true, review: true },
-        { id: "servicos-acessados",             title: "17. Informe se o público beneficiário está acessando alguns dos seguintes serviços",      required: true, review: true },
+        {
+          id: PROJETO_SECOES.publicoBeneficiarioEServicos.slug,
+          title: PROJETO_SECOES.publicoBeneficiarioEServicos.title,
+          required: true,
+          review: true,
+        },
       ],
     },
     {

@@ -53,8 +53,8 @@ export function InformacoesDoProjeto({
         />
 
         <InformacoesProjetoItens
-          itensColunaEsquerda={form.meta.itensColunaEsquerda}
-          itensColunaDireita={form.meta.itensColunaDireita}
+          itensDadosGerais={form.meta.itensDadosGerais}
+          itensDadosTrp={form.meta.itensDadosTrp}
           itensConcluidos={form.meta.itensConcluidos}
           getReview={form.meta.getReview}
           secaoTemAtencao={form.meta.secaoTemAtencao}

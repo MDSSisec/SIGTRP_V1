@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server"
 
 import { handleAdminRequest } from "@/features/admin/server"
 import { handleAuthRequest } from "@/features/login/server"
-import { handleProjetosRequest } from "@/features/projetos/server"
+import { handleProjetosRequest } from "@/features/projeto/server"
 
 type ApiParams = {
   path?: string[]
