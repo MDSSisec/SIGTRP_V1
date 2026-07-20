@@ -75,17 +75,12 @@
 
 .input {
   background: #ffffff !important;
+  width: 100%;
   min-width: 0;
-  max-width: 10rem;
 }
 
 :global(.dark) .input {
   background: oklch(0.22 0.006 264) !important;
-}
-
-.indiretoValor {
-  font-weight: 500;
-  color: var(--foreground);
 }
 
 .totalRow td {
@@ -118,7 +113,7 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: flex-end;
   gap: 0.75rem;
   border-top: 1px solid var(--border);
   padding-top: 1.5rem;

@@ -65,13 +65,8 @@ export function PublicoBeneficiarioFields({
                   disabled={isLocked}
                 />
               </td>
-              <td>
-                <span className={styles.indiretoValor}>
-                  {formatQuantidade(valores.homensIndiretos) || "—"}
-                </span>
-              </td>
+              <td>{formatQuantidade(valores.homensIndiretos) || "—"}</td>
             </tr>
-
             <tr>
               <td>{PUBLICO_BENEFICIARIO_DO_PROJETO_TABLE.ROW_MULHERES}</td>
               <td>
@@ -85,13 +80,8 @@ export function PublicoBeneficiarioFields({
                   disabled={isLocked}
                 />
               </td>
-              <td>
-                <span className={styles.indiretoValor}>
-                  {formatQuantidade(valores.mulheresIndiretos) || "—"}
-                </span>
-              </td>
+              <td>{formatQuantidade(valores.mulheresIndiretos) || "—"}</td>
             </tr>
-
             <tr className={styles.totalRow}>
               <td>{PUBLICO_BENEFICIARIO_DO_PROJETO_TABLE.ROW_TOTAL}</td>
               <td>{formatQuantidade(valores.totalDiretos) || "—"}</td>

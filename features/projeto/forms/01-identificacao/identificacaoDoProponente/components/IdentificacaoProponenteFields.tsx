@@ -124,6 +124,7 @@ export function IdentificacaoProponenteFields({
               onChange={onChange}
               className={fieldClass("dataFundacao")}
               disabled={isLocked}
+              placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_DATA_FUNDACAO}
             />
           </div>
 
