@@ -134,51 +134,31 @@
     max-width: 100%;
     min-width: 0;
     box-sizing: border-box;
-    border-radius: 0.75rem;
-    border: 1px solid var(--input);
-    background: var(--card);
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
-    overflow: hidden;
-}
-
-.sectionContent {
-    min-width: 0;
-    max-width: 100%;
-    overflow-x: auto;
-    overflow-y: visible;
-    padding: 0.75rem;
-    /* background: var(--background); */
-}
-
-@media (min-width: 640px) {
-    .sectionContent {
-        padding: 1rem;
-    }
 }
 
 /* Campos com fundo branco em todas as seções da visão geral (incl. readonly/disabled) */
-.sectionContent input,
-.sectionContent textarea,
-.sectionContent select,
-.sectionContent input:disabled,
-.sectionContent input[readonly],
-.sectionContent textarea:disabled,
-.sectionContent textarea[readonly],
-.sectionContent select:disabled {
+.section input,
+.section textarea,
+.section select,
+.section input:disabled,
+.section input[readonly],
+.section textarea:disabled,
+.section textarea[readonly],
+.section select:disabled {
     background: #ffffff !important;
 }
 
-.sectionContent input:disabled,
-.sectionContent input[readonly],
-.sectionContent textarea:disabled,
-.sectionContent textarea[readonly] {
+.section input:disabled,
+.section input[readonly],
+.section textarea:disabled,
+.section textarea[readonly] {
     opacity: 1;
 }
 
 /* Permite rolar e redimensionar campos com texto longo na visão geral */
-.sectionContent textarea,
-.sectionContent textarea:disabled,
-.sectionContent textarea[readonly] {
+.section textarea,
+.section textarea:disabled,
+.section textarea[readonly] {
     resize: vertical;
     min-height: 4rem;
     max-height: 40rem;
@@ -186,27 +166,27 @@
     overflow-x: auto;
 }
 
-.sectionContent input[type="text"],
-.sectionContent input[type="email"],
-.sectionContent input:not([type]),
-.sectionContent input[type="text"]:disabled,
-.sectionContent input[type="text"]:read-only {
+.section input[type="text"],
+.section input[type="email"],
+.section input:not([type]),
+.section input[type="text"]:disabled,
+.section input[type="text"]:read-only {
     overflow-x: auto;
     min-height: 2.25rem;
 }
 
-.sectionContent input:focus,
-.sectionContent input:not(:placeholder-shown),
-.sectionContent textarea:focus,
-.sectionContent textarea:not(:placeholder-shown),
-.sectionContent input:-webkit-autofill,
-.sectionContent input:-webkit-autofill:hover,
-.sectionContent input:-webkit-autofill:focus,
-.sectionContent input:-webkit-autofill:active {
+.section input:focus,
+.section input:not(:placeholder-shown),
+.section textarea:focus,
+.section textarea:not(:placeholder-shown),
+.section input:-webkit-autofill,
+.section input:-webkit-autofill:hover,
+.section input:-webkit-autofill:focus,
+.section input:-webkit-autofill:active {
     background: #ffffff !important;
 }
 
-.sectionContent input:-webkit-autofill {
+.section input:-webkit-autofill {
     -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
     box-shadow: 0 0 0 30px #ffffff inset !important;
 }

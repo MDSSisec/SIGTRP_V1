@@ -21,11 +21,9 @@ export function VisaoGeralSections({ projectId }: VisaoGeralSectionsProps) {
 
         return (
           <section key={slug} id={`secao-${slug}`} className={styles.section}>
-            <div className={styles.sectionContent}>
-              <ReadOnlyWrapper>
-                <FormSection projectId={projectId} readOnlyView />
-              </ReadOnlyWrapper>
-            </div>
+            <ReadOnlyWrapper>
+              <FormSection projectId={projectId} readOnlyView />
+            </ReadOnlyWrapper>
           </section>
         )
       })}
