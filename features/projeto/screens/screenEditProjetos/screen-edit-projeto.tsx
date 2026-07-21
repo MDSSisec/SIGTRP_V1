@@ -43,7 +43,7 @@ export function ScreenEditProjeto() {
         secaoId={secao.id}
       >
         <div className={styles.pageWrapper}>
-          <EditProjetoHeader tipoProjeto={projeto.tipoProjeto} />
+          <EditProjetoHeader />
 
           <div className={styles.formContainer}>
             <FormSection projectId={screen.projectId} />

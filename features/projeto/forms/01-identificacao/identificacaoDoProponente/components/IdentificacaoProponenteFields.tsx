@@ -14,8 +14,8 @@ type IdentificacaoProponenteFieldsProps = {
   /** Dados do formulário. */
   dados: DadosIdentificacaoProponente
 
-  /** Indica se os campos podem ser editados. */
-  isLocked: boolean
+  /** Bloqueio por campo quando há atenção parcial. */
+  isCampoLocked: (campoKey: string) => boolean
 
   /** Estado atual da busca do CEP. */
   cepStatus: CepStatus
@@ -57,7 +57,7 @@ type IdentificacaoProponenteFieldsProps = {
 /** Campos do formulário de Identificação do(a) Proponente. */
 export function IdentificacaoProponenteFields({
   dados,
-  isLocked,
+  isCampoLocked,
   cepStatus,
   isCepCompleto,
   estados,
@@ -67,8 +67,6 @@ export function IdentificacaoProponenteFields({
   onChange,
   onSelectChange,
 }: IdentificacaoProponenteFieldsProps) {
-  const isLocalidadeLocked = isLocked || !isCepCompleto
-
   return (
     <section className={styles.section}>
       <h2 className={styles.title}>2. Identificação do(a) Proponente</h2>
@@ -86,7 +84,7 @@ export function IdentificacaoProponenteFields({
               onChange={onChange}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_NOME}
               className={fieldClass("nome")}
-              disabled={isLocked}
+              disabled={isCampoLocked("nome")}
             />
           </div>
 
@@ -102,7 +100,7 @@ export function IdentificacaoProponenteFields({
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CNPJ}
               className={fieldClass("cnpj")}
               maxLength={18}
-              disabled={isLocked}
+              disabled={isCampoLocked("cnpj")}
             />
           </div>
         </div>
@@ -123,7 +121,7 @@ export function IdentificacaoProponenteFields({
               value={dados.dataFundacao}
               onChange={onChange}
               className={fieldClass("dataFundacao")}
-              disabled={isLocked}
+              disabled={isCampoLocked("dataFundacao")}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_DATA_FUNDACAO}
             />
           </div>
@@ -143,7 +141,7 @@ export function IdentificacaoProponenteFields({
               value={dados.registroCnpj}
               onChange={onChange}
               className={fieldClass("registroCnpj")}
-              disabled={isLocked}
+              disabled={isCampoLocked("registroCnpj")}
             />
           </div>
         </div>
@@ -165,7 +163,7 @@ export function IdentificacaoProponenteFields({
               IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_ENDERECO_COMPLETO
             }
             className={fieldClass("enderecoCompleto")}
-            disabled={isLocked}
+            disabled={isCampoLocked("enderecoCompleto")}
           />
         </div>
 
@@ -182,7 +180,7 @@ export function IdentificacaoProponenteFields({
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_CEP}
               className={fieldClass("cep")}
               maxLength={9}
-              disabled={isLocked}
+              disabled={isCampoLocked("cep")}
             />
             {cepStatus !== "idle" ? (
               <span
@@ -212,7 +210,7 @@ export function IdentificacaoProponenteFields({
                 fieldClass("ufIbge"),
                 !(dados.ufIbge ?? "") && "text-muted-foreground",
               )}
-              disabled={isLocalidadeLocked}
+              disabled={isCampoLocked("ufIbge") || !isCepCompleto}
             >
               <option value="">
                 {!isCepCompleto
@@ -239,7 +237,7 @@ export function IdentificacaoProponenteFields({
               value={dados.bairro}
               onChange={onChange}
               className={fieldClass("bairro")}
-              disabled={isLocalidadeLocked}
+              disabled={isCampoLocked("bairro") || !isCepCompleto}
               placeholder={
                 !isCepCompleto ? "Informe o CEP primeiro" : undefined
               }
@@ -265,7 +263,8 @@ export function IdentificacaoProponenteFields({
                 !(dados.municipioIbge ?? "") && "text-muted-foreground",
               )}
               disabled={
-                isLocalidadeLocked ||
+                isCampoLocked("municipioIbge") ||
+                !isCepCompleto ||
                 (!dados.uf && dados.ufIbge == null) ||
                 carregandoMunicipios
               }
@@ -315,7 +314,7 @@ export function IdentificacaoProponenteFields({
               }
               className={fieldClass("telefoneFax")}
               maxLength={15}
-              disabled={isLocked}
+              disabled={isCampoLocked("telefoneFax")}
             />
           </div>
 
@@ -331,7 +330,7 @@ export function IdentificacaoProponenteFields({
               onChange={onChange}
               placeholder={IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_EMAIL}
               className={fieldClass("email")}
-              disabled={isLocked}
+              disabled={isCampoLocked("email")}
             />
           </div>
         </div>
@@ -353,7 +352,7 @@ export function IdentificacaoProponenteFields({
               IDENTIFICACAO_PROPONENTE_PLACEHOLDERS.PLACEHOLDER_PAGINA_WEB
             }
             className={fieldClass("paginaWeb")}
-            disabled={isLocked}
+            disabled={isCampoLocked("paginaWeb")}
           />
         </div>
       </div>

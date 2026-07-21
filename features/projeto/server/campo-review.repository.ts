@@ -4,7 +4,7 @@ import {
   type CampoReviewRow,
 } from "../mappers/campo-review.mapper"
 import type { CampoReview } from "../types/campo-review"
-import { getSecaoReview, upsertSecaoReview } from "./secao-review.repository"
+import { upsertSecaoReview } from "./secao-review.repository"
 
 function emptyToNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? ""
@@ -67,8 +67,6 @@ export async function syncCampoReviews(
     ...new Set(campoKeys.map((k) => k.trim()).filter(Boolean)),
   ]
   const comentarioValue = emptyToNull(comentario)
-  const currentSecao = await getSecaoReview(projetoId, secaoSlug)
-
   const client = await pool.connect()
 
   try {
@@ -114,7 +112,9 @@ export async function syncCampoReviews(
     projetoId,
     {
       secaoSlug,
-      bloqueada: temAtencao ? false : Boolean(currentSecao?.bloqueada),
+      // Com atenção: fecha a seção e deixa só os campos marcados editáveis na UI.
+      // Sem atenção (limpar): libera o bloqueio automático da atenção.
+      bloqueada: temAtencao,
       statusRevisao: temAtencao ? "precisaAtencao" : "ok",
       comentario: temAtencao ? comentarioValue : null,
     },

@@ -1,6 +1,6 @@
 "use client"
 
-import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 
 type UsePublicoBeneficiarioReviewOptions = {
   readOnlyView?: boolean
@@ -11,26 +11,12 @@ export function usePublicoBeneficiarioReview({
   readOnlyView,
   isEditing,
 }: UsePublicoBeneficiarioReviewOptions) {
-  const reviewContext = useTedReview()
-
-  const canManageReview = Boolean(reviewContext?.canManage)
-  const review = reviewContext?.review
-  const isMarkingAtencao = Boolean(reviewContext?.isMarkingAtencao)
-
-  const isBlockedForUser =
-    Boolean(review?.bloqueada) && !canManageReview
-
-  const isLocked =
-    Boolean(readOnlyView) || !isEditing || isBlockedForUser
-
-  const isViewMode = !isEditing || isBlockedForUser
-
-  const canStartEditing =
-    !readOnlyView && !isBlockedForUser && !isMarkingAtencao
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
 
   return {
-    isLocked,
-    isViewMode,
-    canStartEditing,
+    isLocked: lock.isLocked,
+    isCampoLocked: lock.isCampoLocked,
+    isViewMode: lock.isViewMode,
+    canStartEditing: lock.canStartEditing,
   }
 }

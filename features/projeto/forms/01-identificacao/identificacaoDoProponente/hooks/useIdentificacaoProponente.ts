@@ -189,6 +189,7 @@ export function useIdentificacaoProponente({
       isSaving,
       saveError,
       isLocked: review.isLocked,
+      isCampoLocked: review.isCampoLocked,
       isViewMode: review.isViewMode,
       canStartEditing: review.canStartEditing,
     },

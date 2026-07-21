@@ -201,13 +201,16 @@ export function useIdentificacaoProjeto({
   return {
     form: dadosFormulario,
 
-    review: review.attention,
+    review: {
+      fieldClass: review.fieldClass,
+    },
 
     ui: {
       isEditing,
       isSaving,
       saveError,
       isLocked: review.isLocked,
+      isCampoLocked: review.isCampoLocked,
       isViewMode: review.isViewMode,
       canStartEditing: review.canStartEditing,
     },

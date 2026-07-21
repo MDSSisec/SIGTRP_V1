@@ -125,19 +125,27 @@ export function TedReviewProvider({
     setIsSaving(true)
     setError(null)
     try {
+      // Fecha a seção por completo e limpa marcações de atenção.
+      const result = await syncCampoReviews(projetoId, {
+        secaoSlug,
+        campoKeys: [],
+        comentario: null,
+      })
       const saved = await saveSecaoReview(projetoId, {
         secaoSlug,
         bloqueada: true,
         statusRevisao: "ok",
         comentario: null,
       })
-      setData((prev) => ({
-        ...prev,
+      setData({
         reviews: [
-          ...prev.reviews.filter((r) => r.secaoSlug !== secaoSlug),
+          ...result.reviews.filter((r) => r.secaoSlug !== secaoSlug),
           saved,
         ],
-      }))
+        campos: result.campos,
+      })
+      setSelectedCampoKeys(new Set())
+      setIsMarkingAtencao(false)
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Não foi possível bloquear a seção.",

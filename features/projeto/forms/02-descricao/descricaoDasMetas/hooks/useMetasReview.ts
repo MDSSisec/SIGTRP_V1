@@ -1,6 +1,7 @@
 "use client"
 
-import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
+import { campoReviewVisualClasses } from "@/features/projeto/components/formShared/secao-review-actions"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { cn } from "@/lib/utils"
 
 import {
@@ -20,6 +21,9 @@ type UseMetasReviewOptions = {
 type UseMetasReviewReturn = {
   /** Bloqueia todos os campos da seção. */
   isLocked: boolean
+
+  /** Impede alteração de um campo específico (atenção parcial). */
+  isCampoLocked: (campoKey: string) => boolean
 
   /** Indica que os campos devem ser exibidos em modo visualização. */
   isViewMode: boolean
@@ -49,58 +53,30 @@ export function useMetasReview({
   readOnlyView,
   isEditing,
 }: UseMetasReviewOptions): UseMetasReviewReturn {
-  const reviewContext = useTedReview()
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
 
-  const canManageReview = Boolean(reviewContext?.canManage)
-  const review = reviewContext?.review
-  const isMarkingAtencao = Boolean(reviewContext?.isMarkingAtencao)
-
-  /**
-   * Usuários sem permissão de revisão não podem editar
-   * quando a seção estiver bloqueada.
-   */
-  const isBlockedForUser =
-    Boolean(review?.bloqueada) && !canManageReview
-
-  /**
-   * Campo completamente bloqueado.
-   */
-  const isLocked =
-    Boolean(readOnlyView) ||
-    !isEditing ||
-    isBlockedForUser
-
-  /**
-   * Apenas visualização (sem permitir edição).
-   */
-  const isViewMode =
-    !isEditing || isBlockedForUser
-
-  /**
-   * Apenas usuários permitidos podem iniciar edição.
-   */
-  const canStartEditing =
-    !readOnlyView &&
-    !isBlockedForUser &&
-    !isMarkingAtencao
-
-  function fieldClass(
-    campoKey: string,
-    extra = "",
-  ) {
+  function fieldClass(campoKey: string, extra = "") {
     return cn(
       styles.input,
-      isViewMode && VIEW_MODE_FIELD_CLASS,
-      reviewContext?.isCampoAtencao(campoKey) &&
-        ATTENTION_FIELD_CLASS,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) => Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: ATTENTION_FIELD_CLASS,
+        },
+        campoKey,
+      ),
       extra,
     )
   }
 
   return {
-    isLocked,
-    isViewMode,
-    canStartEditing,
+    isLocked: lock.isLocked,
+    isCampoLocked: lock.isCampoLocked,
+    isViewMode: lock.isViewMode,
+    canStartEditing: lock.canStartEditing,
     fieldClass,
   }
 }

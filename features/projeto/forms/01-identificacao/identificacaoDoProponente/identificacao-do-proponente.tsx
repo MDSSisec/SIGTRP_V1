@@ -23,7 +23,7 @@ function FormularioIdentificacaoProponente({
 
       <IdentificacaoProponenteFields
         dados={form.form}
-        isLocked={form.ui.isLocked}
+        isCampoLocked={form.ui.isCampoLocked}
         cepStatus={form.localidade.cepStatus}
         isCepCompleto={form.localidade.isCepCompleto}
         estados={form.localidade.estados}

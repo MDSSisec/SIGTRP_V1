@@ -1,6 +1,7 @@
 "use client"
 
-import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
+import { campoReviewVisualClasses } from "@/features/projeto/components/formShared/secao-review-actions"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { cn } from "@/lib/utils"
 
 import {
@@ -18,36 +19,30 @@ export function useOutrasInformacoesReview({
   readOnlyView,
   isEditing,
 }: UseOutrasInformacoesReviewOptions) {
-  const reviewContext = useTedReview()
-
-  const canManageReview = Boolean(reviewContext?.canManage)
-  const review = reviewContext?.review
-  const isMarkingAtencao = Boolean(reviewContext?.isMarkingAtencao)
-
-  const isBlockedForUser =
-    Boolean(review?.bloqueada) && !canManageReview
-
-  const isLocked =
-    Boolean(readOnlyView) || !isEditing || isBlockedForUser
-
-  const isViewMode = !isEditing || isBlockedForUser
-
-  const canStartEditing =
-    !readOnlyView && !isBlockedForUser && !isMarkingAtencao
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
 
   function fieldClass(campoKey: string, extra = "") {
     return cn(
       styles.textarea,
-      isViewMode && VIEW_MODE_FIELD_CLASS,
-      reviewContext?.isCampoAtencao(campoKey) && ATTENTION_FIELD_CLASS,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) => Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: ATTENTION_FIELD_CLASS,
+        },
+        campoKey,
+      ),
       extra,
     )
   }
 
   return {
-    isLocked,
-    isViewMode,
-    canStartEditing,
+    isLocked: lock.isLocked,
+    isCampoLocked: lock.isCampoLocked,
+    isViewMode: lock.isViewMode,
+    canStartEditing: lock.canStartEditing,
     fieldClass,
   }
 }

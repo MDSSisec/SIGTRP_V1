@@ -15,14 +15,14 @@ import styles from "../identificacao-do-representante-legal.module.css"
 
 type Props = {
   dados: DadosIdentificacaoRepresentanteLegal
-  isLocked: boolean
+  isCampoLocked: (campoKey: string) => boolean
   fieldClass: (campoKey: string) => string
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
 }
 
 export function IdentificacaoRepresentanteFields({
   dados,
-  isLocked,
+  isCampoLocked,
   fieldClass,
   onChange,
 }: Props) {
@@ -49,7 +49,7 @@ export function IdentificacaoRepresentanteFields({
                 IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_NOME
               }
               className={fieldClass("nome")}
-              disabled={isLocked}
+              disabled={isCampoLocked("nome")}
             />
           </div>
 
@@ -74,7 +74,7 @@ export function IdentificacaoRepresentanteFields({
               className={fieldClass("matriculaFuncional")}
               maxLength={7}
               inputMode="numeric"
-              disabled={isLocked}
+              disabled={isCampoLocked("matriculaFuncional")}
             />
           </div>
         </div>
@@ -97,7 +97,7 @@ export function IdentificacaoRepresentanteFields({
                 IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_PROFISSAO
               }
               className={fieldClass("profissao")}
-              disabled={isLocked}
+              disabled={isCampoLocked("profissao")}
             />
           </div>
 
@@ -114,7 +114,7 @@ export function IdentificacaoRepresentanteFields({
                 IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CARGO
               }
               className={fieldClass("cargo")}
-              disabled={isLocked}
+              disabled={isCampoLocked("cargo")}
             />
           </div>
         </div>
@@ -137,7 +137,7 @@ export function IdentificacaoRepresentanteFields({
                 IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_ESTADO_CIVIL
               }
               className={fieldClass("estadoCivil")}
-              disabled={isLocked}
+              disabled={isCampoLocked("estadoCivil")}
             />
           </div>
 
@@ -159,7 +159,7 @@ export function IdentificacaoRepresentanteFields({
               }
               className={fieldClass("telefone")}
               maxLength={15}
-              disabled={isLocked}
+              disabled={isCampoLocked("telefone")}
             />
           </div>
         </div>
@@ -178,7 +178,7 @@ export function IdentificacaoRepresentanteFields({
               IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_EMAIL
             }
             className={fieldClass("email")}
-            disabled={isLocked}
+            disabled={isCampoLocked("email")}
           />
         </div>
       </div>

@@ -27,9 +27,8 @@ function FormularioIdentificacaoProjeto({
 
       <IdentificacaoProjetoFields
         dados={form.form}
-        isLocked={form.ui.isLocked}
-        isViewMode={form.ui.isViewMode}
-        attention={form.review}
+        isCampoLocked={form.ui.isCampoLocked}
+        fieldClass={form.review.fieldClass}
         onChange={form.actions.handleChange}
       />
 

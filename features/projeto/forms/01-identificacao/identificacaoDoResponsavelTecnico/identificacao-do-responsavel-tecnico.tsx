@@ -30,7 +30,7 @@ function FormularioIdentificacaoResponsavelTecnico({
 
       <IdentificacaoResponsavelTecnicoFields
         dados={form.form}
-        isLocked={form.ui.isLocked}
+        isCampoLocked={form.ui.isCampoLocked}
         emailInvalido={form.ui.emailInvalido}
         fieldClass={form.review.fieldClass}
         onChange={form.actions.handleChange}

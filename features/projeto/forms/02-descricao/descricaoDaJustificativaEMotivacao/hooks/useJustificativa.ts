@@ -168,6 +168,7 @@ export function useJustificativa({
       isSaving,
       saveError,
       isLocked: review.isLocked,
+      isCampoLocked: review.isCampoLocked,
       isViewMode: review.isViewMode,
       canStartEditing: review.canStartEditing,
     },

@@ -1,6 +1,7 @@
 "use client"
 
-import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
+import { campoReviewVisualClasses } from "@/features/projeto/components/formShared/secao-review-actions"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { cn } from "@/lib/utils"
 
 import {
@@ -10,64 +11,41 @@ import {
 import styles from "../identificacao-do-representante-legal.module.css"
 
 type UseIdentificacaoRepresentanteReviewOptions = {
-  /** Indica se o formulário está em modo somente leitura. */
   readOnlyView?: boolean
-
-  /** Indica se o usuário iniciou a edição do formulário. */
   isEditing: boolean
 }
 
 /**
  * Centraliza as regras de revisão da seção
  * "Identificação do Representante Legal".
- *
- * Responsabilidades:
- * - controlar bloqueio de edição;
- * - definir modo visualização;
- * - informar se a edição pode ser iniciada;
- * - aplicar estilos de campos em atenção.
  */
 export function useIdentificacaoRepresentanteReview({
   readOnlyView,
   isEditing,
 }: UseIdentificacaoRepresentanteReviewOptions) {
-  const reviewContext = useTedReview()
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
 
-  const review = reviewContext?.review
-  const canManageReview = Boolean(reviewContext?.canManage)
-
-  const isBlockedForUser =
-    Boolean(review?.bloqueada) && !canManageReview
-
-  const isViewMode = !isEditing || isBlockedForUser
-
-  const isLocked =
-    Boolean(readOnlyView) ||
-    isViewMode
-
-  const canStartEditing =
-    !readOnlyView &&
-    !isBlockedForUser &&
-    !reviewContext?.isMarkingAtencao
-
-  /**
-   * Retorna as classes CSS de um campo,
-   * aplicando estilos de visualização e destaque
-   * quando o campo estiver marcado em revisão.
-   */
   function fieldClass(campoKey: string): string {
     return cn(
       styles.input,
-      isViewMode && VIEW_MODE_FIELD_CLASS,
-      reviewContext?.isCampoAtencao(campoKey) &&
-        ATTENTION_FIELD_CLASS,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) => Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: ATTENTION_FIELD_CLASS,
+        },
+        campoKey,
+      ),
     )
   }
 
   return {
-    isLocked,
-    isViewMode,
-    canStartEditing,
+    isLocked: lock.isLocked,
+    isCampoLocked: lock.isCampoLocked,
+    isViewMode: lock.isViewMode,
+    canStartEditing: lock.canStartEditing,
     fieldClass,
   }
 }

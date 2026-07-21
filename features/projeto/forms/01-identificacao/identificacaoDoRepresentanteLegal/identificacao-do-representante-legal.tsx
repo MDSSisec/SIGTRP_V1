@@ -27,7 +27,7 @@ function FormularioIdentificacaoRepresentanteLegal({
 
       <IdentificacaoRepresentanteFields
         dados={form.form}
-        isLocked={form.ui.isLocked}
+        isCampoLocked={form.ui.isCampoLocked}
         fieldClass={form.review.fieldClass}
         onChange={form.actions.handleChange}
       />

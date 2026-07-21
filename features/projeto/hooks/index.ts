@@ -5,4 +5,5 @@ export { useProjetoScreen } from "./useProjetoScreen"
 export { useProjetos } from "./useProjetos"
 export { useResponsaveis } from "./useResponsaveis"
 export { useSecaoReviews } from "./useSecaoReviews"
+export { useSecaoFormLock } from "./useSecaoFormLock"
 

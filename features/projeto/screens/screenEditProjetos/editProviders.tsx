@@ -8,7 +8,6 @@ import { ProjectDataProvider } from "@/features/projeto/contexts/project-data-co
 import { TedReviewProvider } from "@/features/projeto/contexts/ted-review-context"
 import { mapModeloCronogramaToForm } from "@/features/projeto/services/project-ted.service"
 
-import { PROJETO_TIPOS } from "../../constants/projeto-tipos"
 import type { Projeto } from "../../types"
 import { mapProjetoToProjectModel } from "./projeto-to-project-model"
 
@@ -22,9 +21,8 @@ type EditProvidersProps = {
 /**
  * Agrupa todos os providers necessários para a tela de edição de projetos.
  *
- * Todos os projetos compartilham o `ProjectDataProvider` e o
- * `CronogramaProvider`. Projetos do tipo TED também recebem o
- * `TedReviewProvider`, responsável pelo fluxo de revisão das seções.
+ * Todos os projetos compartilham o `ProjectDataProvider`, o
+ * `CronogramaProvider` e o `TedReviewProvider` (bloquear / marcar atenção).
  */
 export function EditProviders({
   projeto,
@@ -32,8 +30,6 @@ export function EditProviders({
   secaoId,
   children,
 }: EditProvidersProps) {
-  const isTed = projeto.tipoProjeto === PROJETO_TIPOS.TED
-
   const projectData = useMemo(
     () => mapProjetoToProjectModel(projeto),
     [projeto],
@@ -49,27 +45,16 @@ export function EditProviders({
     ) as CronogramaData
   }, [projectData])
 
-  const content = (
-    <CronogramaProvider initialData={initialCronograma}>
-      {children}
-    </CronogramaProvider>
-  )
-
   return (
     <ProjectDataProvider
       projectId={projectId}
       projectData={projectData}
     >
-      {isTed ? (
-        <TedReviewProvider
-          projetoId={projectId}
-          secaoSlug={secaoId}
-        >
-          {content}
-        </TedReviewProvider>
-      ) : (
-        content
-      )}
+      <TedReviewProvider projetoId={projectId} secaoSlug={secaoId}>
+        <CronogramaProvider initialData={initialCronograma}>
+          {children}
+        </CronogramaProvider>
+      </TedReviewProvider>
     </ProjectDataProvider>
   )
 }

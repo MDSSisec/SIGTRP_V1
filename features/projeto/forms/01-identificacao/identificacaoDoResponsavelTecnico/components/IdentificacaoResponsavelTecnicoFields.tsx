@@ -16,7 +16,7 @@ import styles from "../identificacao-do-responsavel-tecnico.module.css"
 
 type Props = {
   dados: DadosIdentificacaoResponsavelTecnico
-  isLocked: boolean
+  isCampoLocked: (campoKey: string) => boolean
   emailInvalido: boolean
   fieldClass: (campoKey: string, extra?: string) => string
   onChange: (e: ChangeEvent<HTMLInputElement>) => void
@@ -25,7 +25,7 @@ type Props = {
 
 export function IdentificacaoResponsavelTecnicoFields({
   dados,
-  isLocked,
+  isCampoLocked,
   emailInvalido,
   fieldClass,
   onChange,
@@ -53,7 +53,7 @@ export function IdentificacaoResponsavelTecnicoFields({
               IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_NOME
             }
             className={fieldClass("nome")}
-            disabled={isLocked}
+            disabled={isCampoLocked("nome")}
           />
         </div>
 
@@ -70,7 +70,7 @@ export function IdentificacaoResponsavelTecnicoFields({
               IDENTIFICACAO_RESPONSAVEL_TECNICO_PLACEHOLDERS.PLACEHOLDER_CARGO
             }
             className={fieldClass("cargo")}
-            disabled={isLocked}
+            disabled={isCampoLocked("cargo")}
           />
         </div>
 
@@ -93,7 +93,7 @@ export function IdentificacaoResponsavelTecnicoFields({
               }
               className={fieldClass("telefone")}
               maxLength={14}
-              disabled={isLocked}
+              disabled={isCampoLocked("telefone")}
             />
           </div>
 
@@ -115,7 +115,7 @@ export function IdentificacaoResponsavelTecnicoFields({
               }
               className={fieldClass("celular")}
               maxLength={15}
-              disabled={isLocked}
+              disabled={isCampoLocked("celular")}
             />
           </div>
         </div>
@@ -138,7 +138,7 @@ export function IdentificacaoResponsavelTecnicoFields({
               "email",
               emailInvalido ? styles.inputError : "",
             )}
-            disabled={isLocked}
+            disabled={isCampoLocked("email")}
           />
           {emailInvalido ? (
             <span className={styles.errorMessage}>

@@ -21,8 +21,8 @@ type JustificativaFieldsProps = {
   /** Dados atuais do formulário. */
   dados: DadosJustificativa
 
-  /** Indica se os campos estão bloqueados para edição. */
-  isLocked: boolean
+  /** Bloqueio por campo quando há atenção parcial. */
+  isCampoLocked: (campoKey: string) => boolean
 
   /** Retorna as classes CSS aplicadas conforme as regras de revisão. */
   fieldClass: (campoKey: string, extra?: string) => string
@@ -112,7 +112,7 @@ const FIELDS: FieldConfig[] = [
  */
 export function JustificativaFields({
   dados,
-  isLocked,
+  isCampoLocked,
   fieldClass,
   onChange,
 }: JustificativaFieldsProps) {
@@ -154,7 +154,7 @@ export function JustificativaFields({
                     fieldClass(field.campoKey),
                     styles.textareaWithCounter,
                   )}
-                  disabled={isLocked}
+                  disabled={isCampoLocked(field.campoKey)}
                 />
 
                 <span

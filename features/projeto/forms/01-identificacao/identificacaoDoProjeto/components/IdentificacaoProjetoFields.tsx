@@ -20,18 +20,11 @@ type IdentificacaoProjetoFieldsProps = {
   /** Dados exibidos no formulário. */
   dados: DadosIdentificacaoProjeto
 
-  /** Bloqueia edição dos campos. */
-  isLocked: boolean
+  /** Bloqueio por campo quando há atenção parcial. */
+  isCampoLocked: (campoKey: string) => boolean
 
-  /** Aplica o estilo de visualização (readonly). */
-  isViewMode: boolean
-
-  /** Classes CSS para destacar campos em revisão. */
-  attention: {
-    localExecucao?: string
-    duracao?: string
-    resumoProjeto?: string
-  }
+  /** Classes CSS por campo (atenção / OK muteado / visualização). */
+  fieldClass: (campoKey: string, baseClass?: string) => string
 
   /** Callback disparado ao alterar qualquer campo. */
   onChange: (
@@ -48,9 +41,8 @@ type IdentificacaoProjetoFieldsProps = {
  */
 export function IdentificacaoProjetoFields({
   dados,
-  isLocked,
-  isViewMode,
-  attention,
+  isCampoLocked,
+  fieldClass,
   onChange,
 }: IdentificacaoProjetoFieldsProps) {
   return (
@@ -93,8 +85,8 @@ export function IdentificacaoProjetoFields({
                 value={dados.localExecucao}
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_LOCAL_EXECUCAO}
                 onChange={onChange}
-                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS, attention.localExecucao)}
-                disabled={isLocked}
+                className={fieldClass("localExecucao")}
+                disabled={isCampoLocked("localExecucao")}
               />
             </div>
 
@@ -113,8 +105,8 @@ export function IdentificacaoProjetoFields({
                 value={dados.duracao}
                 placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_DURACAO}
                 onChange={onChange}
-                className={cn(styles.input, isViewMode && VIEW_MODE_FIELD_CLASS, attention.duracao)}
-                disabled={isLocked}
+                className={fieldClass("duracao")}
+                disabled={isCampoLocked("duracao")}
               />
             </div>
           </div>
@@ -142,8 +134,8 @@ export function IdentificacaoProjetoFields({
             placeholder={IDENTIFICACAO_PROJETO_PLACEHOLDERS.PLACEHOLDER_RESUMO_PROJETO}
             onChange={onChange}
             rows={6}
-            className={cn(styles.textarea, isViewMode && VIEW_MODE_FIELD_CLASS, attention.resumoProjeto)}
-            disabled={isLocked}
+            className={fieldClass("resumoProjeto", styles.textarea)}
+            disabled={isCampoLocked("resumoProjeto")}
           />
         </div>
       </section>

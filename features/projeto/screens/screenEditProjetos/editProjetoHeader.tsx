@@ -8,27 +8,14 @@ import { SecaoReviewHeaderActions } from "@/features/projeto/components/formShar
 
 import { PROJETOS_ROUTE } from "../../constants"
 import { PROJETOS_TEXT } from "../../constants/projetos.text"
-import {
-  PROJETO_TIPOS,
-  type ProjetoTipo,
-} from "../../constants/projeto-tipos"
-
-type EditProjetoHeaderProps = {
-  /** Tipo do projeto em edição. */
-  tipoProjeto: ProjetoTipo
-}
 
 /**
  * Cabeçalho da tela de edição de projetos.
  *
- * Exibe a ação de retorno para a listagem e, quando o projeto é do tipo TED,
- * apresenta as ações relacionadas ao fluxo de revisão da seção.
+ * Exibe a ação de retorno para a listagem e as ações de revisão
+ * da seção (bloquear / marcar atenção), disponíveis para todos os tipos.
  */
-export function EditProjetoHeader({
-  tipoProjeto,
-}: EditProjetoHeaderProps) {
-  const isTed = tipoProjeto === PROJETO_TIPOS.TED
-
+export function EditProjetoHeader() {
   return (
     <header className="mb-4 flex flex-wrap items-center gap-2">
       <Button
@@ -42,7 +29,7 @@ export function EditProjetoHeader({
         {PROJETOS_TEXT.edit.backToList}
       </Button>
 
-      {isTed && <SecaoReviewHeaderActions />}
+      <SecaoReviewHeaderActions />
     </header>
   )
 }

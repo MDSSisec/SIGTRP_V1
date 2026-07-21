@@ -127,5 +127,10 @@ export async function isSecaoBloqueada(
   secaoSlug: string,
 ): Promise<boolean> {
   const review = await getSecaoReview(projetoId, secaoSlug)
-  return Boolean(review?.bloqueada)
+  if (!review?.bloqueada) return false
+
+  // Com "precisa atenção", o proponente ainda pode corrigir os campos marcados.
+  if (review.statusRevisao === "precisaAtencao") return false
+
+  return true
 }

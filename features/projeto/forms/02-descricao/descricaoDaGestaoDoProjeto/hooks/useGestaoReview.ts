@@ -1,6 +1,7 @@
 "use client"
 
-import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
+import { campoReviewVisualClasses } from "@/features/projeto/components/formShared/secao-review-actions"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { cn } from "@/lib/utils"
 
 import {
@@ -27,24 +28,7 @@ export function useGestaoReview({
   readOnlyView,
   isEditing,
 }: UseGestaoReviewOptions) {
-  const reviewContext = useTedReview()
-
-  const canManageReview = Boolean(reviewContext?.canManage)
-  const review = reviewContext?.review
-  const isMarkingAtencao = Boolean(reviewContext?.isMarkingAtencao)
-
-  const isBlockedForUser =
-    Boolean(review?.bloqueada) && !canManageReview
-
-  const isLocked =
-    Boolean(readOnlyView) || !isEditing || isBlockedForUser
-
-  const isViewMode = !isEditing || isBlockedForUser
-
-  const canStartEditing =
-    !readOnlyView &&
-    !isBlockedForUser &&
-    !isMarkingAtencao
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
 
   /**
    * Monta a lista de classes CSS aplicadas a um campo do formulário.
@@ -56,17 +40,25 @@ export function useGestaoReview({
   ) {
     return cn(
       baseClass,
-      isViewMode && VIEW_MODE_FIELD_CLASS,
-      reviewContext?.isCampoAtencao(campoKey) &&
-        ATTENTION_FIELD_CLASS,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) => Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: ATTENTION_FIELD_CLASS,
+        },
+        campoKey,
+      ),
       extra,
     )
   }
 
   return {
-    isLocked,
-    isViewMode,
-    canStartEditing,
+    isLocked: lock.isLocked,
+    isCampoLocked: lock.isCampoLocked,
+    isViewMode: lock.isViewMode,
+    canStartEditing: lock.canStartEditing,
     fieldClass,
   }
 }
