@@ -12,8 +12,8 @@
 }
 
 :global(.dark) .container {
-  background: oklch(0.29 0.006 264);
-  border-color: oklch(0.36 0.006 264);
+  background: var(--card);
+  border-color: var(--border);
 }
 
 .section {
@@ -59,8 +59,8 @@
 }
 
 :global(.dark) .textarea {
-  background: oklch(0.22 0.006 264);
-  border-color: oklch(0.35 0.006 264);
+  background: var(--field);
+  border-color: var(--border);
 }
 
 .textarea::placeholder {
@@ -107,7 +107,7 @@
 }
 
 :global(.dark) .charCounter {
-  background: color-mix(in oklch, oklch(0.22 0.006 264) 92%, transparent);
+  background: color-mix(in oklch, var(--field) 92%, transparent);
 }
 
 .charCounterWarn {
@@ -144,7 +144,7 @@
 }
 
 :global(.dark) .itemCard {
-  background: oklch(0.25 0.006 264);
+  background: var(--muted);
 }
 
 .input {
@@ -153,7 +153,7 @@
 }
 
 :global(.dark) .input {
-  background: oklch(0.22 0.006 264) !important;
+  background: var(--field) !important;
 }
 
 .cardActions {

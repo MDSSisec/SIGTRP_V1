@@ -8,7 +8,7 @@
  * - cores de texto e placeholder consistentes com o tema.
  */
 export const VIEW_MODE_FIELD_CLASS =
-  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground " +
+  "!bg-[var(--field)] disabled:!bg-[var(--field)] disabled:!opacity-100 text-foreground " +
   "placeholder:text-muted-foreground disabled:placeholder:text-muted-foreground"
 
 /**

@@ -20,7 +20,7 @@ export const OUTRAS_INFORMACOES_TEXT = {
 } as const
 
 export const VIEW_MODE_FIELD_CLASS =
-  "!bg-[#ffffff] disabled:!bg-[#ffffff] disabled:!opacity-100 text-foreground " +
+  "!bg-[var(--field)] disabled:!bg-[var(--field)] disabled:!opacity-100 text-foreground " +
   "placeholder:text-muted-foreground disabled:placeholder:text-muted-foreground"
 
 export const ATTENTION_FIELD_CLASS =

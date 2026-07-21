@@ -16,8 +16,8 @@
 }
 
 :global(.dark) .container {
-    background: oklch(0.29 0.006 264);
-    border-color: oklch(0.36 0.006 264);
+    background: var(--card);
+    border-color: var(--border);
 }
 
 .section {
@@ -71,7 +71,7 @@
 
 :global(.dark) .input,
 :global(.dark) .textarea {
-    background: oklch(0.22 0.006 264);
+    background: var(--field);
 }
 
 .input {
@@ -94,7 +94,7 @@
 }
 
 :global(.dark) .textarea {
-    border-color: oklch(0.35 0.006 264);
+    border-color: var(--border);
 }
 
 .input:disabled,

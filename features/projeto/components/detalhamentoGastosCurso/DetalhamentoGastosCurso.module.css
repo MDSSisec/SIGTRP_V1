@@ -37,7 +37,7 @@
 }
 
 :global(.dark) .tableWrap {
-  background: oklch(0.22 0.006 264);
+  background: var(--field);
 }
 
 .table {
@@ -95,13 +95,13 @@
 }
 
 :global(.dark) .control {
-  background: oklch(0.22 0.006 264) !important;
-  border-color: oklch(0.35 0.006 264) !important;
+  background: var(--field) !important;
+  border-color: var(--border) !important;
 }
 
 :global(.dark) .control:disabled,
 :global(.dark) .control[readonly] {
-  background: oklch(0.22 0.006 264) !important;
+  background: var(--field) !important;
 }
 
 select.control {

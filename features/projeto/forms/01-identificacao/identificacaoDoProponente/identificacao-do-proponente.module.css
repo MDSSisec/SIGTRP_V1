@@ -10,8 +10,8 @@
 }
 
 :global(.dark) .container {
-    background: oklch(0.29 0.006 264);
-    border-color: oklch(0.36 0.006 264);
+    background: var(--card);
+    border-color: var(--border);
 }
 
 .section {
@@ -87,11 +87,11 @@
 }
 
 :global(.dark) .input {
-    background: oklch(0.22 0.006 264) !important;
+    background: var(--field) !important;
 }
 
 :global(.dark) .input:disabled {
-    background: oklch(0.22 0.006 264) !important;
+    background: var(--field) !important;
     opacity: 1;
     color: var(--foreground);
 }
@@ -117,7 +117,7 @@
 :global(.dark) .input:-webkit-autofill:hover,
 :global(.dark) .input:-webkit-autofill:focus,
 :global(.dark) .input:-webkit-autofill:active {
-    background: oklch(0.22 0.006 264) !important;
+    background: var(--field) !important;
 }
 
 .input:-webkit-autofill {
@@ -126,8 +126,8 @@
 }
 
 :global(.dark) .input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px oklch(0.22 0.006 264) inset !important;
-    box-shadow: 0 0 0 30px oklch(0.22 0.006 264) inset !important;
+    -webkit-box-shadow: 0 0 0 30px var(--field) inset !important;
+    box-shadow: 0 0 0 30px var(--field) inset !important;
 }
 
 .grid2 {

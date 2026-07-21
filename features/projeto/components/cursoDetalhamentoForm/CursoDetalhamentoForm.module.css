@@ -108,7 +108,7 @@
 }
 
 :global(.dark) .summaryCard {
-  background: oklch(0.25 0.006 264);
+  background: var(--muted);
 }
 
 .summaryCard span {

@@ -12,8 +12,8 @@
 }
 
 :global(.dark) .container {
-  background: oklch(0.29 0.006 264);
-  border-color: oklch(0.36 0.006 264);
+  background: var(--card);
+  border-color: var(--border);
 }
 
 .section {
@@ -47,7 +47,7 @@
 }
 
 :global(.dark) .tableWrapper {
-  background: oklch(0.25 0.006 264);
+  background: var(--muted);
 }
 
 .table {
@@ -70,7 +70,7 @@
 }
 
 :global(.dark) .table th {
-  background: oklch(0.29 0.006 264);
+  background: var(--card);
 }
 
 .input {
@@ -80,7 +80,7 @@
 }
 
 :global(.dark) .input {
-  background: oklch(0.22 0.006 264) !important;
+  background: var(--field) !important;
 }
 
 .totalRow td {
@@ -89,7 +89,7 @@
 }
 
 :global(.dark) .totalRow td {
-  background: oklch(0.29 0.006 264);
+  background: var(--card);
 }
 
 .footnote {
