@@ -54,19 +54,26 @@ export function IdentificacaoRepresentanteFields({
           </div>
 
           <div className={styles.fieldGroup}>
-            <CampoReviewLabel htmlFor="cpf" campoKey="cpf" className={styles.label}>
-              {IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_CPF}
+            <CampoReviewLabel
+              htmlFor="matriculaFuncional"
+              campoKey="matriculaFuncional"
+              className={styles.label}
+            >
+              {
+                IDENTIFICACAO_REPRESENTANTE_LEGAL_LABELS.LABEL_MATRICULA_FUNCIONAL
+              }
             </CampoReviewLabel>
             <Input
-              id="cpf"
-              name="cpf"
-              value={dados.cpf}
+              id="matriculaFuncional"
+              name="matriculaFuncional"
+              value={dados.matriculaFuncional}
               onChange={onChange}
               placeholder={
-                IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_CPF
+                IDENTIFICACAO_REPRESENTANTE_LEGAL_PLACEHOLDERS.PLACEHOLDER_MATRICULA_FUNCIONAL
               }
-              className={fieldClass("cpf")}
-              maxLength={14}
+              className={fieldClass("matriculaFuncional")}
+              maxLength={7}
+              inputMode="numeric"
               disabled={isLocked}
             />
           </div>

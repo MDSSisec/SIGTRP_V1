@@ -1,4 +1,4 @@
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 
 import { formatTelefone, formatTelefoneFixo } from "../utils/formatters"
 
@@ -20,7 +20,7 @@ export const VAZIO_IDENTIFICACAO_RESPONSAVEL_TECNICO: DadosIdentificacaoResponsa
   }
 
 export function toIdentificacaoResponsavelTecnicoForm(
-  identificacao: TedIdentificacao | null,
+  identificacao: ProjectSession01Identificacao | null,
 ): DadosIdentificacaoResponsavelTecnico {
   if (!identificacao) return VAZIO_IDENTIFICACAO_RESPONSAVEL_TECNICO
 

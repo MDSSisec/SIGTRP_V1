@@ -14,9 +14,10 @@ import styles from "./detalhamento-da-base.module.css"
  * Formulário da seção "Detalhamento da Base Territorial do Projeto".
  */
 export function FormularioDetalhamentoDaBase({
+  projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
-  const form = useDetalhamentoDaBase({ readOnlyView })
+  const form = useDetalhamentoDaBase({ projectId, readOnlyView })
 
   return (
     <div className={styles.container}>
@@ -33,10 +34,12 @@ export function FormularioDetalhamentoDaBase({
       {!readOnlyView ? (
         <DetalhamentoDaBaseActions
           isEditing={form.ui.isEditing}
+          isSaving={form.ui.isSaving}
+          saveError={form.ui.saveError}
           canStartEditing={form.ui.canStartEditing}
           onEdit={form.actions.startEditing}
           onCancel={form.actions.cancel}
-          onSave={form.actions.save}
+          onSave={() => void form.actions.save()}
         />
       ) : null}
     </div>

@@ -3,10 +3,10 @@
 import { toIdentificacaoProponenteForm, VAZIO_IDENTIFICACAO_PROPONENTE, type DadosIdentificacaoProponente } from "../types/proponente-form"
 import { useIdentificacaoProponenteReview } from "./useIdentificacaoProponenteReview"
 import { saveIdentificacaoProponente } from "../action/saveIdentificacaoProponente"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 import { formatCEP, formatCNPJ, formatTelefone } from "../utils/formatters"
 import { useCallback, useEffect, useState, type ChangeEvent } from "react"
-import { fetchTedIdentificacao } from "@/features/projeto/services"
+import { fetchProjectSession01Identificacao } from "@/features/projeto/services"
 import { useProponenteLocalidade } from "./useProponenteLocalidade"
 import { useAsyncData } from "@/hooks/use-async-data"
 
@@ -16,16 +16,16 @@ type UseIdentificacaoProponenteOptions = {
 }
 
 /**
- * Hook responsável pela lógica do formulário de
- * Identificação do(a) Proponente.
+ * Hook responsÃ¡vel pela lÃ³gica do formulÃ¡rio de
+ * IdentificaÃ§Ã£o do(a) Proponente.
  *
  * Responsabilidades:
  * - carregar dados da API;
- * - controlar edição;
- * - salvar alterações;
- * - aplicar máscaras de CNPJ/CEP/telefone;
- * - sincronizar UF/município e ViaCEP;
- * - aplicar regras de revisão.
+ * - controlar ediÃ§Ã£o;
+ * - salvar alteraÃ§Ãµes;
+ * - aplicar mÃ¡scaras de CNPJ/CEP/telefone;
+ * - sincronizar UF/municÃ­pio e ViaCEP;
+ * - aplicar regras de revisÃ£o.
  */
 export function useIdentificacaoProponente({
   projectId,
@@ -50,16 +50,16 @@ export function useIdentificacaoProponente({
 
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
-    initialData: null as TedIdentificacao | null,
-    errorMessage: "Não foi possível carregar o proponente.",
+    initialData: null as ProjectSession01Identificacao | null,
+    errorMessage: "NÃ£o foi possÃ­vel carregar o proponente.",
     loadOnMount: Boolean(projectId),
   })
 
-  const resetForm = useCallback((data: TedIdentificacao | null) => {
+  const resetForm = useCallback((data: ProjectSession01Identificacao | null) => {
     setDadosFormulario(toIdentificacaoProponenteForm(data))
   }, [])
 

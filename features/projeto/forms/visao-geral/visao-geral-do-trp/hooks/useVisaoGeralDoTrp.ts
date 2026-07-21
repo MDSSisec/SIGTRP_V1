@@ -12,9 +12,9 @@ import {
   fetchEstados,
   fetchMunicipiosByUf,
   fetchProjectStages,
-  fetchTedIdentificacao,
+  fetchProjectSession01Identificacao,
 } from "@/features/projeto/services"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { exportVisaoGeralToPdf } from "../utils/export-visao-geral-pdf"
@@ -24,10 +24,10 @@ type UseVisaoGeralDoTrpOptions = {
 }
 
 /**
- * Resolve município/UF a partir dos códigos IBGE do proponente.
+ * Resolve municÃ­pio/UF a partir dos cÃ³digos IBGE do proponente.
  */
 async function resolveLocalProponente(
-  identificacao: TedIdentificacao | null,
+  identificacao: ProjectSession01Identificacao | null,
 ): Promise<string> {
   const ufIbge = identificacao?.proponenteUfIbge
   const municipioIbge = identificacao?.proponenteMunicipioIbge
@@ -52,11 +52,11 @@ async function resolveLocalProponente(
 }
 
 /**
- * Lógica da Visão Geral do TRP.
+ * LÃ³gica da VisÃ£o Geral do TRP.
  *
  * - carrega etapas e resolve o stepper;
  * - carrega dados do representante legal e local do proponente;
- * - controla exportação PDF.
+ * - controla exportaÃ§Ã£o PDF.
  */
 export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
   const projectData = useProjectData()
@@ -68,18 +68,18 @@ export function useVisaoGeralDoTrp({ projectId }: UseVisaoGeralDoTrpOptions) {
 
   const { data: etapas } = useAsyncData(fetchProjectStages, {
     initialData: [],
-    errorMessage: "Não foi possível carregar as etapas do projeto.",
+    errorMessage: "NÃ£o foi possÃ­vel carregar as etapas do projeto.",
   })
 
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao } = useAsyncData(loadIdentificacao, {
-    initialData: null as TedIdentificacao | null,
+    initialData: null as ProjectSession01Identificacao | null,
     errorMessage:
-      "Não foi possível carregar os dados do representante legal.",
+      "NÃ£o foi possÃ­vel carregar os dados do representante legal.",
     loadOnMount: Boolean(projectId),
   })
 

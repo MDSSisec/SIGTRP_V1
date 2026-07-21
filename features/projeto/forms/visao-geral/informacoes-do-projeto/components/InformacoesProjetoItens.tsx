@@ -3,7 +3,7 @@
 import { AlertTriangle, Lock } from "lucide-react"
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
 import { TITLE_KEY_TO_SECAO_SLUG } from "@/features/projeto/constants/secao-review"
-import type { TedSecaoReview } from "@/features/projeto/types/ted-secao-review"
+import type { SecaoReview } from "@/features/projeto/types/secao-review"
 import { cn } from "@/lib/utils"
 
 import { ITENS_TRP_POR_COLUNA } from "../constants/form"
@@ -14,7 +14,7 @@ type InformacoesProjetoItensProps = {
   itensDadosGerais: ItemPreenchido[]
   itensDadosTrp: ItemPreenchido[]
   itensConcluidos: Set<string>
-  getReview: (slug: string) => TedSecaoReview | null | undefined
+  getReview: (slug: string) => SecaoReview | null | undefined
   secaoTemAtencao: (slug: string) => boolean
 }
 
@@ -28,7 +28,7 @@ function ItemLinha({
   itemKey: string
   title: string
   itensConcluidos: Set<string>
-  getReview: (slug: string) => TedSecaoReview | null | undefined
+  getReview: (slug: string) => SecaoReview | null | undefined
   secaoTemAtencao: (slug: string) => boolean
 }) {
   const preenchido = itensConcluidos.has(itemKey)
@@ -54,9 +54,9 @@ function ItemLinha({
         )}
         title={
           precisaAtencao
-            ? (review?.comentario ?? "Precisa de atenção")
+            ? (review?.comentario ?? "Precisa de atenÃ§Ã£o")
             : bloqueada
-              ? "Seção bloqueada"
+              ? "SeÃ§Ã£o bloqueada"
               : undefined
         }
       >
@@ -81,7 +81,7 @@ function ListaItens({
 }: {
   itens: ItemPreenchido[]
   itensConcluidos: Set<string>
-  getReview: (slug: string) => TedSecaoReview | null | undefined
+  getReview: (slug: string) => SecaoReview | null | undefined
   secaoTemAtencao: (slug: string) => boolean
   duasColunas?: boolean
 }) {

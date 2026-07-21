@@ -1,9 +1,9 @@
-import type { TedIdentificacao } from "../types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "../types/project-session-01-identificacao"
 
 type DbNumeric = string | number | null
 
-/** Registro bruto da tabela de identificação TED (snake_case). */
-export type TedIdentificacaoRow = {
+/** Registro bruto da tabela de identificação (snake_case). */
+export type ProjectSession01IdentificacaoRow = {
   id: string
   projeto_id: string
   nome_projeto: string | null
@@ -23,7 +23,7 @@ export type TedIdentificacaoRow = {
   proponente_email: string | null
   proponente_pagina_web: string | null
   representante_nome: string | null
-  representante_cpf: DbNumeric
+  representante_matricula_funcional: string | null
   representante_profissao: string | null
   representante_cargo: string | null
   representante_estado_civil: string | null
@@ -57,7 +57,9 @@ function normalizeDate(value: string | Date | null | undefined): string | null {
   return match ? match[1] : text || null
 }
 
-export function toTedIdentificacao(row: TedIdentificacaoRow): TedIdentificacao {
+export function toProjectSession01Identificacao(
+  row: ProjectSession01IdentificacaoRow,
+): ProjectSession01Identificacao {
   return {
     id: row.id,
     projetoId: row.projeto_id,
@@ -78,7 +80,8 @@ export function toTedIdentificacao(row: TedIdentificacaoRow): TedIdentificacao {
     proponenteEmail: row.proponente_email,
     proponentePaginaWeb: row.proponente_pagina_web,
     representanteNome: row.representante_nome,
-    representanteCpf: normalizeDigits(row.representante_cpf),
+    representanteMatriculaFuncional:
+      row.representante_matricula_funcional?.trim() || null,
     representanteProfissao: row.representante_profissao,
     representanteCargo: row.representante_cargo,
     representanteEstadoCivil: row.representante_estado_civil,

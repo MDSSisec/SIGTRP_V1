@@ -1,4 +1,4 @@
-import type { ProjectModelData } from "@/features/projeto/types"
+import type { ProjectSession04Characterization } from "@/features/projeto/types/project-session-04-characterization"
 
 export type DadosOutrasInformacoes = {
   texto: string
@@ -8,30 +8,20 @@ export const VAZIO_OUTRAS_INFORMACOES: DadosOutrasInformacoes = {
   texto: "",
 }
 
-type CaracterizacaoProponente = {
-  outras_informacoes?: string
-}
-
 export function toOutrasInformacoesForm(
-  projectData: ProjectModelData | null | undefined,
+  caracterizacao: ProjectSession04Characterization | null,
 ): DadosOutrasInformacoes {
-  const raw = projectData?.caracterizacao_proponente as
-    | CaracterizacaoProponente
-    | undefined
-
-  if (!raw || typeof raw.outras_informacoes !== "string") {
+  if (!caracterizacao?.outrasInformacoesTexto) {
     return { ...VAZIO_OUTRAS_INFORMACOES }
   }
 
   return {
-    texto: raw.outras_informacoes,
+    texto: caracterizacao.outrasInformacoesTexto,
   }
 }
 
-export function toOutrasInformacoesPatch(
-  dados: DadosOutrasInformacoes,
-): NonNullable<ProjectModelData["caracterizacao_proponente"]> {
+export function toOutrasInformacoesInput(dados: DadosOutrasInformacoes) {
   return {
-    outras_informacoes: dados.texto,
+    outrasInformacoesTexto: dados.texto,
   }
 }

@@ -1,25 +1,22 @@
 import { getDbPool } from "@/lib/db"
 import {
-  toTedCampoReview,
-  type TedCampoReviewRow,
-} from "../mappers/ted-campo-review.mapper"
-import type { TedCampoReview } from "../types/ted-campo-review"
-import {
-  getTedSecaoReview,
-  upsertTedSecaoReview,
-} from "./ted-secao-review.repository"
+  toCampoReview,
+  type CampoReviewRow,
+} from "../mappers/campo-review.mapper"
+import type { CampoReview } from "../types/campo-review"
+import { getSecaoReview, upsertSecaoReview } from "./secao-review.repository"
 
 function emptyToNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? ""
   return trimmed ? trimmed : null
 }
 
-export async function listTedCampoReviewsByProjetoId(
+export async function listCampoReviewsByProjetoId(
   projetoId: string,
-): Promise<TedCampoReview[]> {
+): Promise<CampoReview[]> {
   const pool = getDbPool()
 
-  const result = await pool.query<TedCampoReviewRow>(
+  const result = await pool.query<CampoReviewRow>(
     `
       SELECT *
       FROM "SIGTRP_TB_TED_CAMPO_REVIEW"
@@ -30,16 +27,16 @@ export async function listTedCampoReviewsByProjetoId(
     [projetoId],
   )
 
-  return result.rows.map(toTedCampoReview)
+  return result.rows.map(toCampoReview)
 }
 
-export async function listTedCampoReviewsBySecao(
+export async function listCampoReviewsBySecao(
   projetoId: string,
   secaoSlug: string,
-): Promise<TedCampoReview[]> {
+): Promise<CampoReview[]> {
   const pool = getDbPool()
 
-  const result = await pool.query<TedCampoReviewRow>(
+  const result = await pool.query<CampoReviewRow>(
     `
       SELECT *
       FROM "SIGTRP_TB_TED_CAMPO_REVIEW"
@@ -51,26 +48,26 @@ export async function listTedCampoReviewsBySecao(
     [projetoId, secaoSlug],
   )
 
-  return result.rows.map(toTedCampoReview)
+  return result.rows.map(toCampoReview)
 }
 
 /**
  * Substitui as marcações da seção pelos campoKeys informados.
  * Atualiza também o status da seção (precisaAtencao / ok).
  */
-export async function syncTedCampoReviews(
+export async function syncCampoReviews(
   projetoId: string,
   secaoSlug: string,
   campoKeys: string[],
   atualizadoPorId: string,
   comentario?: string | null,
-): Promise<TedCampoReview[]> {
+): Promise<CampoReview[]> {
   const pool = getDbPool()
   const uniqueKeys = [
     ...new Set(campoKeys.map((k) => k.trim()).filter(Boolean)),
   ]
   const comentarioValue = emptyToNull(comentario)
-  const currentSecao = await getTedSecaoReview(projetoId, secaoSlug)
+  const currentSecao = await getSecaoReview(projetoId, secaoSlug)
 
   const client = await pool.connect()
 
@@ -113,7 +110,7 @@ export async function syncTedCampoReviews(
 
   const temAtencao = uniqueKeys.length > 0
 
-  await upsertTedSecaoReview(
+  await upsertSecaoReview(
     projetoId,
     {
       secaoSlug,
@@ -124,5 +121,5 @@ export async function syncTedCampoReviews(
     atualizadoPorId,
   )
 
-  return listTedCampoReviewsBySecao(projetoId, secaoSlug)
+  return listCampoReviewsBySecao(projetoId, secaoSlug)
 }

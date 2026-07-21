@@ -1,6 +1,6 @@
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 
-import { formatCpf, formatTelefone } from "../utils/formatters"
+import { formatTelefone, sanitizeMatriculaFuncional } from "../utils/formatters"
 
 /**
  * Estado do formulário de
@@ -8,7 +8,7 @@ import { formatCpf, formatTelefone } from "../utils/formatters"
  */
 export type DadosIdentificacaoRepresentanteLegal = {
   nome: string
-  cpf: string
+  matriculaFuncional: string
   profissao: string
   cargo: string
   estadoCivil: string
@@ -22,7 +22,7 @@ export type DadosIdentificacaoRepresentanteLegal = {
 export const VAZIO_IDENTIFICACAO_REPRESENTANTE: Readonly<DadosIdentificacaoRepresentanteLegal> =
   {
     nome: "",
-    cpf: "",
+    matriculaFuncional: "",
     profissao: "",
     cargo: "",
     estadoCivil: "",
@@ -33,12 +33,9 @@ export const VAZIO_IDENTIFICACAO_REPRESENTANTE: Readonly<DadosIdentificacaoRepre
 /**
  * Converte os dados retornados pela API para o modelo
  * utilizado pelo formulário.
- *
- * Também aplica as máscaras de CPF e telefone para
- * exibição na interface.
  */
 export function toIdentificacaoRepresentanteForm(
-  identificacao: TedIdentificacao | null,
+  identificacao: ProjectSession01Identificacao | null,
 ): DadosIdentificacaoRepresentanteLegal {
   if (!identificacao) {
     return VAZIO_IDENTIFICACAO_REPRESENTANTE
@@ -47,7 +44,9 @@ export function toIdentificacaoRepresentanteForm(
   return {
     nome: identificacao.representanteNome ?? "",
 
-    cpf: formatCpf(identificacao.representanteCpf ?? ""),
+    matriculaFuncional: sanitizeMatriculaFuncional(
+      identificacao.representanteMatriculaFuncional ?? "",
+    ),
 
     profissao: identificacao.representanteProfissao ?? "",
 
@@ -55,9 +54,7 @@ export function toIdentificacaoRepresentanteForm(
 
     estadoCivil: identificacao.representanteEstadoCivil ?? "",
 
-    telefone: formatTelefone(
-      identificacao.representanteTelefone ?? "",
-    ),
+    telefone: formatTelefone(identificacao.representanteTelefone ?? ""),
 
     email: identificacao.representanteEmail ?? "",
   }

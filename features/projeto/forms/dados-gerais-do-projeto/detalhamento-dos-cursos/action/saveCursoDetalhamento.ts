@@ -1,6 +1,6 @@
 import type { CursoDetalhamentoDados } from "@/features/projeto/types/general-project-data"
 import { syncCursosByQuantidade } from "@/features/projeto/types/general-project-data"
-import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { ProjectModelData } from "@/features/projeto/types/project-model"
 
 import { readCursos } from "../../dados-gerais/types/dados-gerais-form"
 

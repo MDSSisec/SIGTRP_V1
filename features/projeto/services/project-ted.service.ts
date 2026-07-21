@@ -1,10 +1,10 @@
 import type {
   CronogramaDataMapped,
   ProjectModelData,
-} from "@/features/projeto/types/ted"
+} from "@/features/projeto/types/project-model"
 import { parseValorModelo } from "@/features/projeto/utils/ted-model"
 
-export type { CronogramaDataMapped, ProjectModelData } from "@/features/projeto/types/ted"
+export type { CronogramaDataMapped, ProjectModelData } from "@/features/projeto/types/project-model"
 
 export function mapModeloCronogramaToForm(
   etapasCronograma: ProjectModelData["etapas_cronograma"],

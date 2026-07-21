@@ -1,16 +1,39 @@
 "use client"
 
-import { getTipoProjetoLabel, mapProjectDataToInformacoesForm, mapProjetoToContextPatch, VAZIO_INFORMACOES_PROJETO, type DadosInformacoesProjeto } from "../types/informacoes-form"
-import { fetchProjectStages, fetchResponsaveisExternos, fetchResponsaveisInternos, fetchTedIdentificacao } from "@/features/projeto/services"
-import { useProjectData, useUpdateProjectData } from "@/features/projeto/contexts/project-data-context"
-import { saveInformacoesProjeto, validateInformacoesProjeto } from "../action/saveInformacoesProjeto"
-import { getItensConcluidosFromTedIdentificacao } from "@/features/projeto/utils/ted-preenchimento"
+import {
+  getTipoProjetoLabel,
+  mapProjectDataToInformacoesForm,
+  mapProjetoToContextPatch,
+  VAZIO_INFORMACOES_PROJETO,
+  type DadosInformacoesProjeto,
+} from "../types/informacoes-form"
+import {
+  fetchProjectStages,
+  fetchResponsaveisExternos,
+  fetchResponsaveisInternos,
+  fetchProjectSession01Identificacao,
+  fetchProjectSession02Description,
+  fetchProjectSession03Participants,
+  fetchProjectSession04Characterization,
+} from "@/features/projeto/services"
+import {
+  useProjectData,
+  useUpdateProjectData,
+} from "@/features/projeto/contexts/project-data-context"
+import {
+  saveInformacoesProjeto,
+  validateInformacoesProjeto,
+} from "../action/saveInformacoesProjeto"
+import { getItensConcluidos } from "@/features/projeto/utils/ted-preenchimento"
 import { canEditProjetoInformacoes } from "@/features/projeto/domain/projeto.permissions"
 import { SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 import { useCallback, useEffect, useMemo, useState, type ChangeEvent } from "react"
 import { buildEtapaSteps, resolveEtapaStepIndex } from "@/components/StatusStepper"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
-import { useTedSecaoReviews } from "@/features/projeto/hooks/useTedSecaoReviews"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
+import type { ProjectSession02Description } from "@/features/projeto/types/project-session-02-description"
+import type { ProjectSession03Participants } from "@/features/projeto/types/project-session-03-participants"
+import type { ProjectSession04Characterization } from "@/features/projeto/types/project-session-04-characterization"
+import { useSecaoReviews } from "@/features/projeto/hooks/useSecaoReviews"
 import type { ResponsavelOption } from "@/features/projeto/types"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
@@ -31,9 +54,10 @@ function getItensPreenchidos() {
 /**
  * Lógica do formulário de Informações do Projeto.
  *
- * - carrega etapas, responsáveis e identificação;
+ * - carrega etapas, responsáveis, identificação e descrição;
  * - controla edição/salvamento;
- * - resolve o stepper de etapas.
+ * - resolve o stepper de etapas;
+ * - calcula itens preenchidos das sessões persistidas.
  */
 export function useInformacoesProjeto({
   projectId,
@@ -82,23 +106,75 @@ export function useInformacoesProjeto({
 
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao, reload: reloadIdentificacao } = useAsyncData(
     loadIdentificacao,
     {
-      initialData: null as TedIdentificacao | null,
+      initialData: null as ProjectSession01Identificacao | null,
       errorMessage: "Não foi possível carregar o preenchimento das seções.",
       loadOnMount: Boolean(projectId),
     },
   )
 
-  useEffect(() => {
-    if (projectId) void reloadIdentificacao()
-  }, [projectId, reloadIdentificacao])
+  const loadDescricao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession02Description(projectId)
+  }, [projectId])
 
-  const { getReview, secaoTemAtencao } = useTedSecaoReviews(projectId)
+  const { data: descricao, reload: reloadDescricao } = useAsyncData(
+    loadDescricao,
+    {
+      initialData: null as ProjectSession02Description | null,
+      errorMessage: "Não foi possível carregar o preenchimento da descrição.",
+      loadOnMount: Boolean(projectId),
+    },
+  )
+
+  const loadParticipantes = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession03Participants(projectId)
+  }, [projectId])
+
+  const { data: participantes, reload: reloadParticipantes } = useAsyncData(
+    loadParticipantes,
+    {
+      initialData: null as ProjectSession03Participants | null,
+      errorMessage: "Não foi possível carregar o preenchimento de participantes.",
+      loadOnMount: Boolean(projectId),
+    },
+  )
+
+  const loadCaracterizacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession04Characterization(projectId)
+  }, [projectId])
+
+  const { data: caracterizacao, reload: reloadCaracterizacao } = useAsyncData(
+    loadCaracterizacao,
+    {
+      initialData: null as ProjectSession04Characterization | null,
+      errorMessage: "Não foi possível carregar o preenchimento da caracterização.",
+      loadOnMount: Boolean(projectId),
+    },
+  )
+
+  useEffect(() => {
+    if (!projectId) return
+    void reloadIdentificacao()
+    void reloadDescricao()
+    void reloadParticipantes()
+    void reloadCaracterizacao()
+  }, [
+    projectId,
+    reloadIdentificacao,
+    reloadDescricao,
+    reloadParticipantes,
+    reloadCaracterizacao,
+  ])
+
+  const { getReview, secaoTemAtencao } = useSecaoReviews(projectId)
 
   useEffect(() => {
     setDados(mapProjectDataToInformacoesForm(projectData))
@@ -171,8 +247,14 @@ export function useInformacoesProjeto({
   )
 
   const itensConcluidos = useMemo(
-    () => getItensConcluidosFromTedIdentificacao(identificacao),
-    [identificacao],
+    () =>
+      getItensConcluidos({
+        identificacao,
+        descricao,
+        participantes,
+        caracterizacao,
+      }),
+    [identificacao, descricao, participantes, caracterizacao],
   )
 
   const { itensDadosGerais, itensDadosTrp } = useMemo(() => {

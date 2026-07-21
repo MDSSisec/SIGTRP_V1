@@ -3,7 +3,7 @@ import {
   normalizeProjetoTipo,
   PROJETO_TIPOS,
 } from "@/features/projeto/constants/projeto-tipos"
-import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { ProjectModelData } from "@/features/projeto/types/project-model"
 import type { Projeto } from "@/features/projeto/types"
 
 /** Estado do formulário de Informações do Projeto. */

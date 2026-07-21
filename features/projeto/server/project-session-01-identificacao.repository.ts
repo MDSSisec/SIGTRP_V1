@@ -1,19 +1,19 @@
 import { getDbPool } from "@/lib/db"
 import {
-  toTedIdentificacao,
-  type TedIdentificacaoRow,
-} from "../mappers/ted-identificacao.mapper"
+  toProjectSession01Identificacao,
+  type ProjectSession01IdentificacaoRow,
+} from "../mappers/project-session-01-identificacao.mapper"
 import type {
-  TedIdentificacao,
-  TedIdentificacaoProjetoInput,
-  TedIdentificacaoProponenteInput,
-  TedIdentificacaoRepresentanteInput,
-  TedIdentificacaoResponsavelTecnicoInput,
-} from "../types/ted-identificacao"
+  ProjectSession01Identificacao,
+  ProjectSession01IdentificacaoProjetoInput,
+  ProjectSession01IdentificacaoProponenteInput,
+  ProjectSession01IdentificacaoRepresentanteInput,
+  ProjectSession01IdentificacaoResponsavelTecnicoInput,
+} from "../types/project-session-01-identificacao"
 
-const TED_IDENTIFICACAO_SELECT = `
+const PROJECT_SESSION_01_IDENTIFICACAO_SELECT = `
   SELECT *
-  FROM "SIGTRP_TB_TED_IDENTIFICACAO"
+  FROM "SIGTRP_TB_PROJECT_SESSION_01_IDENTIFICACAO"
 `
 
 function emptyToNull(value: string | undefined): string | null {
@@ -31,14 +31,14 @@ function numberToNull(value: number | null | undefined): number | null {
   return typeof value === "number" && Number.isFinite(value) ? value : null
 }
 
-export async function getTedIdentificacaoByProjetoId(
+export async function getProjectSession01IdentificacaoByProjetoId(
   projetoId: string,
-): Promise<TedIdentificacao | null> {
+): Promise<ProjectSession01Identificacao | null> {
   const pool = getDbPool()
 
-  const result = await pool.query<TedIdentificacaoRow>(
+  const result = await pool.query<ProjectSession01IdentificacaoRow>(
     `
-      ${TED_IDENTIFICACAO_SELECT}
+      ${PROJECT_SESSION_01_IDENTIFICACAO_SELECT}
       WHERE projeto_id = $1
       LIMIT 1
     `,
@@ -46,13 +46,13 @@ export async function getTedIdentificacaoByProjetoId(
   )
 
   const row = result.rows[0]
-  return row ? toTedIdentificacao(row) : null
+  return row ? toProjectSession01Identificacao(row) : null
 }
 
-export async function upsertTedIdentificacaoProjeto(
+export async function upsertProjectSession01IdentificacaoProjeto(
   projetoId: string,
-  data: TedIdentificacaoProjetoInput,
-): Promise<TedIdentificacao> {
+  data: ProjectSession01IdentificacaoProjetoInput,
+): Promise<ProjectSession01Identificacao> {
   const pool = getDbPool()
 
   const nomeProjeto = emptyToNull(data.nomeProjeto)
@@ -62,7 +62,7 @@ export async function upsertTedIdentificacaoProjeto(
 
   await pool.query(
     `
-      INSERT INTO "SIGTRP_TB_TED_IDENTIFICACAO" (
+      INSERT INTO "SIGTRP_TB_PROJECT_SESSION_01_IDENTIFICACAO" (
         projeto_id,
         nome_projeto,
         local_execucao,
@@ -82,7 +82,8 @@ export async function upsertTedIdentificacaoProjeto(
     [projetoId, nomeProjeto, localExecucao, duracao, resumoProjeto],
   )
 
-  const identificacao = await getTedIdentificacaoByProjetoId(projetoId)
+  const identificacao =
+    await getProjectSession01IdentificacaoByProjetoId(projetoId)
 
   if (!identificacao) {
     throw new Error("Não foi possível salvar a identificação do projeto.")
@@ -91,25 +92,28 @@ export async function upsertTedIdentificacaoProjeto(
   return identificacao
 }
 
-async function refetchIdentificacao(projetoId: string): Promise<TedIdentificacao> {
-  const identificacao = await getTedIdentificacaoByProjetoId(projetoId)
-
-  if (!identificacao) {
-    throw new Error("Não foi possível salvar a identificação do projeto.")
-  }
-
-  return identificacao
-}
-
-export async function upsertTedIdentificacaoProponente(
+async function refetchIdentificacao(
   projetoId: string,
-  data: TedIdentificacaoProponenteInput,
-): Promise<TedIdentificacao> {
+): Promise<ProjectSession01Identificacao> {
+  const identificacao =
+    await getProjectSession01IdentificacaoByProjetoId(projetoId)
+
+  if (!identificacao) {
+    throw new Error("Não foi possível salvar a identificação do projeto.")
+  }
+
+  return identificacao
+}
+
+export async function upsertProjectSession01IdentificacaoProponente(
+  projetoId: string,
+  data: ProjectSession01IdentificacaoProponenteInput,
+): Promise<ProjectSession01Identificacao> {
   const pool = getDbPool()
 
   await pool.query(
     `
-      INSERT INTO "SIGTRP_TB_TED_IDENTIFICACAO" (
+      INSERT INTO "SIGTRP_TB_PROJECT_SESSION_01_IDENTIFICACAO" (
         projeto_id,
         proponente_nome,
         proponente_cnpj,
@@ -162,18 +166,18 @@ export async function upsertTedIdentificacaoProponente(
   return refetchIdentificacao(projetoId)
 }
 
-export async function upsertTedIdentificacaoRepresentante(
+export async function upsertProjectSession01IdentificacaoRepresentante(
   projetoId: string,
-  data: TedIdentificacaoRepresentanteInput,
-): Promise<TedIdentificacao> {
+  data: ProjectSession01IdentificacaoRepresentanteInput,
+): Promise<ProjectSession01Identificacao> {
   const pool = getDbPool()
 
   await pool.query(
     `
-      INSERT INTO "SIGTRP_TB_TED_IDENTIFICACAO" (
+      INSERT INTO "SIGTRP_TB_PROJECT_SESSION_01_IDENTIFICACAO" (
         projeto_id,
         representante_nome,
-        representante_cpf,
+        representante_matricula_funcional,
         representante_profissao,
         representante_cargo,
         representante_estado_civil,
@@ -185,7 +189,7 @@ export async function upsertTedIdentificacaoRepresentante(
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, NOW(), NOW())
       ON CONFLICT (projeto_id) DO UPDATE SET
         representante_nome = EXCLUDED.representante_nome,
-        representante_cpf = EXCLUDED.representante_cpf,
+        representante_matricula_funcional = EXCLUDED.representante_matricula_funcional,
         representante_profissao = EXCLUDED.representante_profissao,
         representante_cargo = EXCLUDED.representante_cargo,
         representante_estado_civil = EXCLUDED.representante_estado_civil,
@@ -196,7 +200,7 @@ export async function upsertTedIdentificacaoRepresentante(
     [
       projetoId,
       emptyToNull(data.representanteNome),
-      digitsToNull(data.representanteCpf),
+      emptyToNull(data.representanteMatriculaFuncional),
       emptyToNull(data.representanteProfissao),
       emptyToNull(data.representanteCargo),
       emptyToNull(data.representanteEstadoCivil),
@@ -208,15 +212,15 @@ export async function upsertTedIdentificacaoRepresentante(
   return refetchIdentificacao(projetoId)
 }
 
-export async function upsertTedIdentificacaoResponsavelTecnico(
+export async function upsertProjectSession01IdentificacaoResponsavelTecnico(
   projetoId: string,
-  data: TedIdentificacaoResponsavelTecnicoInput,
-): Promise<TedIdentificacao> {
+  data: ProjectSession01IdentificacaoResponsavelTecnicoInput,
+): Promise<ProjectSession01Identificacao> {
   const pool = getDbPool()
 
   await pool.query(
     `
-      INSERT INTO "SIGTRP_TB_TED_IDENTIFICACAO" (
+      INSERT INTO "SIGTRP_TB_PROJECT_SESSION_01_IDENTIFICACAO" (
         projeto_id,
         responsavel_tecnico_nome,
         responsavel_tecnico_cargo,

@@ -7,10 +7,9 @@ import {
   type ChangeEvent,
 } from "react"
 
-import {
-  useProjectData,
-  useUpdateProjectData,
-} from "@/features/projeto/contexts/project-data-context"
+import { fetchProjectSession04Characterization } from "@/features/projeto/services/project-session-04-characterization.service"
+import type { ProjectSession04Characterization } from "@/features/projeto/types/project-session-04-characterization"
+import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveOutrasInformacoesProponente } from "../action/saveOutrasInformacoesProponente"
 import { OUTRAS_INFORMACOES_MAX_LENGTH } from "../constants/form"
@@ -30,9 +29,6 @@ export function useOutrasInformacoesProponente({
   projectId,
   readOnlyView,
 }: UseOutrasInformacoesProponenteOptions) {
-  const projectData = useProjectData()
-  const updateProjectData = useUpdateProjectData()
-
   const [isEditing, setIsEditing] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [saveError, setSaveError] = useState<string | null>(null)
@@ -44,15 +40,29 @@ export function useOutrasInformacoesProponente({
     isEditing,
   })
 
-  const resetForm = useCallback(() => {
-    setDadosFormulario(toOutrasInformacoesForm(projectData))
-  }, [projectData])
+  const loadCaracterizacao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession04Characterization(projectId)
+  }, [projectId])
+
+  const { data: caracterizacao, reload } = useAsyncData(loadCaracterizacao, {
+    initialData: null as ProjectSession04Characterization | null,
+    errorMessage: "Não foi possível carregar as outras informações do proponente.",
+    loadOnMount: Boolean(projectId),
+  })
+
+  const resetForm = useCallback(
+    (data: ProjectSession04Characterization | null) => {
+      setDadosFormulario(toOutrasInformacoesForm(data))
+    },
+    [],
+  )
 
   useEffect(() => {
-    if (!isEditing) {
-      resetForm()
+    if (projectId && !isEditing) {
+      resetForm(caracterizacao)
     }
-  }, [isEditing, resetForm])
+  }, [projectId, caracterizacao, isEditing, resetForm])
 
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -67,16 +77,16 @@ export function useOutrasInformacoesProponente({
   )
 
   const startEditing = useCallback(() => {
-    resetForm()
+    resetForm(caracterizacao)
     setSaveError(null)
     setIsEditing(true)
-  }, [resetForm])
+  }, [caracterizacao, resetForm])
 
   const cancel = useCallback(() => {
-    resetForm()
+    resetForm(caracterizacao)
     setSaveError(null)
     setIsEditing(false)
-  }, [resetForm])
+  }, [caracterizacao, resetForm])
 
   const save = useCallback(async () => {
     if (!projectId) return
@@ -88,7 +98,6 @@ export function useOutrasInformacoesProponente({
       const result = await saveOutrasInformacoesProponente({
         projectId,
         dados: dadosFormulario,
-        updateProjectData,
       })
 
       if (!result.ok) {
@@ -96,11 +105,17 @@ export function useOutrasInformacoesProponente({
         return
       }
 
+      if (result.data) {
+        resetForm(result.data)
+      } else {
+        void reload()
+      }
+
       setIsEditing(false)
     } finally {
       setIsSaving(false)
     }
-  }, [projectId, dadosFormulario, updateProjectData])
+  }, [projectId, dadosFormulario, resetForm, reload])
 
   return {
     form: dadosFormulario,

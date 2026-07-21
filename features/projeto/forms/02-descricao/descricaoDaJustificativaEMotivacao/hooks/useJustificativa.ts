@@ -11,6 +11,9 @@ import {
   useProjectData,
   useUpdateProjectData,
 } from "@/features/projeto/contexts/project-data-context"
+import { fetchProjectSession02Description } from "@/features/projeto/services"
+import type { ProjectSession02Description } from "@/features/projeto/types/project-session-02-description"
+import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveJustificativa } from "../action/saveJustificativa"
 import { JUSTIFICATIVA_MAX_LENGTH } from "../constants/form"
@@ -21,27 +24,18 @@ import {
 } from "../types/justificativa-form"
 import { useJustificativaReview } from "./useJustificativaReview"
 
-/** Opções de inicialização do hook. */
+/** OpÃ§Ãµes de inicializaÃ§Ã£o do hook. */
 type UseJustificativaOptions = {
   /** Identificador do projeto. */
   projectId?: string
 
-  /** Indica se o formulário será exibido somente para visualização. */
+  /** Indica se o formulÃ¡rio serÃ¡ exibido somente para visualizaÃ§Ã£o. */
   readOnlyView?: boolean
 }
 
 /**
- * Gerencia toda a lógica da seção
- * "Descrição da Justificativa e Motivação".
- *
- * Responsabilidades:
- * - carregar os dados do contexto do projeto;
- * - controlar o modo de edição;
- * - controlar o processo de salvamento;
- * - limitar o tamanho dos textos;
- * - restaurar os dados originais;
- * - aplicar as regras de revisão;
- * - disponibilizar estados e ações para a interface.
+ * Gerencia toda a lÃ³gica da seÃ§Ã£o
+ * "DescriÃ§Ã£o da Justificativa e MotivaÃ§Ã£o".
  */
 export function useJustificativa({
   projectId,
@@ -50,44 +44,68 @@ export function useJustificativa({
   const projectData = useProjectData()
   const updateProjectData = useUpdateProjectData()
 
-  /** Controla o modo de edição do formulário. */
   const [isEditing, setIsEditing] = useState(false)
-
-  /** Indica se existe um salvamento em andamento. */
   const [isSaving, setIsSaving] = useState(false)
-
-  /** Mensagem de erro exibida na interface. */
   const [saveError, setSaveError] = useState<string | null>(null)
-
-  /** Estado local do formulário. */
   const [dadosFormulario, setDadosFormulario] =
     useState<DadosJustificativa>(VAZIO_JUSTIFICATIVA)
 
-  /** Regras relacionadas ao processo de revisão. */
   const review = useJustificativaReview({
     readOnlyView,
     isEditing,
   })
 
-  /**
-   * Recarrega os dados do formulário a partir do contexto
-   * do projeto.
-   */
-  const resetForm = useCallback(() => {
-    setDadosFormulario(toJustificativaForm(projectData))
-  }, [projectData])
+  const loadDescricao = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession02Description(projectId)
+  }, [projectId])
 
-  /** Mantém o formulário sincronizado com o contexto. */
+  const { data: descricao, reload } = useAsyncData(loadDescricao, {
+    initialData: null as ProjectSession02Description | null,
+    errorMessage: "NÃ£o foi possÃ­vel carregar a justificativa do projeto.",
+    loadOnMount: Boolean(projectId),
+  })
+
+  const resetForm = useCallback((data: ProjectSession02Description | null) => {
+    setDadosFormulario(toJustificativaForm(data))
+  }, [])
+
+  const atualizarFormulario = useCallback(
+    (salvo: ProjectSession02Description) => {
+      resetForm(salvo)
+
+      updateProjectData({
+        descricao_projeto: {
+          ...projectData?.descricao_projeto,
+          publico_alvo: salvo.justificativaPublicoAlvo ?? "",
+          problema: salvo.justificativaProblema ?? "",
+          resultados_esperados: salvo.justificativaResultadosEsperados ?? "",
+          relacao_proposta_programa: salvo.justificativaRelacaoPrograma ?? "",
+          justificativa_motivacao: {
+            caracterizacao_interesses_reciprocos:
+              salvo.justificativaCaracterizacaoInteresses ?? "",
+            publico_alvo: salvo.justificativaPublicoAlvo ?? "",
+            problema: salvo.justificativaProblema ?? "",
+            resultados_esperados: salvo.justificativaResultadosEsperados ?? "",
+            relacao_proposta_programa:
+              salvo.justificativaRelacaoPrograma ?? "",
+          },
+        },
+      })
+    },
+    [resetForm, updateProjectData, projectData?.descricao_projeto],
+  )
+
   useEffect(() => {
-    resetForm()
-  }, [resetForm])
+    if (projectId) {
+      void reload()
+    }
+  }, [projectId, reload])
 
-  /**
-   * Atualiza um campo do formulário.
-   *
-   * Também remove mensagens de erro anteriores e garante
-   * o limite máximo de caracteres.
-   */
+  useEffect(() => {
+    resetForm(descricao)
+  }, [descricao, resetForm])
+
   const handleChange = useCallback(
     (event: ChangeEvent<HTMLTextAreaElement>) => {
       const { name, value } = event.target
@@ -102,25 +120,17 @@ export function useJustificativa({
     [],
   )
 
-  /** Habilita o modo de edição. */
   const startEditing = useCallback(() => {
     setIsEditing(true)
     setSaveError(null)
   }, [])
 
-  /**
-   * Cancela a edição e restaura os dados carregados
-   * originalmente.
-   */
   const cancel = useCallback(() => {
-    resetForm()
+    resetForm(descricao)
     setSaveError(null)
     setIsEditing(false)
-  }, [resetForm])
+  }, [descricao, resetForm])
 
-  /**
-   * Persiste as alterações realizadas pelo usuário.
-   */
   const save = useCallback(async () => {
     if (!projectId) return
 
@@ -128,39 +138,31 @@ export function useJustificativa({
     setSaveError(null)
 
     try {
-      const result = await saveJustificativa({
-        projectId,
-        dados: dadosFormulario,
-        currentDescricao: projectData?.descricao_projeto,
-        updateProjectData,
-      })
+      const result = await saveJustificativa(projectId, dadosFormulario)
 
       if (!result.ok) {
         setSaveError(result.error)
         return
       }
 
+      if (result.data) {
+        atualizarFormulario(result.data)
+      }
+
       setIsEditing(false)
+      await reload()
     } finally {
       setIsSaving(false)
     }
-  }, [
-    projectId,
-    dadosFormulario,
-    projectData?.descricao_projeto,
-    updateProjectData,
-  ])
+  }, [projectId, dadosFormulario, atualizarFormulario, reload])
 
   return {
-    /** Estado do formulário. */
     form: dadosFormulario,
 
-    /** Informações relacionadas à revisão. */
     review: {
       fieldClass: review.fieldClass,
     },
 
-    /** Estados utilizados pela interface. */
     ui: {
       isEditing,
       isSaving,
@@ -170,7 +172,6 @@ export function useJustificativa({
       canStartEditing: review.canStartEditing,
     },
 
-    /** Ações disponíveis para o componente. */
     actions: {
       handleChange,
       startEditing,

@@ -1,6 +1,6 @@
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 
-/** Estado utilizado pelo formulário de Identificação do Projeto. */
+/** Estado utilizado pelo formulÃ¡rio de IdentificaÃ§Ã£o do Projeto. */
 export type DadosIdentificacaoProjeto = {
   nomeProjeto: string
   localExecucao: string
@@ -8,7 +8,7 @@ export type DadosIdentificacaoProjeto = {
   resumoProjeto: string
 }
 
-/** Estado inicial do formulário. */
+/** Estado inicial do formulÃ¡rio. */
 export const VAZIO_IDENTIFICACAO_PROJETO: DadosIdentificacaoProjeto = {
   nomeProjeto: "",
   localExecucao: "",
@@ -18,10 +18,10 @@ export const VAZIO_IDENTIFICACAO_PROJETO: DadosIdentificacaoProjeto = {
 
 /**
  * Converte os dados carregados do banco para o formato utilizado
- * pelo formulário de edição.
+ * pelo formulÃ¡rio de ediÃ§Ã£o.
  */
 export function toIdentificacaoProjetoForm(
-  identificacao: TedIdentificacao | null,
+  identificacao: ProjectSession01Identificacao | null,
   nomeProjeto: string,
 ): DadosIdentificacaoProjeto {
   if (!identificacao) {

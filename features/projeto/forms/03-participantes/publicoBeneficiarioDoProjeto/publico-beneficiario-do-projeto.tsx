@@ -16,9 +16,10 @@ import styles from "./publico-beneficiario-do-projeto.module.css"
  * Compõe a UI e delega a lógica a `usePublicoBeneficiario`.
  */
 export function FormularioPublicoBeneficiarioDoProjeto({
+  projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
-  const form = usePublicoBeneficiario({ readOnlyView })
+  const form = usePublicoBeneficiario({ projectId, readOnlyView })
 
   return (
     <div className={styles.container}>

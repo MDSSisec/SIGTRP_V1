@@ -10,12 +10,12 @@ import {
   type ReactNode,
 } from "react"
 import {
-  fetchTedSecaoReviews,
-  saveTedSecaoReview,
-  syncTedCampoReviews,
+  fetchSecaoReviews,
+  saveSecaoReview,
+  syncCampoReviews,
 } from "@/features/projeto/services"
-import type { TedCampoReview } from "@/features/projeto/types/ted-campo-review"
-import type { TedSecaoReview } from "@/features/projeto/types/ted-secao-review"
+import type { CampoReview } from "@/features/projeto/types/campo-review"
+import type { SecaoReview } from "@/features/projeto/types/secao-review"
 import { canEditProjetoInformacoes } from "@/features/projeto/domain/projeto.permissions"
 import { fetchSessionUser } from "@/features/login/services"
 import type { PublicUser } from "@/features/login/types"
@@ -25,7 +25,7 @@ type TedReviewContextValue = {
   projetoId: string
   secaoSlug: string | null
   canManage: boolean
-  review: TedSecaoReview | null
+  review: SecaoReview | null
   camposAtencao: Set<string>
   isMarkingAtencao: boolean
   selectedCampoKeys: Set<string>
@@ -65,11 +65,11 @@ export function TedReviewProvider({
 
   const load = useCallback(async () => {
     if (!projetoId) return { reviews: [], campos: [] }
-    return fetchTedSecaoReviews(projetoId)
+    return fetchSecaoReviews(projetoId)
   }, [projetoId])
 
   const { data, reload, setData } = useAsyncData(load, {
-    initialData: { reviews: [] as TedSecaoReview[], campos: [] as TedCampoReview[] },
+    initialData: { reviews: [] as SecaoReview[], campos: [] as CampoReview[] },
     errorMessage: "Não foi possível carregar as revisões.",
     loadOnMount: Boolean(projetoId),
   })
@@ -125,7 +125,7 @@ export function TedReviewProvider({
     setIsSaving(true)
     setError(null)
     try {
-      const saved = await saveTedSecaoReview(projetoId, {
+      const saved = await saveSecaoReview(projetoId, {
         secaoSlug,
         bloqueada: true,
         statusRevisao: "ok",
@@ -151,7 +151,7 @@ export function TedReviewProvider({
     setIsSaving(true)
     setError(null)
     try {
-      const saved = await saveTedSecaoReview(projetoId, {
+      const saved = await saveSecaoReview(projetoId, {
         secaoSlug,
         bloqueada: false,
         statusRevisao: review?.statusRevisao ?? "ok",
@@ -179,7 +179,7 @@ export function TedReviewProvider({
     setIsSaving(true)
     setError(null)
     try {
-      const result = await syncTedCampoReviews(projetoId, {
+      const result = await syncCampoReviews(projetoId, {
         secaoSlug,
         campoKeys: [],
         comentario: null,
@@ -203,7 +203,7 @@ export function TedReviewProvider({
       setIsSaving(true)
       setError(null)
       try {
-        const result = await syncTedCampoReviews(projetoId, {
+        const result = await syncCampoReviews(projetoId, {
           secaoSlug,
           campoKeys: [...selectedCampoKeys],
           comentario,

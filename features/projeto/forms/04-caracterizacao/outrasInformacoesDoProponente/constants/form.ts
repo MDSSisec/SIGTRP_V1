@@ -1,5 +1,5 @@
 /** Limite de caracteres do campo de outras informações. */
-export const OUTRAS_INFORMACOES_MAX_LENGTH = 1000
+export const OUTRAS_INFORMACOES_MAX_LENGTH = 2000
 
 export const OUTRAS_INFORMACOES_IDS = {
   ID_TEXTO: "outras-informacoes-proponente",

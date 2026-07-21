@@ -1,31 +1,31 @@
-import type { ProjectModelData } from "@/features/projeto/types"
+import type { ProjectSession02Description } from "@/features/projeto/types/project-session-02-description"
 
 /**
- * Estado utilizado pelo formulário da seção
- * "Descrição da Justificativa e Motivação".
+ * Estado utilizado pelo formulÃ¡rio da seÃ§Ã£o
+ * "DescriÃ§Ã£o da Justificativa e MotivaÃ§Ã£o".
  */
 export type DadosJustificativa = {
-  /** Caracterização dos interesses recíprocos entre as partes. */
+  /** CaracterizaÃ§Ã£o dos interesses recÃ­procos entre as partes. */
   caracterizacaoInteresses: string
 
-  /** Público-alvo beneficiado pelo projeto. */
+  /** PÃºblico-alvo beneficiado pelo projeto. */
   publicoAlvo: string
 
-  /** Problema que motivou a elaboração da proposta. */
+  /** Problema que motivou a elaboraÃ§Ã£o da proposta. */
   problema: string
 
-  /** Resultados esperados após a execução do projeto. */
+  /** Resultados esperados apÃ³s a execuÃ§Ã£o do projeto. */
   resultadosEsperados: string
 
-  /** Relação da proposta com os objetivos e diretrizes do programa. */
+  /** RelaÃ§Ã£o da proposta com os objetivos e diretrizes do programa. */
   relacaoPrograma: string
 }
 
 /**
- * Estado inicial do formulário.
+ * Estado inicial do formulÃ¡rio.
  *
- * Utilizado durante a criação de um novo projeto ou enquanto
- * os dados ainda não foram carregados.
+ * Utilizado durante a criaÃ§Ã£o de um novo projeto ou enquanto
+ * os dados ainda nÃ£o foram carregados.
  */
 export const VAZIO_JUSTIFICATIVA: DadosJustificativa = {
   caracterizacaoInteresses: "",
@@ -36,80 +36,34 @@ export const VAZIO_JUSTIFICATIVA: DadosJustificativa = {
 }
 
 /**
- * Converte os dados armazenados em `descricao_projeto`
- * para o formato utilizado pelo formulário.
- *
- * A função também mantém compatibilidade com versões antigas,
- * priorizando os novos campos e utilizando os campos internos de
- * `justificativa_motivacao` quando necessário.
+ * Converte os dados carregados do banco para o formato do formulÃ¡rio.
  */
 export function toJustificativaForm(
-  projectData: ProjectModelData | null | undefined,
+  descricao: ProjectSession02Description | null,
 ): DadosJustificativa {
-  const descricaoProjeto = projectData?.descricao_projeto
-  const justificativa = descricaoProjeto?.justificativa_motivacao
-
-  if (!descricaoProjeto && !justificativa) {
+  if (!descricao) {
     return VAZIO_JUSTIFICATIVA
   }
 
   return {
     caracterizacaoInteresses:
-      justificativa?.caracterizacao_interesses_reciprocos ?? "",
-
-    publicoAlvo:
-      descricaoProjeto?.publico_alvo ??
-      justificativa?.publico_alvo ??
-      "",
-
-    problema:
-      descricaoProjeto?.problema ??
-      justificativa?.problema ??
-      "",
-
-    resultadosEsperados:
-      descricaoProjeto?.resultados_esperados ??
-      justificativa?.resultados_esperados ??
-      "",
-
-    relacaoPrograma:
-      descricaoProjeto?.relacao_proposta_programa ??
-      justificativa?.relacao_proposta_programa ??
-      "",
+      descricao.justificativaCaracterizacaoInteresses ?? "",
+    publicoAlvo: descricao.justificativaPublicoAlvo ?? "",
+    problema: descricao.justificativaProblema ?? "",
+    resultadosEsperados: descricao.justificativaResultadosEsperados ?? "",
+    relacaoPrograma: descricao.justificativaRelacaoPrograma ?? "",
   }
 }
 
 /**
- * Converte os dados do formulário para o formato esperado
- * pelo contexto do projeto.
- *
- * Preserva as propriedades existentes em `descricao_projeto`
- * e atualiza apenas os campos relacionados à justificativa.
+ * Converte o formulÃ¡rio para o payload da API/repositÃ³rio.
  */
-export function toDescricaoProjetoPatch(
-  dados: DadosJustificativa,
-  current?: ProjectModelData["descricao_projeto"],
-): NonNullable<ProjectModelData["descricao_projeto"]> {
+export function toJustificativaInput(dados: DadosJustificativa) {
   return {
-    ...current,
-
-    publico_alvo: dados.publicoAlvo,
-    problema: dados.problema,
-    resultados_esperados: dados.resultadosEsperados,
-    relacao_proposta_programa: dados.relacaoPrograma,
-
-    justificativa_motivacao: {
-      ...(typeof current?.justificativa_motivacao === "object"
-        ? current.justificativa_motivacao
-        : {}),
-
-      caracterizacao_interesses_reciprocos:
-        dados.caracterizacaoInteresses,
-
-      publico_alvo: dados.publicoAlvo,
-      problema: dados.problema,
-      resultados_esperados: dados.resultadosEsperados,
-      relacao_proposta_programa: dados.relacaoPrograma,
-    },
+    justificativaCaracterizacaoInteresses: dados.caracterizacaoInteresses,
+    justificativaPublicoAlvo: dados.publicoAlvo,
+    justificativaProblema: dados.problema,
+    justificativaResultadosEsperados: dados.resultadosEsperados,
+    justificativaRelacaoPrograma: dados.relacaoPrograma,
   }
 }

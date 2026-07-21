@@ -19,6 +19,11 @@ export function formatCpf(value: string | number): string {
     .slice(0, 14)
 }
 
+/** Mantém apenas dígitos na matrícula funcional (sempre 7 números). */
+export function sanitizeMatriculaFuncional(value: string | number): string {
+  return onlyNumbers(value).slice(0, 7)
+}
+
 /**
  * Formata um telefone brasileiro.
  *

@@ -2,7 +2,7 @@
 
 import * as React from "react"
 
-import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { ProjectModelData } from "@/features/projeto/types/project-model"
 
 type ProjectDataContextValue = {
   projectData: ProjectModelData | null

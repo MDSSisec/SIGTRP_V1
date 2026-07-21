@@ -12,7 +12,7 @@ export type CronogramaDataMapped = {
   }>
 }
 
-// Estrutura flexível do modelo TED — detalhada conforme as seções forem tipadas.
+/** Estrutura flexível do modelo do projeto — tipada conforme as seções. */
 export type ProjectModelData = {
   id?: string
   nome?: string

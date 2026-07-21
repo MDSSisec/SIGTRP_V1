@@ -1,4 +1,4 @@
-export type TedIdentificacao = {
+export type ProjectSession01Identificacao = {
   id: string
   projetoId: string
   nomeProjeto: string | null
@@ -18,7 +18,7 @@ export type TedIdentificacao = {
   proponenteEmail: string | null
   proponentePaginaWeb: string | null
   representanteNome: string | null
-  representanteCpf: string | null
+  representanteMatriculaFuncional: string | null
   representanteProfissao: string | null
   representanteCargo: string | null
   representanteEstadoCivil: string | null
@@ -33,14 +33,14 @@ export type TedIdentificacao = {
   atualizadoEm: string
 }
 
-export type TedIdentificacaoProjetoInput = {
+export type ProjectSession01IdentificacaoProjetoInput = {
   nomeProjeto?: string
   localExecucao?: string
   duracao?: string
   resumoProjeto?: string
 }
 
-export type TedIdentificacaoProponenteInput = {
+export type ProjectSession01IdentificacaoProponenteInput = {
   proponenteNome?: string
   proponenteCnpj?: string
   proponenteDataFundacao?: string
@@ -55,9 +55,9 @@ export type TedIdentificacaoProponenteInput = {
   proponentePaginaWeb?: string
 }
 
-export type TedIdentificacaoRepresentanteInput = {
+export type ProjectSession01IdentificacaoRepresentanteInput = {
   representanteNome?: string
-  representanteCpf?: string
+  representanteMatriculaFuncional?: string
   representanteProfissao?: string
   representanteCargo?: string
   representanteEstadoCivil?: string
@@ -65,7 +65,7 @@ export type TedIdentificacaoRepresentanteInput = {
   representanteEmail?: string
 }
 
-export type TedIdentificacaoResponsavelTecnicoInput = {
+export type ProjectSession01IdentificacaoResponsavelTecnicoInput = {
   responsavelTecnicoNome?: string
   responsavelTecnicoCargo?: string
   responsavelTecnicoTelefone?: string

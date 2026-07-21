@@ -8,6 +8,8 @@ import styles from "../descricao-da-metodologia.module.css"
 
 type MetodologiaActionsProps = {
   isEditing: boolean
+  isSaving: boolean
+  saveError: string | null
   canStartEditing: boolean
   onEdit: () => void
   onCancel: () => void
@@ -15,13 +17,12 @@ type MetodologiaActionsProps = {
 }
 
 /**
- * Renderiza as ações de edição da seção Metodologia.
- *
- * - Exibe "Editar" quando a seção está em modo de visualização.
- * - Exibe "Cancelar" e "Salvar" durante a edição.
+ * Ações de edição da seção Metodologia.
  */
 export function MetodologiaActions({
   isEditing,
+  isSaving,
+  saveError,
   canStartEditing,
   onEdit,
   onCancel,
@@ -29,23 +30,37 @@ export function MetodologiaActions({
 }: MetodologiaActionsProps) {
   return (
     <div className={styles.actions}>
-      {!isEditing && canStartEditing && (
+      {saveError ? (
+        <p className="mr-auto text-sm text-destructive">{saveError}</p>
+      ) : null}
+
+      {!isEditing && canStartEditing ? (
         <GenericButton variant="editar" icon={Pencil} onClick={onEdit}>
           Editar
         </GenericButton>
-      )}
+      ) : null}
 
-      {isEditing && (
+      {isEditing ? (
         <>
-          <GenericButton variant="outline" icon={X} onClick={onCancel}>
+          <GenericButton
+            variant="outline"
+            icon={X}
+            disabled={isSaving}
+            onClick={onCancel}
+          >
             Cancelar
           </GenericButton>
 
-          <GenericButton variant="salvar" icon={Check} onClick={onSave}>
-            Salvar
+          <GenericButton
+            variant="salvar"
+            icon={Check}
+            disabled={isSaving}
+            onClick={onSave}
+          >
+            {isSaving ? "Salvando..." : "Salvar"}
           </GenericButton>
         </>
-      )}
+      ) : null}
     </div>
   )
 }

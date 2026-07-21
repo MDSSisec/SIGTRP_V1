@@ -3,7 +3,7 @@ import {
   notifyError,
   notifySuccess,
 } from "@/features/projeto/utils/notify"
-import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { ProjectModelData } from "@/features/projeto/types/project-model"
 
 import {
   readCursos,

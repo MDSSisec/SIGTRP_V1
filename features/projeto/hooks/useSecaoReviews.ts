@@ -1,23 +1,23 @@
 "use client"
 
 import { useCallback, useEffect, useMemo } from "react"
-import { fetchTedSecaoReviews } from "@/features/projeto/services"
-import type { TedCampoReview } from "@/features/projeto/types/ted-campo-review"
-import type { TedSecaoReview } from "@/features/projeto/types/ted-secao-review"
+import { fetchSecaoReviews } from "@/features/projeto/services"
+import type { CampoReview } from "@/features/projeto/types/campo-review"
+import type { SecaoReview } from "@/features/projeto/types/secao-review"
 import { useAsyncData } from "@/hooks/use-async-data"
 
-export function useTedSecaoReviews(projetoId?: string) {
+export function useSecaoReviews(projetoId?: string) {
   const load = useCallback(async () => {
     if (!projetoId) {
-      return { reviews: [] as TedSecaoReview[], campos: [] as TedCampoReview[] }
+      return { reviews: [] as SecaoReview[], campos: [] as CampoReview[] }
     }
-    return fetchTedSecaoReviews(projetoId)
+    return fetchSecaoReviews(projetoId)
   }, [projetoId])
 
   const { data, reload } = useAsyncData(load, {
     initialData: {
-      reviews: [] as TedSecaoReview[],
-      campos: [] as TedCampoReview[],
+      reviews: [] as SecaoReview[],
+      campos: [] as CampoReview[],
     },
     errorMessage: "Não foi possível carregar as revisões das seções.",
     loadOnMount: Boolean(projetoId),
@@ -28,7 +28,7 @@ export function useTedSecaoReviews(projetoId?: string) {
   }, [projetoId, reload])
 
   const bySlug = useMemo(() => {
-    const map = new Map<string, TedSecaoReview>()
+    const map = new Map<string, SecaoReview>()
     for (const review of data.reviews) {
       map.set(review.secaoSlug, review)
     }
@@ -36,7 +36,7 @@ export function useTedSecaoReviews(projetoId?: string) {
   }, [data.reviews])
 
   const camposBySecao = useMemo(() => {
-    const map = new Map<string, TedCampoReview[]>()
+    const map = new Map<string, CampoReview[]>()
     for (const campo of data.campos) {
       const list = map.get(campo.secaoSlug) ?? []
       list.push(campo)

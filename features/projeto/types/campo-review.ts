@@ -1,5 +1,5 @@
-/** Campo marcado na revisão do TED (camelCase). */
-export type TedCampoReview = {
+/** Campo marcado na revisão do projeto (camelCase). */
+export type CampoReview = {
   id: string
   projetoId: string
   secaoSlug: string
@@ -11,7 +11,7 @@ export type TedCampoReview = {
 }
 
 /** Payload para sincronizar campos "precisa de atenção" de uma seção. */
-export type TedCampoReviewSyncInput = {
+export type CampoReviewSyncInput = {
   secaoSlug: string
   campoKeys: string[]
   comentario?: string | null

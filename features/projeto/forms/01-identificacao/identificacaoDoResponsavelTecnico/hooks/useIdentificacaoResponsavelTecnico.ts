@@ -7,8 +7,8 @@ import {
   type ChangeEvent,
 } from "react"
 
-import { fetchTedIdentificacao } from "@/features/projeto/services"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { fetchProjectSession01Identificacao } from "@/features/projeto/services"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveIdentificacaoResponsavelTecnico } from "../action/saveIdentificacaoResponsavelTecnico"
@@ -30,16 +30,16 @@ type Options = {
 }
 
 /**
- * Hook responsável pela lógica do formulário de
- * Identificação do Responsável Técnico.
+ * Hook responsÃ¡vel pela lÃ³gica do formulÃ¡rio de
+ * IdentificaÃ§Ã£o do ResponsÃ¡vel TÃ©cnico.
  *
  * Responsabilidades:
  * - carregar dados da API;
- * - controlar edição;
- * - aplicar máscaras de telefone/celular;
+ * - controlar ediÃ§Ã£o;
+ * - aplicar mÃ¡scaras de telefone/celular;
  * - validar e-mail;
- * - salvar alterações;
- * - aplicar regras de revisão.
+ * - salvar alteraÃ§Ãµes;
+ * - aplicar regras de revisÃ£o.
  */
 export function useIdentificacaoResponsavelTecnico({
   projectId,
@@ -61,16 +61,16 @@ export function useIdentificacaoResponsavelTecnico({
 
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
-    initialData: null as TedIdentificacao | null,
-    errorMessage: "Não foi possível carregar o responsável técnico.",
+    initialData: null as ProjectSession01Identificacao | null,
+    errorMessage: "NÃ£o foi possÃ­vel carregar o responsÃ¡vel tÃ©cnico.",
     loadOnMount: Boolean(projectId),
   })
 
-  const resetForm = useCallback((data: TedIdentificacao | null) => {
+  const resetForm = useCallback((data: ProjectSession01Identificacao | null) => {
     setDadosFormulario(toIdentificacaoResponsavelTecnicoForm(data))
     setEmailTocado(false)
   }, [])

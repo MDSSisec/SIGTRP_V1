@@ -1,14 +1,14 @@
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 
 import { formatCEP, formatCNPJ, formatTelefone } from "../utils/formatters"
 
 /**
- * Estado utilizado pelo formulário de
- * Identificação do(a) Proponente.
+ * Estado utilizado pelo formulÃ¡rio de
+ * IdentificaÃ§Ã£o do(a) Proponente.
  *
- * Alguns campos (UF e Município) possuem dois valores:
+ * Alguns campos (UF e MunicÃ­pio) possuem dois valores:
  * - nome/sigla (utilizados na interface);
- * - código IBGE (persistido no banco).
+ * - cÃ³digo IBGE (persistido no banco).
  */
 export type DadosIdentificacaoProponente = {
   nome: string
@@ -32,7 +32,7 @@ export type DadosIdentificacaoProponente = {
 }
 
 /**
- * Estado inicial do formulário.
+ * Estado inicial do formulÃ¡rio.
  */
 export const VAZIO_IDENTIFICACAO_PROPONENTE: Readonly<DadosIdentificacaoProponente> =
   {
@@ -54,16 +54,16 @@ export const VAZIO_IDENTIFICACAO_PROPONENTE: Readonly<DadosIdentificacaoProponen
 
 /**
  * Converte os dados retornados pela API para o modelo
- * utilizado pelo formulário.
+ * utilizado pelo formulÃ¡rio.
  *
- * Observação:
- * - UF e Município são carregados inicialmente apenas pelos
- *   respectivos códigos IBGE.
- * - Os nomes são resolvidos posteriormente pelo hook
+ * ObservaÃ§Ã£o:
+ * - UF e MunicÃ­pio sÃ£o carregados inicialmente apenas pelos
+ *   respectivos cÃ³digos IBGE.
+ * - Os nomes sÃ£o resolvidos posteriormente pelo hook
  *   `useProponenteLocalidade`.
  */
 export function toIdentificacaoProponenteForm(
-  identificacao: TedIdentificacao | null,
+  identificacao: ProjectSession01Identificacao | null,
 ): DadosIdentificacaoProponente {
   if (!identificacao) {
     return VAZIO_IDENTIFICACAO_PROPONENTE

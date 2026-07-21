@@ -5,10 +5,10 @@ import { AlertTriangle, Lock, LockOpen } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { useTedReview } from "@/features/projeto/contexts/ted-review-context"
-import { TED_SECOES_COM_REVIEW } from "@/features/projeto/constants/secao-review"
+import { SECOES_COM_REVIEW } from "@/features/projeto/constants/secao-review"
 import { cn } from "@/lib/utils"
 
-const SECOES_COM_REVIEW = new Set<string>(TED_SECOES_COM_REVIEW)
+const SECOES_COM_REVIEW_SET = new Set<string>(SECOES_COM_REVIEW)
 
 /** Botões de review no header, ao lado de "Voltar". */
 export function SecaoReviewHeaderActions() {
@@ -17,7 +17,7 @@ export function SecaoReviewHeaderActions() {
   const [showConfirm, setShowConfirm] = useState(false)
 
   if (!review?.canManage) return null
-  if (!review.secaoSlug || !SECOES_COM_REVIEW.has(review.secaoSlug)) return null
+  if (!review.secaoSlug || !SECOES_COM_REVIEW_SET.has(review.secaoSlug)) return null
 
   const bloqueada = Boolean(review.review?.bloqueada)
   const precisaAtencao = review.review?.statusRevisao === "precisaAtencao"

@@ -2,13 +2,13 @@ import {
   notifyError,
   notifySuccess,
 } from "@/features/projeto/utils/notify"
-import { saveTedIdentificacaoRepresentante } from "@/features/projeto/services"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { saveProjectSession01IdentificacaoRepresentante } from "@/features/projeto/services"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 
 import type { DadosIdentificacaoRepresentanteLegal } from "../types/representante-form"
 
 type SaveResult =
-  | { ok: true; data: TedIdentificacao | null }
+  | { ok: true; data: ProjectSession01Identificacao | null }
   | { ok: false; error: string }
 
 export async function saveIdentificacaoRepresentante(
@@ -16,9 +16,9 @@ export async function saveIdentificacaoRepresentante(
   dados: DadosIdentificacaoRepresentanteLegal,
 ): Promise<SaveResult> {
   try {
-    const data = await saveTedIdentificacaoRepresentante(projectId, {
+    const data = await saveProjectSession01IdentificacaoRepresentante(projectId, {
       representanteNome: dados.nome,
-      representanteCpf: dados.cpf,
+      representanteMatriculaFuncional: dados.matriculaFuncional,
       representanteProfissao: dados.profissao,
       representanteCargo: dados.cargo,
       representanteEstadoCivil: dados.estadoCivil,
@@ -33,7 +33,7 @@ export async function saveIdentificacaoRepresentante(
       ok: false,
       error: notifyError(
         error,
-        "Não foi possível salvar o representante legal.",
+        "NÃ£o foi possÃ­vel salvar o representante legal.",
       ),
     }
   }

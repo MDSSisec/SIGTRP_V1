@@ -7,8 +7,8 @@ import {
   type ChangeEvent,
 } from "react"
 
-import { fetchTedIdentificacao } from "@/features/projeto/services"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { fetchProjectSession01Identificacao } from "@/features/projeto/services"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveIdentificacaoRepresentante } from "../action/saveIdentificacaoRepresentante"
@@ -18,8 +18,8 @@ import {
   type DadosIdentificacaoRepresentanteLegal,
 } from "../types/representante-form"
 import {
-  formatCpf,
   formatTelefone,
+  sanitizeMatriculaFuncional,
   validateTextWithoutDigits,
 } from "../utils/formatters"
 import { useIdentificacaoRepresentanteReview } from "./useIdentificacaoRepresentanteReview"
@@ -30,15 +30,15 @@ type Options = {
 }
 
 /**
- * Hook responsável pela lógica do formulário de
- * Identificação do Representante Legal.
+ * Hook responsÃ¡vel pela lÃ³gica do formulÃ¡rio de
+ * IdentificaÃ§Ã£o do Representante Legal.
  *
  * Responsabilidades:
  * - carregar dados da API;
- * - controlar edição;
- * - aplicar máscaras e validações;
- * - salvar alterações;
- * - aplicar regras de revisão.
+ * - controlar ediÃ§Ã£o;
+ * - aplicar mÃ¡scaras e validaÃ§Ãµes;
+ * - salvar alteraÃ§Ãµes;
+ * - aplicar regras de revisÃ£o.
  */
 export function useIdentificacaoRepresentante({
   projectId,
@@ -59,16 +59,16 @@ export function useIdentificacaoRepresentante({
 
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao, reload } = useAsyncData(loadIdentificacao, {
-    initialData: null as TedIdentificacao | null,
-    errorMessage: "Não foi possível carregar o representante legal.",
+    initialData: null as ProjectSession01Identificacao | null,
+    errorMessage: "NÃ£o foi possÃ­vel carregar o representante legal.",
     loadOnMount: Boolean(projectId),
   })
 
-  const resetForm = useCallback((data: TedIdentificacao | null) => {
+  const resetForm = useCallback((data: ProjectSession01Identificacao | null) => {
     setDadosFormulario(toIdentificacaoRepresentanteForm(data))
   }, [])
 
@@ -84,8 +84,9 @@ export function useIdentificacaoRepresentante({
     let { name, value } = event.target
     setSaveError(null)
 
-    if (name === "cpf") value = formatCpf(value)
-    else if (name === "telefone") value = formatTelefone(value)
+    if (name === "matriculaFuncional") {
+      value = sanitizeMatriculaFuncional(value)
+    } else if (name === "telefone") value = formatTelefone(value)
     else if (!validateTextWithoutDigits(name, value)) return
 
     setDadosFormulario((prev) => ({ ...prev, [name]: value }))

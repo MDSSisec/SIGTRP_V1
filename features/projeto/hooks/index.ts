@@ -4,5 +4,5 @@ export { useProjetoPermissions } from "./useProjetoPermissions"
 export { useProjetoScreen } from "./useProjetoScreen"
 export { useProjetos } from "./useProjetos"
 export { useResponsaveis } from "./useResponsaveis"
-export { useTedSecaoReviews } from "./useTedSecaoReviews"
+export { useSecaoReviews } from "./useSecaoReviews"
 

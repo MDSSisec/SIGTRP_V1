@@ -36,10 +36,13 @@ export {
 export { COMUNS_LABELS, COMUNS_TITLES } from "./communs"
 
 export {
+  DESCRICAO_BLOCO_TO_SECAO_SLUG,
   IDENTIFICACAO_BLOCO_TO_SECAO_SLUG,
-  TED_IDENTIFICACAO_SECAO_SLUGS,
+  PROJECT_SESSION_01_IDENTIFICACAO_SECAO_SLUGS,
+  SECOES_COM_REVIEW,
   TED_SECOES_COM_REVIEW,
   TITLE_KEY_TO_SECAO_SLUG,
-  type TedIdentificacaoSecaoSlug,
+  type ProjectSession01IdentificacaoSecaoSlug,
+  type SecaoComReviewSlug,
   type TedSecaoComReviewSlug,
 } from "./secao-review"

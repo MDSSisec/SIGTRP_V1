@@ -11,8 +11,8 @@ import {
   useProjectData,
   useUpdateProjectData,
 } from "@/features/projeto/contexts/project-data-context"
-import { fetchTedIdentificacao } from "@/features/projeto/services"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
+import { fetchProjectSession01Identificacao } from "@/features/projeto/services"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
 import { useAsyncData } from "@/hooks/use-async-data"
 
 import { saveIdentificacaoProjeto } from "../action/saveIdentificacaoProjeto"
@@ -29,15 +29,15 @@ type UseIdentificacaoProjetoOptions = {
 }
 
 /**
- * Hook responsável por toda a lógica do formulário de
- * Identificação do Projeto.
+ * Hook responsÃ¡vel por toda a lÃ³gica do formulÃ¡rio de
+ * IdentificaÃ§Ã£o do Projeto.
  *
  * Responsabilidades:
  * - carregar dados da API;
- * - controlar edição;
- * - salvar alterações;
+ * - controlar ediÃ§Ã£o;
+ * - salvar alteraÃ§Ãµes;
  * - sincronizar o contexto do projeto;
- * - aplicar regras de revisão.
+ * - aplicar regras de revisÃ£o.
  */
 export function useIdentificacaoProjeto({
   projectId,
@@ -63,24 +63,24 @@ export function useIdentificacaoProjeto({
   const loadIdentificacao = useCallback(async () => {
     if (!projectId) return null
 
-    return fetchTedIdentificacao(projectId)
+    return fetchProjectSession01Identificacao(projectId)
   }, [projectId])
 
   const { data: identificacao, reload } = useAsyncData(
     loadIdentificacao,
     {
-      initialData: null as TedIdentificacao | null,
+      initialData: null as ProjectSession01Identificacao | null,
       errorMessage:
-        "Não foi possível carregar a identificação do projeto.",
+        "NÃ£o foi possÃ­vel carregar a identificaÃ§Ã£o do projeto.",
       loadOnMount: Boolean(projectId),
     },
   )
 
   /**
-   * Sincroniza o estado do formulário com os dados vindos da API.
+   * Sincroniza o estado do formulÃ¡rio com os dados vindos da API.
    */
   const resetForm = useCallback(
-    (data: TedIdentificacao | null) => {
+    (data: ProjectSession01Identificacao | null) => {
       setDadosFormulario(
         toIdentificacaoProjetoForm(data, nomeProjeto),
       )
@@ -89,10 +89,10 @@ export function useIdentificacaoProjeto({
   )
 
   /**
-   * Atualiza o formulário e o contexto global após salvar.
+   * Atualiza o formulÃ¡rio e o contexto global apÃ³s salvar.
    */
   const atualizarFormulario = useCallback(
-    (salvo: TedIdentificacao) => {
+    (salvo: ProjectSession01Identificacao) => {
       resetForm(salvo)
 
       updateProjectData({
@@ -126,7 +126,7 @@ export function useIdentificacaoProjeto({
   }, [identificacao, resetForm])
 
   /**
-   * Atualiza um campo do formulário.
+   * Atualiza um campo do formulÃ¡rio.
    */
   const handleChange = useCallback(
     (
@@ -145,14 +145,14 @@ export function useIdentificacaoProjeto({
   )
 
   /**
-   * Habilita o modo de edição.
+   * Habilita o modo de ediÃ§Ã£o.
    */
   const startEditing = useCallback(() => {
     setIsEditing(true)
   }, [])
 
   /**
-   * Descarta alterações locais.
+   * Descarta alteraÃ§Ãµes locais.
    */
   const cancel = useCallback(() => {
     resetForm(identificacao)
@@ -161,7 +161,7 @@ export function useIdentificacaoProjeto({
   }, [identificacao, resetForm])
 
   /**
-   * Persiste o formulário.
+   * Persiste o formulÃ¡rio.
    */
   const save = useCallback(async () => {
     if (!projectId) return

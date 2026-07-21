@@ -8,6 +8,8 @@ import styles from "../detalhamento-da-base.module.css"
 
 type DetalhamentoDaBaseActionsProps = {
   isEditing: boolean
+  isSaving: boolean
+  saveError: string | null
   canStartEditing: boolean
   onEdit: () => void
   onCancel: () => void
@@ -19,6 +21,8 @@ type DetalhamentoDaBaseActionsProps = {
  */
 export function DetalhamentoDaBaseActions({
   isEditing,
+  isSaving,
+  saveError,
   canStartEditing,
   onEdit,
   onCancel,
@@ -26,6 +30,10 @@ export function DetalhamentoDaBaseActions({
 }: DetalhamentoDaBaseActionsProps) {
   return (
     <div className={styles.actions}>
+      {saveError ? (
+        <p className="mr-auto text-sm text-destructive">{saveError}</p>
+      ) : null}
+
       {!isEditing && canStartEditing ? (
         <GenericButton variant="editar" icon={Pencil} onClick={onEdit}>
           Editar
@@ -34,11 +42,21 @@ export function DetalhamentoDaBaseActions({
 
       {isEditing ? (
         <>
-          <GenericButton variant="outline" icon={X} onClick={onCancel}>
+          <GenericButton
+            variant="outline"
+            icon={X}
+            disabled={isSaving}
+            onClick={onCancel}
+          >
             Cancelar
           </GenericButton>
-          <GenericButton variant="salvar" icon={Check} onClick={onSave}>
-            Salvar
+          <GenericButton
+            variant="salvar"
+            icon={Check}
+            disabled={isSaving}
+            onClick={onSave}
+          >
+            {isSaving ? "Salvando..." : "Salvar"}
           </GenericButton>
         </>
       ) : null}

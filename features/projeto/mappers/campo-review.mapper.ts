@@ -1,7 +1,7 @@
-import type { TedCampoReview } from "../types/ted-campo-review"
+import type { CampoReview } from "../types/campo-review"
 
 /** Registro bruto da tabela de revisão de campos (snake_case). */
-export type TedCampoReviewRow = {
+export type CampoReviewRow = {
   id: string
   projeto_id: string
   secao_slug: string
@@ -12,7 +12,7 @@ export type TedCampoReviewRow = {
   atualizado_em: string
 }
 
-export function toTedCampoReview(row: TedCampoReviewRow): TedCampoReview {
+export function toCampoReview(row: CampoReviewRow): CampoReview {
   return {
     id: row.id,
     projetoId: row.projeto_id,

@@ -6,22 +6,22 @@ import {
 
 export { TITLE_KEY_TO_SECAO_SLUG }
 
-export const TED_IDENTIFICACAO_SECAO_SLUGS = [
+export const PROJECT_SESSION_01_IDENTIFICACAO_SECAO_SLUGS = [
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_PROJETO,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_PROPOSTA,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_REPRESENTANTE_LEGAL,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_RESPONSAVEL_TECNICO,
 ] as const
 
-export type TedIdentificacaoSecaoSlug =
-  (typeof TED_IDENTIFICACAO_SECAO_SLUGS)[number]
+export type ProjectSession01IdentificacaoSecaoSlug =
+  (typeof PROJECT_SESSION_01_IDENTIFICACAO_SECAO_SLUGS)[number]
 
 /**
- * Seções do TED com fluxo de bloquear / marcar atenção.
+ * Seções com fluxo de bloquear / marcar atenção.
  * Inclui Identificação + seções de Descrição já habilitadas.
  */
-export const TED_SECOES_COM_REVIEW = [
-  ...TED_IDENTIFICACAO_SECAO_SLUGS,
+export const SECOES_COM_REVIEW = [
+  ...PROJECT_SESSION_01_IDENTIFICACAO_SECAO_SLUGS,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_JUSTIFICATIVA_MOTIVACAO,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_OBJETIVOS,
   SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_METAS,
@@ -44,7 +44,12 @@ export const TED_SECOES_COM_REVIEW = [
   PROJETO_SECOES.indicadoresEficiencia.slug,
 ] as const
 
-export type TedSecaoComReviewSlug = (typeof TED_SECOES_COM_REVIEW)[number]
+export type SecaoComReviewSlug = (typeof SECOES_COM_REVIEW)[number]
+
+/** @deprecated Use SECOES_COM_REVIEW */
+export const TED_SECOES_COM_REVIEW = SECOES_COM_REVIEW
+/** @deprecated Use SecaoComReviewSlug */
+export type TedSecaoComReviewSlug = SecaoComReviewSlug
 
 /** Mapeia bloco PATCH identificação → slug de review. */
 export const IDENTIFICACAO_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
@@ -54,4 +59,27 @@ export const IDENTIFICACAO_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
     SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_REPRESENTANTE_LEGAL,
   "responsavel-tecnico":
     SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_IDENTIFICACAO_RESPONSAVEL_TECNICO,
+}
+
+/** Mapeia bloco PATCH descrição → slug de review. */
+export const DESCRICAO_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
+  justificativa: SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_JUSTIFICATIVA_MOTIVACAO,
+  metodologia: SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_METODOLOGIA,
+}
+
+/** Mapeia bloco PATCH participantes → slug de review. */
+export const PARTICIPANTES_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
+  historico:
+    SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_HISTORICO_SITUACAO_TERRITORIO,
+  "base-territorial": SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_BASE_TERRITORIAL,
+  "publico-beneficiario":
+    SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_PUBLICO_BENEFICIARIO,
+  povos: SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_POVOS_COMUNIDADES_TRADICIONAIS,
+  perfil: SESSOES_VISAO_GERAL_SLUG.SLUG_SESSAO_PERFIL_SOCIO_OCUPACIONAL,
+  servicos: PROJETO_SECOES.publicoBeneficiarioEServicos.slug,
+}
+
+/** Mapeia bloco PATCH caracterização → slug de review. */
+export const CARACTERIZACAO_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
+  "outras-informacoes": PROJETO_SECOES.outrasInformacoesProponente.slug,
 }

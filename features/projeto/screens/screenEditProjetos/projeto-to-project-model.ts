@@ -1,4 +1,4 @@
-import type { ProjectModelData } from "@/features/projeto/types/ted"
+import type { ProjectModelData } from "@/features/projeto/types/project-model"
 
 import type { Projeto } from "../../types"
 

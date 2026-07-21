@@ -1,12 +1,12 @@
 import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
-import type { TedIdentificacao } from "@/features/projeto/types/ted-identificacao"
-import { saveTedIdentificacaoProponente } from "@/features/projeto/services"
+import type { ProjectSession01Identificacao } from "@/features/projeto/types/project-session-01-identificacao"
+import { saveProjectSession01IdentificacaoProponente } from "@/features/projeto/services"
 import type { DadosIdentificacaoProponente } from "../types/proponente-form"
 
 type SaveIdentificacaoProponenteResult =
   | {
       ok: true
-      data: TedIdentificacao | null
+      data: ProjectSession01Identificacao | null
     }
   | {
       ok: false
@@ -14,10 +14,10 @@ type SaveIdentificacaoProponenteResult =
     }
 
 /**
- * Persiste a seção "Identificação do(a) Proponente".
+ * Persiste a seÃ§Ã£o "IdentificaÃ§Ã£o do(a) Proponente".
  *
- * Responsável por:
- * - converter o formulário para o formato esperado pela API;
+ * ResponsÃ¡vel por:
+ * - converter o formulÃ¡rio para o formato esperado pela API;
  * - executar o salvamento;
  * - exibir feedback de sucesso ou erro;
  * - retornar um resultado padronizado.
@@ -42,7 +42,7 @@ export async function saveIdentificacaoProponente(
       proponentePaginaWeb: dados.paginaWeb,
     }
 
-    const data = await saveTedIdentificacaoProponente(
+    const data = await saveProjectSession01IdentificacaoProponente(
       projectId,
       payload,
     )
@@ -58,7 +58,7 @@ export async function saveIdentificacaoProponente(
       ok: false,
       error: notifyError(
         error,
-        "Não foi possível salvar o proponente.",
+        "NÃ£o foi possÃ­vel salvar o proponente.",
       ),
     }
   }

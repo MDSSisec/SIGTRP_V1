@@ -52,7 +52,7 @@ export function OutrasInformacoesFields({
             name="texto"
             value={dados.texto}
             onChange={onChange}
-            rows={8}
+            rows={20}
             maxLength={OUTRAS_INFORMACOES_MAX_LENGTH}
             placeholder={OUTRAS_INFORMACOES_PLACEHOLDERS.PLACEHOLDER_CAMPO}
             className={cn(fieldClass("texto"), styles.textareaWithCounter)}

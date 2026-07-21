@@ -14,9 +14,10 @@ import styles from "./historico-e-situacao.module.css"
  * Formulário da seção "Histórico e situação socioeconômica do território".
  */
 export function FormularioHistoricoSituacao({
+  projectId,
   readOnlyView,
 }: ProjectFormSectionProps) {
-  const form = useHistoricoSituacao({ readOnlyView })
+  const form = useHistoricoSituacao({ projectId, readOnlyView })
 
   return (
     <div className={styles.container}>
@@ -31,10 +32,12 @@ export function FormularioHistoricoSituacao({
       {!readOnlyView ? (
         <HistoricoSituacaoActions
           isEditing={form.ui.isEditing}
+          isSaving={form.ui.isSaving}
+          saveError={form.ui.saveError}
           canStartEditing={form.ui.canStartEditing}
           onEdit={form.actions.startEditing}
           onCancel={form.actions.cancel}
-          onSave={form.actions.save}
+          onSave={() => void form.actions.save()}
         />
       ) : null}
     </div>

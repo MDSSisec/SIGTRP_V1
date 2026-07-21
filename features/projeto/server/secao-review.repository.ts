@@ -1,26 +1,26 @@
 import { getDbPool } from "@/lib/db"
 import {
-  toTedSecaoReview,
-  toTedSecaoRevisaoStatusDb,
-  type TedSecaoReviewRow,
-} from "../mappers/ted-secao-review.mapper"
+  toSecaoReview,
+  toSecaoRevisaoStatusDb,
+  type SecaoReviewRow,
+} from "../mappers/secao-review.mapper"
 import type {
-  TedSecaoReview,
-  TedSecaoReviewInput,
-  TedSecaoRevisaoStatus,
-} from "../types/ted-secao-review"
+  SecaoReview,
+  SecaoReviewInput,
+  SecaoRevisaoStatus,
+} from "../types/secao-review"
 
 function emptyToNull(value: string | null | undefined): string | null {
   const trimmed = value?.trim() ?? ""
   return trimmed ? trimmed : null
 }
 
-export async function listTedSecaoReviewsByProjetoId(
+export async function listSecaoReviewsByProjetoId(
   projetoId: string,
-): Promise<TedSecaoReview[]> {
+): Promise<SecaoReview[]> {
   const pool = getDbPool()
 
-  const result = await pool.query<TedSecaoReviewRow>(
+  const result = await pool.query<SecaoReviewRow>(
     `
       SELECT *
       FROM "SIGTRP_TB_TED_SECAO_REVIEW"
@@ -30,16 +30,16 @@ export async function listTedSecaoReviewsByProjetoId(
     [projetoId],
   )
 
-  return result.rows.map(toTedSecaoReview)
+  return result.rows.map(toSecaoReview)
 }
 
-export async function getTedSecaoReview(
+export async function getSecaoReview(
   projetoId: string,
   secaoSlug: string,
-): Promise<TedSecaoReview | null> {
+): Promise<SecaoReview | null> {
   const pool = getDbPool()
 
-  const result = await pool.query<TedSecaoReviewRow>(
+  const result = await pool.query<SecaoReviewRow>(
     `
       SELECT *
       FROM "SIGTRP_TB_TED_SECAO_REVIEW"
@@ -50,14 +50,14 @@ export async function getTedSecaoReview(
   )
 
   const row = result.rows[0]
-  return row ? toTedSecaoReview(row) : null
+  return row ? toSecaoReview(row) : null
 }
 
-export async function upsertTedSecaoReview(
+export async function upsertSecaoReview(
   projetoId: string,
-  data: TedSecaoReviewInput,
+  data: SecaoReviewInput,
   atualizadoPorId: string,
-): Promise<TedSecaoReview> {
+): Promise<SecaoReview> {
   const pool = getDbPool()
   const secaoSlug = data.secaoSlug.trim()
 
@@ -65,9 +65,9 @@ export async function upsertTedSecaoReview(
     throw new Error("Seção inválida.")
   }
 
-  const current = await getTedSecaoReview(projetoId, secaoSlug)
+  const current = await getSecaoReview(projetoId, secaoSlug)
 
-  const statusRevisao: TedSecaoRevisaoStatus =
+  const statusRevisao: SecaoRevisaoStatus =
     data.statusRevisao === "precisaAtencao"
       ? "precisaAtencao"
       : data.statusRevisao === "ok"
@@ -107,13 +107,13 @@ export async function upsertTedSecaoReview(
       projetoId,
       secaoSlug,
       bloqueada,
-      toTedSecaoRevisaoStatusDb(statusRevisao),
+      toSecaoRevisaoStatusDb(statusRevisao),
       comentario,
       atualizadoPorId,
     ],
   )
 
-  const review = await getTedSecaoReview(projetoId, secaoSlug)
+  const review = await getSecaoReview(projetoId, secaoSlug)
 
   if (!review) {
     throw new Error("Não foi possível salvar a revisão da seção.")
@@ -122,10 +122,10 @@ export async function upsertTedSecaoReview(
   return review
 }
 
-export async function isTedSecaoBloqueada(
+export async function isSecaoBloqueada(
   projetoId: string,
   secaoSlug: string,
 ): Promise<boolean> {
-  const review = await getTedSecaoReview(projetoId, secaoSlug)
+  const review = await getSecaoReview(projetoId, secaoSlug)
   return Boolean(review?.bloqueada)
 }
