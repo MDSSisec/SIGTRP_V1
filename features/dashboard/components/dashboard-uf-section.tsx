@@ -1,18 +1,30 @@
 "use client"
 
 import { BrazilUfMap } from "@/components/map"
-import { DASHBOARD_PROJECTS_BY_UF } from "../constants/dashboard-uf-data"
+import type { UfSource } from "@/components/map"
 
-export function DashboardUfSection() {
+type DashboardUfSectionProps = {
+  items: UfSource[]
+  isLoading?: boolean
+}
+
+export function DashboardUfSection({
+  items,
+  isLoading = false,
+}: DashboardUfSectionProps) {
   return (
     <div className="flex h-full min-h-0 flex-col">
       <BrazilUfMap
-        items={DASHBOARD_PROJECTS_BY_UF}
+        items={items}
         title="Mapa por UF"
-        description="Quanto mais escuro o estado, maior a quantidade de projetos."
+        description={
+          isLoading
+            ? "Carregando distribuição por UF…"
+            : "UF do proponente (proponente_uf_ibge). Quanto mais escuro, mais projetos."
+        }
         countSingular="projeto"
         countPlural="projetos"
-        emptyMessage="Nenhum projeto com UF cadastrada para exibir no mapa."
+        emptyMessage="Nenhum projeto com UF do proponente cadastrada."
       />
     </div>
   )

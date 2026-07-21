@@ -1,53 +1,81 @@
+"use client"
+
 import {
-  CircleCheckIcon,
-  ClockIcon,
+  FilePenLineIcon,
+  FileSignatureIcon,
+  HandshakeIcon,
   LayoutGridIcon,
-  SearchIcon,
+  LandmarkIcon,
+  ScrollTextIcon,
 } from "lucide-react"
 
 import { Total } from "@/components/ui/total"
 
-const totals = [
-  {
-    label: "Total de projetos",
-    value: 115,
-    icon: <LayoutGridIcon />,
-    description: "Quantidade total de projetos cadastrados no sistema.",
-  },
-  {
-    label: "Aprovados",
-    value: 68,
-    icon: <CircleCheckIcon />,
-    description: "Projetos com status aprovado.",
-  },
-  {
-    label: "Em Análise",
-    value: 29,
-    icon: <SearchIcon />,
-    description: "Projetos em processo de análise.",
-  },
-  {
-    label: "Pendências",
-    value: 18,
-    icon: <ClockIcon />,
-    description: "Projetos com pendências a resolver.",
-  },
-  {
-    label: "Concluídos",
-    value: 47,
-    icon: <CircleCheckIcon />,
-    description: "Projetos finalizados com sucesso.",
-  },
-] as const
+type DashboardTotalsProps = {
+  totalProjetos: number
+  preenchimentoTrp: number
+  instrumentosCelebrados: number
+  totalTed: number
+  totalEmenda: number
+  totalConvenio: number
+  isLoading?: boolean
+}
 
-export function DashboardTotals() {
+export function DashboardTotals({
+  totalProjetos,
+  preenchimentoTrp,
+  instrumentosCelebrados,
+  totalTed,
+  totalEmenda,
+  totalConvenio,
+  isLoading = false,
+}: DashboardTotalsProps) {
+  const totals = [
+    {
+      label: "Total de projetos",
+      value: totalProjetos,
+      icon: <LayoutGridIcon />,
+      description: "Quantidade total de projetos cadastrados.",
+    },
+    {
+      label: "Preenchimento do TRP",
+      value: preenchimentoTrp,
+      icon: <FilePenLineIcon />,
+      description: 'Projetos na etapa "TRP em Elaboração".',
+    },
+    {
+      label: "Instrumentos Celebrados",
+      value: instrumentosCelebrados,
+      icon: <FileSignatureIcon />,
+      description: 'Projetos na etapa "Instrumento Celebrado".',
+    },
+    {
+      label: "Total TED",
+      value: totalTed,
+      icon: <ScrollTextIcon />,
+      description: 'Projetos com tipo "TED".',
+    },
+    {
+      label: "Total Emenda",
+      value: totalEmenda,
+      icon: <LandmarkIcon />,
+      description: 'Projetos com tipo "EMENDA".',
+    },
+    {
+      label: "Total Convenio",
+      value: totalConvenio,
+      icon: <HandshakeIcon />,
+      description: 'Projetos com tipo "CONVENIO".',
+    },
+  ] as const
+
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-6">
       {totals.map((item) => (
         <Total
           key={item.label}
           label={item.label}
-          value={item.value}
+          value={isLoading ? "…" : item.value}
           icon={item.icon}
           description={item.description}
         />

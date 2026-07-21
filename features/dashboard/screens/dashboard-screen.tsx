@@ -5,22 +5,40 @@ import * as React from "react"
 import { ChartBarInteractive } from "@/components/ChartBarInteractive"
 import { Button } from "@/components/ui/button"
 import { DashboardTotals, DashboardUfSection } from "../components"
-import { DASHBOARD_PROJECTS_BY_UF } from "../constants/dashboard-uf-data"
+import { useDashboardStats } from "../hooks"
 
 export function DashboardScreen() {
   const [view, setView] = React.useState<"grafico" | "mapa">("grafico")
+  const { cards, ufItems, isLoading, error, reload } = useDashboardStats()
 
   return (
     <div className="flex h-[calc(100svh-9rem)] min-h-[520px] flex-col gap-4 overflow-hidden md:gap-6">
       <div className="shrink-0">
-        <DashboardTotals />
+        <DashboardTotals
+          totalProjetos={cards.totalProjetos}
+          preenchimentoTrp={cards.preenchimentoTrp}
+          instrumentosCelebrados={cards.instrumentosCelebrados}
+          totalTed={cards.totalTed}
+          totalEmenda={cards.totalEmenda}
+          totalConvenio={cards.totalConvenio}
+          isLoading={isLoading}
+        />
+        {error ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2 text-sm text-destructive">
+            <span>{error}</span>
+            <Button variant="outline" size="sm" onClick={() => void reload()}>
+              Tentar novamente
+            </Button>
+          </div>
+        ) : null}
       </div>
+
       <div className="flex min-h-0 flex-1 flex-col">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h2 className="text-sm font-semibold">Visões do dashboard</h2>
+            <h2 className="text-sm font-semibold">Distribuição por UF</h2>
             <p className="mt-1 text-sm text-muted-foreground">
-              Alterne entre o grafico de barras e o mapa por UF.
+              Baseado no código IBGE do proponente na identificação do projeto.
             </p>
           </div>
 
@@ -31,7 +49,7 @@ export function DashboardScreen() {
               className="flex-1 sm:flex-none"
               onClick={() => setView("grafico")}
             >
-              Grafico de barras
+              Gráfico de barras
             </Button>
             <Button
               variant={view === "mapa" ? "default" : "outline"}
@@ -46,10 +64,16 @@ export function DashboardScreen() {
 
         <div className="min-h-0 flex-1">
           {view === "mapa" ? (
-            <DashboardUfSection />
+            <DashboardUfSection items={ufItems} isLoading={isLoading} />
           ) : (
             <ChartBarInteractive
-              items={DASHBOARD_PROJECTS_BY_UF}
+              items={ufItems}
+              title="Gráfico por UF"
+              description={
+                isLoading
+                  ? "Carregando…"
+                  : "Projetos agrupados pela UF do proponente (IBGE)."
+              }
               className="h-full"
             />
           )}

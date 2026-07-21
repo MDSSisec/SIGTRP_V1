@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { handleAdminRequest } from "@/features/admin/server"
+import { handleDashboardRequest } from "@/features/dashboard/server"
 import { handleAuthRequest } from "@/features/login/server"
 import { handleProjetosRequest } from "@/features/projeto/server"
 
@@ -19,6 +20,8 @@ export async function handleApiRequest(
       return handleAdminRequest(request, rest)
     case "auth":
       return handleAuthRequest(request, rest)
+    case "dashboard":
+      return handleDashboardRequest(request, rest)
     case "health":
       return NextResponse.json({ ok: true })
     case "projetos":
