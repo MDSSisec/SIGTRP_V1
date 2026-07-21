@@ -265,13 +265,15 @@ export function IdentificacaoProponenteFields({
                 !(dados.municipioIbge ?? "") && "text-muted-foreground",
               )}
               disabled={
-                isLocalidadeLocked || !dados.uf || carregandoMunicipios
+                isLocalidadeLocked ||
+                (!dados.uf && dados.ufIbge == null) ||
+                carregandoMunicipios
               }
             >
               <option value="">
                 {!isCepCompleto
                   ? "Informe o CEP primeiro"
-                  : !dados.uf
+                  : !dados.uf && dados.ufIbge == null
                     ? "Selecione a UF primeiro"
                     : carregandoMunicipios
                       ? "Carregando municípios..."
@@ -282,6 +284,14 @@ export function IdentificacaoProponenteFields({
                   {municipio.nome}
                 </option>
               ))}
+              {dados.municipioIbge != null &&
+              !carregandoMunicipios &&
+              !municipios.some(
+                (m) => Number(m.id) === Number(dados.municipioIbge),
+              ) &&
+              dados.municipio ? (
+                <option value={dados.municipioIbge}>{dados.municipio}</option>
+              ) : null}
             </select>
           </div>
         </div>

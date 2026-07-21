@@ -38,6 +38,12 @@ import {
   upsertProjectSession04OutrasInformacoes,
 } from "./project-session-04-characterization.repository"
 import {
+  getProjectSession05FinancialByProjetoId,
+  upsertProjectSession05ValorTotal,
+  upsertProjectSession05CronogramaDesembolso,
+  upsertProjectSession05ResumoPlanoAplicacao,
+} from "./project-session-05-financial.repository"
+import {
   isSecaoBloqueada,
   listSecaoReviewsByProjetoId,
   upsertSecaoReview,
@@ -51,6 +57,7 @@ import {
   IDENTIFICACAO_BLOCO_TO_SECAO_SLUG,
   PARTICIPANTES_BLOCO_TO_SECAO_SLUG,
   CARACTERIZACAO_BLOCO_TO_SECAO_SLUG,
+  DADOS_FINANCEIROS_BLOCO_TO_SECAO_SLUG,
 } from "../constants/secao-review"
 import type { SecaoRevisaoStatus } from "../types/secao-review"
 
@@ -209,6 +216,36 @@ export async function handleProjetosRequest(
         error instanceof Error
           ? error.message
           : "Não foi possível carregar a caracterização do projeto."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (
+    resource &&
+    rest[0] === "ted" &&
+    rest[1] === "dados-financeiros" &&
+    rest.length === 2 &&
+    request.method === "GET"
+  ) {
+    try {
+      const projetoId = resource.trim()
+
+      if (!projetoId) {
+        return NextResponse.json(
+          { error: "ID do projeto inválido." },
+          { status: 400 },
+        )
+      }
+
+      const financeiro =
+        await getProjectSession05FinancialByProjetoId(projetoId)
+      return NextResponse.json({ financeiro })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível carregar os dados financeiros do projeto."
 
       return NextResponse.json({ error: message }, { status: 500 })
     }
@@ -692,6 +729,84 @@ export async function handleProjetosRequest(
         error instanceof Error
           ? error.message
           : "Não foi possível salvar a caracterização do projeto."
+
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  if (
+    resource &&
+    rest[0] === "ted" &&
+    rest[1] === "dados-financeiros" &&
+    rest.length === 3 &&
+    request.method === "PATCH"
+  ) {
+    try {
+      const projetoId = resource.trim()
+
+      if (!projetoId) {
+        return NextResponse.json(
+          { error: "ID do projeto inválido." },
+          { status: 400 },
+        )
+      }
+
+      const bloco = rest[2]
+      const secaoSlug = DADOS_FINANCEIROS_BLOCO_TO_SECAO_SLUG[bloco]
+
+      if (!secaoSlug) {
+        return NextResponse.json(
+          { error: "Bloco de dados financeiros inválido." },
+          { status: 404 },
+        )
+      }
+
+      const canManageReview = canEditProjetoInformacoes(sessionUser)
+      const bloqueada = await isSecaoBloqueada(projetoId, secaoSlug)
+
+      if (bloqueada && !canManageReview) {
+        return NextResponse.json(
+          {
+            error:
+              "Esta seção foi bloqueada pelo gestor interno do MDS e não pode ser alterada.",
+          },
+          { status: 403 },
+        )
+      }
+
+      const body = await request.json()
+
+      let financeiro
+
+      switch (bloco) {
+        case "valor-total":
+          financeiro = await upsertProjectSession05ValorTotal(projetoId, body)
+          break
+        case "cronograma-desembolso":
+          financeiro = await upsertProjectSession05CronogramaDesembolso(
+            projetoId,
+            body,
+          )
+          break
+        case "resumo-plano-aplicacao":
+          financeiro = await upsertProjectSession05ResumoPlanoAplicacao(
+            projetoId,
+            body,
+          )
+          break
+        default:
+          return NextResponse.json(
+            { error: "Bloco de dados financeiros inválido." },
+            { status: 404 },
+          )
+      }
+
+      return NextResponse.json({ financeiro })
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Não foi possível salvar os dados financeiros do projeto."
 
       return NextResponse.json({ error: message }, { status: 500 })
     }

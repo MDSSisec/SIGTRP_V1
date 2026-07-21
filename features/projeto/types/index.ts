@@ -49,6 +49,15 @@ export type {
 } from "./project-session-04-characterization"
 
 export type {
+  ProjectSession05CronogramaParcela,
+  ProjectSession05Financial,
+  ProjectSession05ResumoPlanoLinha,
+  ProjectSession05ValorTotalInput,
+  ProjectSession05CronogramaDesembolsoInput,
+  ProjectSession05ResumoPlanoAplicacaoInput,
+} from "./project-session-05-financial"
+
+export type {
   CursoDespesaRow,
   CursoDetalhamentoDados,
   DadosGeraisProjetoState,

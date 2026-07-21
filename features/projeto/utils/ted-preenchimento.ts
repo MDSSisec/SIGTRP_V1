@@ -2,6 +2,7 @@ import type { ProjectSession01Identificacao } from "@/features/projeto/types/pro
 import type { ProjectSession02Description } from "@/features/projeto/types/project-session-02-description"
 import type { ProjectSession03Participants } from "@/features/projeto/types/project-session-03-participants"
 import type { ProjectSession04Characterization } from "@/features/projeto/types/project-session-04-characterization"
+import type { ProjectSession05Financial } from "@/features/projeto/types/project-session-05-financial"
 
 type SectionConfig<T> = {
   key: string
@@ -125,6 +126,29 @@ const CARACTERIZACAO_SECTIONS: SectionConfig<ProjectSession04Characterization>[]
     },
   ]
 
+/**
+ * Seções de Dados financeiros (sessão 05 — parcial).
+ */
+const FINANCIAL_SECTIONS: SectionConfig<ProjectSession05Financial>[] = [
+  {
+    key: "TITLE_SESSAO_VALOR_TOTAL",
+    fields: [
+      "valorRepasseMdsCusteio",
+      "valorRepasseMdsInvestimento",
+      "valorContrapartidaCusteio",
+      "valorContrapartidaInvestimento",
+    ],
+  },
+  {
+    key: "TITLE_SESSAO_CRONOGRAMA_DESENBOLSO",
+    fields: ["cronogramaDesembolsoParcelas"],
+  },
+  {
+    key: "TITLE_SESSAO_RESUMO_PLANO_APLICACAO",
+    fields: ["resumoPlanoAplicacaoLinhas"],
+  },
+]
+
 function isFilled(value: unknown): boolean {
   if (typeof value === "string") {
     return value.trim().length > 0
@@ -198,6 +222,12 @@ export function getItensConcluidosFromCaracterizacao(
   return collectCompletedSections(caracterizacao, CARACTERIZACAO_SECTIONS)
 }
 
+export function getItensConcluidosFromFinancial(
+  financeiro: ProjectSession05Financial | null,
+): Set<string> {
+  return collectCompletedSections(financeiro, FINANCIAL_SECTIONS)
+}
+
 /** Une vários conjuntos de seções concluídas. */
 export function mergeItensConcluidos(
   ...sets: Array<Set<string> | null | undefined>
@@ -222,11 +252,13 @@ export function getItensConcluidos(options: {
   descricao?: ProjectSession02Description | null
   participantes?: ProjectSession03Participants | null
   caracterizacao?: ProjectSession04Characterization | null
+  financeiro?: ProjectSession05Financial | null
 }): Set<string> {
   return mergeItensConcluidos(
     getItensConcluidosFromIdentificacao(options.identificacao ?? null),
     getItensConcluidosFromDescricao(options.descricao ?? null),
     getItensConcluidosFromParticipantes(options.participantes ?? null),
     getItensConcluidosFromCaracterizacao(options.caracterizacao ?? null),
+    getItensConcluidosFromFinancial(options.financeiro ?? null),
   )
 }

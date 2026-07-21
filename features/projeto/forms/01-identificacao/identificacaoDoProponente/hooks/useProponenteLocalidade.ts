@@ -75,7 +75,9 @@ export function useProponenteLocalidade({
     setDados((prev) => {
       if (prev.ufIbge == null || prev.uf) return prev
 
-      const estado = estados.find((item) => item.id === prev.ufIbge)
+      const estado = estados.find(
+        (item) => Number(item.id) === Number(prev.ufIbge),
+      )
 
       return estado
         ? {
@@ -84,7 +86,7 @@ export function useProponenteLocalidade({
           }
         : prev
     })
-  }, [estados, setDados])
+  }, [estados, dados.ufIbge, dados.uf, setDados])
 
   /**
    * Sincroniza o nome do município quando apenas o código IBGE existir.
@@ -96,7 +98,7 @@ export function useProponenteLocalidade({
       if (prev.municipioIbge == null || prev.municipio) return prev
 
       const municipio = municipios.find(
-        (item) => item.id === prev.municipioIbge,
+        (item) => Number(item.id) === Number(prev.municipioIbge),
       )
 
       return municipio
@@ -106,15 +108,19 @@ export function useProponenteLocalidade({
           }
         : prev
     })
-  }, [municipios, setDados])
+  }, [municipios, dados.municipioIbge, dados.municipio, setDados])
 
   /**
-   * Carrega os municípios da UF selecionada.
+   * Carrega os municípios da UF selecionada (sigla ou código IBGE).
    */
   useEffect(() => {
-    const uf = dados.uf.trim().toUpperCase()
+    const sigla =
+      dados.uf.trim().toUpperCase() ||
+      estados.find((estado) => Number(estado.id) === Number(dados.ufIbge))
+        ?.sigla ||
+      ""
 
-    if (!uf) {
+    if (!sigla) {
       setMunicipios([])
       return
     }
@@ -123,7 +129,7 @@ export function useProponenteLocalidade({
 
     setCarregandoMunicipios(true)
 
-    fetchMunicipiosByUf(uf, controller.signal)
+    fetchMunicipiosByUf(sigla, controller.signal)
       .then(setMunicipios)
       .catch((error: unknown) => {
         if (error instanceof Error && error.name === "AbortError") return
@@ -134,7 +140,7 @@ export function useProponenteLocalidade({
       })
 
     return () => controller.abort()
-  }, [dados.uf])
+  }, [dados.uf, dados.ufIbge, estados])
 
   /**
    * Consulta o ViaCEP e atualiza automaticamente

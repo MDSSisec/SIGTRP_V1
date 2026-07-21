@@ -4,4 +4,7 @@
   LinhaParcelaDesembolso,
   ValoresCronogramaDesembolso,
 } from "./cronograma-desembolso-form"
-export { VAZIO_CRONOGRAMA_DESEMBOLSO } from "./cronograma-desembolso-form"
+export {
+  toCronogramaDesembolsoForm,
+  VAZIO_CRONOGRAMA_DESEMBOLSO,
+} from "./cronograma-desembolso-form"

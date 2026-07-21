@@ -83,3 +83,10 @@ export const PARTICIPANTES_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
 export const CARACTERIZACAO_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
   "outras-informacoes": PROJETO_SECOES.outrasInformacoesProponente.slug,
 }
+
+/** Mapeia bloco PATCH dados financeiros (sessão 05) → slug de review. */
+export const DADOS_FINANCEIROS_BLOCO_TO_SECAO_SLUG: Record<string, string> = {
+  "valor-total": PROJETO_SECOES.valorTotal.slug,
+  "cronograma-desembolso": PROJETO_SECOES.cronogramaDesembolso.slug,
+  "resumo-plano-aplicacao": PROJETO_SECOES.resumoPlanoAplicacao.slug,
+}

@@ -15,6 +15,7 @@ import {
   fetchProjectSession02Description,
   fetchProjectSession03Participants,
   fetchProjectSession04Characterization,
+  fetchProjectSession05Financial,
 } from "@/features/projeto/services"
 import {
   useProjectData,
@@ -33,6 +34,7 @@ import type { ProjectSession01Identificacao } from "@/features/projeto/types/pro
 import type { ProjectSession02Description } from "@/features/projeto/types/project-session-02-description"
 import type { ProjectSession03Participants } from "@/features/projeto/types/project-session-03-participants"
 import type { ProjectSession04Characterization } from "@/features/projeto/types/project-session-04-characterization"
+import type { ProjectSession05Financial } from "@/features/projeto/types/project-session-05-financial"
 import { useSecaoReviews } from "@/features/projeto/hooks/useSecaoReviews"
 import type { ResponsavelOption } from "@/features/projeto/types"
 import { fetchSessionUser } from "@/features/login/services"
@@ -160,18 +162,34 @@ export function useInformacoesProjeto({
     },
   )
 
+  const loadFinanceiro = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession05Financial(projectId)
+  }, [projectId])
+
+  const { data: financeiro, reload: reloadFinanceiro } = useAsyncData(
+    loadFinanceiro,
+    {
+      initialData: null as ProjectSession05Financial | null,
+      errorMessage: "Não foi possível carregar o preenchimento financeiro.",
+      loadOnMount: Boolean(projectId),
+    },
+  )
+
   useEffect(() => {
     if (!projectId) return
     void reloadIdentificacao()
     void reloadDescricao()
     void reloadParticipantes()
     void reloadCaracterizacao()
+    void reloadFinanceiro()
   }, [
     projectId,
     reloadIdentificacao,
     reloadDescricao,
     reloadParticipantes,
     reloadCaracterizacao,
+    reloadFinanceiro,
   ])
 
   const { getReview, secaoTemAtencao } = useSecaoReviews(projectId)
@@ -253,8 +271,9 @@ export function useInformacoesProjeto({
         descricao,
         participantes,
         caracterizacao,
+        financeiro,
       }),
-    [identificacao, descricao, participantes, caracterizacao],
+    [identificacao, descricao, participantes, caracterizacao, financeiro],
   )
 
   const { itensDadosGerais, itensDadosTrp } = useMemo(() => {

@@ -55,6 +55,13 @@ export {
 } from "./project-session-04-characterization.service"
 
 export {
+  fetchProjectSession05Financial,
+  saveProjectSession05ValorTotal,
+  saveProjectSession05CronogramaDesembolso,
+  saveProjectSession05ResumoPlanoAplicacao,
+} from "./project-session-05-financial.service"
+
+export {
   fetchSecaoReviews,
   saveSecaoReview,
   syncCampoReviews,

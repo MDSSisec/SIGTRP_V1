@@ -1,8 +1,14 @@
 "use client"
 
-import { useCallback, useMemo, useState } from "react"
+import { useCallback, useEffect, useMemo, useState } from "react"
 
+import { fetchProjectSession05Financial } from "@/features/projeto/services/project-session-05-financial.service"
+import type { ProjectSession05Financial } from "@/features/projeto/types/project-session-05-financial"
+import { useAsyncData } from "@/hooks/use-async-data"
+
+import { saveCronogramaDesembolso } from "../action/saveCronogramaDesembolso"
 import {
+  toCronogramaDesembolsoForm,
   VAZIO_CRONOGRAMA_DESEMBOLSO,
   type CampoParcela,
   type DadosCronogramaDesembolso,
@@ -31,6 +37,7 @@ function cloneDados(
  * Lógica do formulário de Cronograma de desembolso.
  */
 export function useCronogramaDesembolso({
+  projectId,
   readOnlyView,
 }: UseCronogramaDesembolsoOptions) {
   const [isEditing, setIsEditing] = useState(false)
@@ -44,6 +51,28 @@ export function useCronogramaDesembolso({
   )
 
   const review = useCronogramaDesembolsoReview({ readOnlyView, isEditing })
+
+  const loadFinanceiro = useCallback(async () => {
+    if (!projectId) return null
+    return fetchProjectSession05Financial(projectId)
+  }, [projectId])
+
+  const { data: financeiro, reload } = useAsyncData(loadFinanceiro, {
+    initialData: null as ProjectSession05Financial | null,
+    errorMessage: "Não foi possível carregar o cronograma de desembolso.",
+    loadOnMount: Boolean(projectId),
+  })
+
+  const resetForm = useCallback((data: ProjectSession05Financial | null) => {
+    setDados(toCronogramaDesembolsoForm(data))
+  }, [])
+
+  useEffect(() => {
+    if (projectId && !isEditing) {
+      resetForm(financeiro)
+    }
+  }, [projectId, financeiro, isEditing, resetForm])
+
   const valores = useMemo(() => calcularValores(dados), [dados])
 
   const setParcelaCampo = useCallback(
@@ -77,18 +106,29 @@ export function useCronogramaDesembolso({
   }, [rascunho])
 
   const save = useCallback(async () => {
+    if (!projectId) return
+
     setIsSaving(true)
     setSaveError(null)
 
     try {
-      // TODO: integrar API / banco quando disponível
+      const result = await saveCronogramaDesembolso(projectId, dados)
+      if (!result.ok) {
+        setSaveError(result.error)
+        return
+      }
+
+      if (result.data) {
+        resetForm(result.data)
+      } else {
+        void reload()
+      }
+
       setIsEditing(false)
-    } catch {
-      setSaveError("Não foi possível salvar o cronograma de desembolso.")
     } finally {
       setIsSaving(false)
     }
-  }, [])
+  }, [projectId, dados, resetForm, reload])
 
   return {
     form: dados,
