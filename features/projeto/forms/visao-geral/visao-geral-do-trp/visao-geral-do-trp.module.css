@@ -62,14 +62,14 @@
 }
 
 .exportButton {
-    background: black;
-    color: white;
-    border: 1px solid black;
+    background: var(--foreground);
+    color: var(--background);
+    border: 1px solid var(--foreground);
 }
 
 .exportButton:hover {
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
+    background: color-mix(in oklch, var(--foreground) 90%, transparent);
+    color: var(--background);
 }
 
 .pdfExportRoot {
@@ -78,7 +78,23 @@
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    background: transparent;
+}
+
+/* Durante a captura do PDF, força paleta clara via variáveis (herdadas pelos forms). */
+.pdfExportRoot[data-pdf-capture] {
     background: #ffffff;
+    --background: #ffffff;
+    --card: #f5f5f5;
+    --field: #ffffff;
+    --foreground: #0a0a0a;
+    --muted-foreground: #52525b;
+    --border: #e4e4e7;
+    --input: #e4e4e7;
+    --muted: #f4f4f5;
+    --primary: #171717;
+    --primary-foreground: #fafafa;
+    color: #0a0a0a;
 }
 
 @media (min-width: 640px) {
@@ -97,7 +113,7 @@
 .documentHeader {
     min-width: 0;
     border-radius: 0.75rem;
-    border: 1px solid var(--input);
+    border: 1px solid var(--border);
     background: var(--card);
     padding: 0.75rem 1rem;
     text-align: center;
@@ -136,7 +152,7 @@
     box-sizing: border-box;
 }
 
-/* Campos com fundo branco em todas as seções da visão geral (incl. readonly/disabled) */
+/* Campos seguem o tema (--field) em vez de branco fixo */
 .section input,
 .section textarea,
 .section select,
@@ -145,7 +161,8 @@
 .section textarea:disabled,
 .section textarea[readonly],
 .section select:disabled {
-    background: #ffffff !important;
+    background: var(--field) !important;
+    color: var(--foreground) !important;
 }
 
 .section input:disabled,
@@ -183,12 +200,13 @@
 .section input:-webkit-autofill:hover,
 .section input:-webkit-autofill:focus,
 .section input:-webkit-autofill:active {
-    background: #ffffff !important;
+    background: var(--field) !important;
 }
 
 .section input:-webkit-autofill {
-    -webkit-box-shadow: 0 0 0 30px #ffffff inset !important;
-    box-shadow: 0 0 0 30px #ffffff inset !important;
+    -webkit-box-shadow: 0 0 0 30px var(--field) inset !important;
+    box-shadow: 0 0 0 30px var(--field) inset !important;
+    -webkit-text-fill-color: var(--foreground) !important;
 }
 
 .readOnlyWrapper {

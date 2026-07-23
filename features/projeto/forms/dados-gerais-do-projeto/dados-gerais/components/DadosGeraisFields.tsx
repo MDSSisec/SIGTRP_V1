@@ -1,18 +1,17 @@
 "use client"
 
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { CampoReviewLabel } from "@/features/projeto/components/formShared/secao-review-actions"
 import { cn } from "@/lib/utils"
 
-import { VIEW_MODE_FIELD_CLASS } from "../constants/form"
 import type { DadosGeraisForm } from "../types/dados-gerais-form"
 import styles from "../dadosGeraisDoprojeto.module.css"
 
 type Props = {
   dados: DadosGeraisForm
-  isLocked: boolean
-  isViewMode: boolean
+  isCampoLocked: (campoKey: string) => boolean
+  fieldClass: (campoKey: string, baseClass?: string) => string
   onCurrencyChange: (value: string) => void
   onQuantidadeChange: (value: string) => void
   onCheckboxChange: (checked: boolean) => void
@@ -20,8 +19,8 @@ type Props = {
 
 export function DadosGeraisFields({
   dados,
-  isLocked,
-  isViewMode,
+  isCampoLocked,
+  fieldClass,
   onCurrencyChange,
   onQuantidadeChange,
   onCheckboxChange,
@@ -30,9 +29,13 @@ export function DadosGeraisFields({
     <section className={formLayoutStyles.section}>
       <div className={formLayoutStyles.grid2}>
         <div className={formLayoutStyles.fieldGroup}>
-          <Label htmlFor="custoTotalProjeto" className={styles.required}>
+          <CampoReviewLabel
+            htmlFor="custoTotalProjeto"
+            campoKey="custoTotalProjeto"
+            className={styles.required}
+          >
             Custo total do projeto
-          </Label>
+          </CampoReviewLabel>
           <Input
             id="custoTotalProjeto"
             name="custoTotalProjeto"
@@ -42,17 +45,21 @@ export function DadosGeraisFields({
             placeholder="R$ 0,00"
             value={dados.custoTotalProjeto}
             onChange={(event) => onCurrencyChange(event.target.value)}
-            className={cn(isViewMode && VIEW_MODE_FIELD_CLASS)}
-            disabled={isLocked}
+            className={fieldClass("custoTotalProjeto")}
+            disabled={isCampoLocked("custoTotalProjeto")}
             required
           />
           <small className={styles.hint}>Formato monetário brasileiro.</small>
         </div>
 
         <div className={formLayoutStyles.fieldGroup}>
-          <Label htmlFor="quantidadeCursos" className={styles.required}>
+          <CampoReviewLabel
+            htmlFor="quantidadeCursos"
+            campoKey="quantidadeCursos"
+            className={styles.required}
+          >
             Quantidade de cursos
-          </Label>
+          </CampoReviewLabel>
           <Input
             id="quantidadeCursos"
             name="quantidadeCursos"
@@ -62,8 +69,8 @@ export function DadosGeraisFields({
             inputMode="numeric"
             value={dados.quantidadeCursos}
             onChange={(event) => onQuantidadeChange(event.target.value)}
-            className={cn(isViewMode && VIEW_MODE_FIELD_CLASS)}
-            disabled={isLocked}
+            className={fieldClass("quantidadeCursos")}
+            disabled={isCampoLocked("quantidadeCursos")}
             required
           />
           <small className={styles.hint}>
@@ -72,7 +79,7 @@ export function DadosGeraisFields({
         </div>
       </div>
 
-      <div className={styles.checkCard}>
+      <div className={cn(styles.checkCard, fieldClass("possuiEventoCertificacao"))}>
         <input
           id="possuiEventoCertificacao"
           name="possuiEventoCertificacao"
@@ -80,15 +87,21 @@ export function DadosGeraisFields({
           className="mt-0.5 size-4 shrink-0 rounded-sm border border-input accent-[var(--primary)]"
           checked={dados.possuiEventoCertificacao}
           onChange={(event) => onCheckboxChange(event.target.checked)}
-          disabled={isLocked}
+          disabled={isCampoLocked("possuiEventoCertificacao")}
         />
-        <Label htmlFor="possuiEventoCertificacao" className={styles.checkLabel}>
-          Projeto irá possuir evento de entrega de certificado?
-          <small>
+        <div className="min-w-0 flex-1">
+          <CampoReviewLabel
+            htmlFor="possuiEventoCertificacao"
+            campoKey="possuiEventoCertificacao"
+            className={styles.checkLabel}
+          >
+            Projeto irá possuir evento de entrega de certificado?
+          </CampoReviewLabel>
+          <small className={styles.hint}>
             Ao marcar, a etapa de despesas do evento final será exibida e
             passará a ser validada.
           </small>
-        </Label>
+        </div>
       </div>
     </section>
   )

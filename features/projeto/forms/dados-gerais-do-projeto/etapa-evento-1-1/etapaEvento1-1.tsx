@@ -1,6 +1,7 @@
 "use client"
 
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import { EtapaDespesasForm } from "@/features/projeto/components/cursoDetalhamentoForm"
 import {
   SESSOES_VISAO_GERAL_SUBTITLE,
@@ -12,7 +13,7 @@ import { useDespesasEtapa11 } from "./hooks/useDespesasEtapa11"
 
 /**
  * Seção "Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1".
- * Reutiliza o mesmo padrão de card/tabela do detalhamento de cursos.
+ * Review aplica-se ao período; a tabela de despesas fica fora do bloqueio/atenção.
  */
 export function DespesasEtapa11({
   readOnlyView,
@@ -29,6 +30,8 @@ export function DespesasEtapa11({
           {SESSOES_VISAO_GERAL_SUBTITLE.SUBTITLE_SESSAO_DESPESAS_ETAPA_1_1}
         </p>
       </div>
+
+      <SecaoReviewBanner />
 
       <EtapaDespesasForm
         tableTitle="Despesas da Etapa 1.1"

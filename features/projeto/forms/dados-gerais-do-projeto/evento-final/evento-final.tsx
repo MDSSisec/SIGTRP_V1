@@ -1,6 +1,7 @@
 "use client"
 
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import { EtapaDespesasForm } from "@/features/projeto/components/cursoDetalhamentoForm"
 import { CATALOGO_DESPESAS_EVENTO_FINAL } from "@/features/projeto/constants/catalogo-despesas-evento-final"
 import {
@@ -13,7 +14,7 @@ import { useDespesasEventoFinal } from "./hooks/useDespesasEventoFinal"
 
 /**
  * Seção "Celebração, Certificação e Encerramento — Etapa Final".
- * Reutiliza o mesmo EtapaDespesasForm das etapas 1.1 e 1.2.
+ * Review aplica-se ao período; a tabela de despesas fica fora do bloqueio/atenção.
  */
 export function DespesasEventoFinal({
   readOnlyView,
@@ -30,6 +31,8 @@ export function DespesasEventoFinal({
           {SESSOES_VISAO_GERAL_SUBTITLE.SUBTITLE_SESSAO_DESPESAS_EVENTO_FINAL}
         </p>
       </div>
+
+      <SecaoReviewBanner />
 
       <EtapaDespesasForm
         tableTitle="Despesas do evento final"

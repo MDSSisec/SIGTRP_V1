@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   DetalhamentoGastosCurso,
   summarizeEtapaDespesas,
@@ -14,8 +13,14 @@ import {
   FormSectionCard,
   formLayoutStyles,
 } from "@/features/projeto/components/formShared/form-section"
+import {
+  CampoReviewLabel,
+  CAMPO_ATENCAO_CLASS,
+  campoReviewVisualClasses,
+} from "@/features/projeto/components/formShared/secao-review-actions"
 import type { CursoDespesaRow } from "@/features/projeto/types/general-project-data"
 import type { CatalogoItemEtapa } from "@/features/projeto/constants/catalogo-despesas-etapa-11"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
 import { parseCurrencyInput } from "@/features/projeto/utils/currency"
 import { cn } from "@/lib/utils"
@@ -136,8 +141,28 @@ export function EtapaDespesasForm({
     }
   }, [value, isEditing])
 
-  const isLocked = readOnlyView || !isEditing
-  const isViewMode = !isEditing
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
+  /** Bloqueio da seção não impede editar a tabela de despesas. */
+  const canStartEditing = !readOnlyView && !lock.isMarkingAtencao
+  const isTableLocked = Boolean(readOnlyView) || !isEditing
+  const isTableViewMode = !isEditing
+
+  function fieldClass(campoKey: string, baseClass?: string) {
+    return cn(
+      baseClass,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) =>
+            Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: CAMPO_ATENCAO_CLASS,
+        },
+        campoKey,
+      ),
+    )
+  }
 
   const summary = useMemo(
     () => summarizeEtapaDespesas(draft.despesas),
@@ -207,9 +232,13 @@ export function EtapaDespesasForm({
 
       <div className={styles.fieldsGrid}>
         <div className={formLayoutStyles.fieldGroup}>
-          <Label htmlFor={`${fieldIdPrefix}-inicio`} className={styles.required}>
+          <CampoReviewLabel
+            htmlFor={`${fieldIdPrefix}-inicio`}
+            campoKey="inicioEtapa"
+            className={styles.required}
+          >
             Início da etapa
-          </Label>
+          </CampoReviewLabel>
           <Input
             id={`${fieldIdPrefix}-inicio`}
             type="text"
@@ -217,17 +246,21 @@ export function EtapaDespesasForm({
             maxLength={7}
             placeholder="MM/AAAA"
             value={draft.inicioEtapa}
-            disabled={isLocked}
-            className={cn(isViewMode && VIEW_MODE_FIELD_CLASS)}
+            disabled={lock.isCampoLocked("inicioEtapa")}
+            className={fieldClass("inicioEtapa")}
             onChange={(event) =>
               handlePeriodChange("inicioEtapa", event.target.value)
             }
           />
         </div>
         <div className={formLayoutStyles.fieldGroup}>
-          <Label htmlFor={`${fieldIdPrefix}-fim`} className={styles.required}>
+          <CampoReviewLabel
+            htmlFor={`${fieldIdPrefix}-fim`}
+            campoKey="fimEtapa"
+            className={styles.required}
+          >
             Fim da etapa
-          </Label>
+          </CampoReviewLabel>
           <Input
             id={`${fieldIdPrefix}-fim`}
             type="text"
@@ -235,8 +268,8 @@ export function EtapaDespesasForm({
             maxLength={7}
             placeholder="MM/AAAA"
             value={draft.fimEtapa}
-            disabled={isLocked}
-            className={cn(isViewMode && VIEW_MODE_FIELD_CLASS)}
+            disabled={lock.isCampoLocked("fimEtapa")}
+            className={fieldClass("fimEtapa")}
             onChange={(event) =>
               handlePeriodChange("fimEtapa", event.target.value)
             }
@@ -266,8 +299,8 @@ export function EtapaDespesasForm({
         title={tableTitle}
         despesas={draft.despesas}
         onChange={handleDespesasChange}
-        disabled={isLocked}
-        isViewMode={isViewMode}
+        disabled={isTableLocked}
+        isViewMode={isTableViewMode}
         catalogoEtapa={catalogoEtapa}
       />
 
@@ -279,7 +312,11 @@ export function EtapaDespesasForm({
             </p>
           ) : null}
           {!isEditing ? (
-            <Button variant="outline" onClick={() => setIsEditing(true)}>
+            <Button
+              variant="outline"
+              disabled={!canStartEditing}
+              onClick={() => setIsEditing(true)}
+            >
               <Pencil className="size-4" />
               Editar
             </Button>

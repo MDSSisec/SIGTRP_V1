@@ -1,6 +1,7 @@
 "use client"
 
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import { EtapaDespesasForm } from "@/features/projeto/components/cursoDetalhamentoForm"
 import { CATALOGO_DESPESAS_ETAPA_12 } from "@/features/projeto/constants/catalogo-despesas-etapa-12"
 import {
@@ -13,7 +14,7 @@ import { useDespesasEtapa12 } from "./hooks/useDespesasEtapa12"
 
 /**
  * Seção "Estruturação e Equipamento dos Espaços — Etapa 1.2".
- * Reutiliza o mesmo EtapaDespesasForm da Etapa 1.1.
+ * Review aplica-se ao período; a tabela de despesas fica fora do bloqueio/atenção.
  */
 export function DespesasEtapa12({
   readOnlyView,
@@ -30,6 +31,8 @@ export function DespesasEtapa12({
           {SESSOES_VISAO_GERAL_SUBTITLE.SUBTITLE_SESSAO_DESPESAS_ETAPA_1_2}
         </p>
       </div>
+
+      <SecaoReviewBanner />
 
       <EtapaDespesasForm
         tableTitle="Despesas da Etapa 1.2"

@@ -61,7 +61,7 @@
   border: 2px solid;
   transition: all 0.2s ease;
   flex-shrink: 0;
-  background: #ffffff;
+  background: var(--card);
   box-sizing: border-box;
 }
 
@@ -92,7 +92,7 @@
 }
 
 .active {
-  background: #ffffff;
+  background: var(--card);
   border-color: var(--primary);
   color: var(--primary);
 }
@@ -100,7 +100,7 @@
 .inactive {
   border-color: var(--muted);
   color: var(--muted-foreground);
-  background: #ffffff;
+  background: var(--card);
 }
 
 .label {
@@ -155,13 +155,13 @@
   overflow: hidden;
   border-radius: 0.5rem;
   border: 1px solid var(--border);
-  background: #ffffff;
+  background: var(--card);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 :global(.dark) .fullWidth {
-  background: oklch(0.29 0.006 264);
-  border-color: oklch(0.36 0.006 264);
+  background: var(--card);
+  border-color: var(--border);
 }
 
 .trigger {
@@ -220,7 +220,7 @@
   min-width: 0;
   max-width: 100%;
   padding: var(--spacing-2) var(--spacing-3);
-  background: #ffffff;
+  background: var(--card);
 }
 
 @media (min-width: 640px) {
@@ -230,5 +230,5 @@
 }
 
 :global(.dark) .motionWrapper {
-  background: oklch(0.29 0.006 264);
+  background: var(--card);
 }

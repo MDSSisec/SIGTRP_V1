@@ -20,6 +20,7 @@ function prepareElementForCapture(element: HTMLElement) {
   const textareas: RestorableTextarea[] = []
   const previousBackground = element.style.background
   const previousWidth = element.style.width
+  const hadPdfCapture = element.hasAttribute("data-pdf-capture")
 
   element.querySelectorAll("[data-pdf-hide]").forEach((node) => {
     if (node instanceof HTMLElement) {
@@ -28,6 +29,7 @@ function prepareElementForCapture(element: HTMLElement) {
     }
   })
 
+  element.setAttribute("data-pdf-capture", "")
   element.style.background = "#ffffff"
   element.style.width = `${element.scrollWidth}px`
 
@@ -46,6 +48,11 @@ function prepareElementForCapture(element: HTMLElement) {
   })
 
   return () => {
+    if (hadPdfCapture) {
+      element.setAttribute("data-pdf-capture", "")
+    } else {
+      element.removeAttribute("data-pdf-capture")
+    }
     element.style.background = previousBackground
     element.style.width = previousWidth
 

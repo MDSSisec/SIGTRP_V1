@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import {
   DetalhamentoGastosCurso,
   summarizeCursoDespesas,
@@ -16,6 +15,12 @@ import type {
 } from "@/features/projeto/types/general-project-data"
 import { createDefaultCursoDespesas } from "@/features/projeto/types/general-project-data"
 import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import {
+  CampoReviewLabel,
+  campoReviewVisualClasses,
+  CAMPO_ATENCAO_CLASS,
+} from "@/features/projeto/components/formShared/secao-review-actions"
+import { useSecaoFormLock } from "@/features/projeto/hooks/useSecaoFormLock"
 import { notifyError, notifySuccess } from "@/features/projeto/utils/notify"
 import { parseCurrencyInput } from "@/features/projeto/utils/currency"
 import { cn } from "@/lib/utils"
@@ -187,8 +192,32 @@ export function CursoDetalhamentoForm({
     }
   }, [value, isEditing])
 
-  const isLocked = readOnlyView || !isEditing
-  const isViewMode = !isEditing
+  const lock = useSecaoFormLock({ readOnlyView, isEditing })
+  /** Bloqueio da seção não impede editar a tabela de gastos. */
+  const canStartEditing = !readOnlyView && !lock.isMarkingAtencao
+  const isTableLocked = Boolean(readOnlyView) || !isEditing
+  const isTableViewMode = !isEditing
+
+  function campoKey(fieldKey: CourseFieldKey) {
+    return `curso-${courseNumber}-${fieldKey}`
+  }
+
+  function fieldClass(fieldKey: CourseFieldKey, baseClass?: string) {
+    return cn(
+      baseClass,
+      campoReviewVisualClasses(
+        {
+          isCampoOkMuted: lock.isCampoOkMuted,
+          isCampoViewMode: lock.isCampoViewMode,
+          isCampoAtencao: (key) =>
+            Boolean(lock.reviewContext?.isCampoAtencao(key)),
+          viewModeClass: VIEW_MODE_FIELD_CLASS,
+          attentionClass: CAMPO_ATENCAO_CLASS,
+        },
+        campoKey(fieldKey),
+      ),
+    )
+  }
 
   const summary = useMemo(
     () =>
@@ -258,6 +287,7 @@ export function CursoDetalhamentoForm({
 
       <div className={styles.fieldsGrid}>
         {COURSE_FIELDS.map((field) => {
+          const key = campoKey(field.key)
           const fieldId = `curso-${courseNumber}-${field.key}`
           const input = (
             <Input
@@ -272,11 +302,11 @@ export function CursoDetalhamentoForm({
               onChange={(event) =>
                 handleFieldChange(field.key, event.target.value)
               }
-              className={cn(
-                field.suffix && styles.inputWithSuffix,
-                isViewMode && VIEW_MODE_FIELD_CLASS,
+              className={fieldClass(
+                field.key,
+                field.suffix ? styles.inputWithSuffix : undefined,
               )}
-              disabled={isLocked}
+              disabled={lock.isCampoLocked(key)}
               required
             />
           )
@@ -289,9 +319,13 @@ export function CursoDetalhamentoForm({
                 field.full ? styles.fieldFull : undefined,
               )}
             >
-              <Label htmlFor={fieldId} className={styles.required}>
+              <CampoReviewLabel
+                htmlFor={fieldId}
+                campoKey={key}
+                className={styles.required}
+              >
                 {field.label}
-              </Label>
+              </CampoReviewLabel>
               {field.suffix ? (
                 <div className={styles.suffixWrap}>
                   {input}
@@ -343,8 +377,8 @@ export function CursoDetalhamentoForm({
       <DetalhamentoGastosCurso
         despesas={draft.despesas}
         onChange={handleDespesasChange}
-        disabled={isLocked}
-        isViewMode={isViewMode}
+        disabled={isTableLocked}
+        isViewMode={isTableViewMode}
       />
 
       {!readOnlyView && (
@@ -355,7 +389,11 @@ export function CursoDetalhamentoForm({
             </p>
           ) : null}
           {!isEditing ? (
-            <Button variant="outline" onClick={() => setIsEditing(true)}>
+            <Button
+              variant="outline"
+              disabled={!canStartEditing}
+              onClick={() => setIsEditing(true)}
+            >
               <Pencil className="size-4" />
               Editar
             </Button>

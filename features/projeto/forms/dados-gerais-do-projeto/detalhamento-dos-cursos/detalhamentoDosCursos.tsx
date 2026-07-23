@@ -1,6 +1,7 @@
 "use client"
 
 import { formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import {
   SESSOES_VISAO_GERAL_SUBTITLE,
   SESSOES_VISAO_GERAL_TITLE,
@@ -17,6 +18,8 @@ import { useDetalhamentoCursos } from "./hooks/useDetalhamentoCursos"
  * Formulário da seção "Detalhamento dos cursos".
  *
  * Compõe a UI e delega a lógica a `useDetalhamentoCursos`.
+ * Review (bloquear/atenção) aplica-se aos dados gerais do curso,
+ * não à tabela de gastos.
  */
 export function DetalhamentoCursos({
   readOnlyView,
@@ -33,6 +36,8 @@ export function DetalhamentoCursos({
           {SESSOES_VISAO_GERAL_SUBTITLE.SUBTITLE_SESSAO_DETALHAMENTO_CURSOS}
         </p>
       </div>
+
+      <SecaoReviewBanner />
 
       {!form.ui.hasCursos ? (
         <DetalhamentoCursosEmpty />

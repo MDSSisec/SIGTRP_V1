@@ -1,6 +1,7 @@
 "use client"
 
 import { FormSectionCard, formLayoutStyles } from "@/features/projeto/components/formShared/form-section"
+import { SecaoReviewBanner } from "@/features/projeto/components/formShared/secao-review-actions"
 import { SESSOES_VISAO_GERAL_SUBTITLE, SESSOES_VISAO_GERAL_TITLE } from "@/features/projeto/constants/visao-geral"
 
 import type { ProjectFormSectionProps } from "../../types"
@@ -28,11 +29,13 @@ export function DadosGeraisDoProjeto({
         </p>
       </div>
 
+      <SecaoReviewBanner />
+
       <FormSectionCard>
         <DadosGeraisFields
           dados={form.form}
-          isLocked={form.ui.isLocked}
-          isViewMode={form.ui.isViewMode}
+          isCampoLocked={form.ui.isCampoLocked}
+          fieldClass={form.review.fieldClass}
           onCurrencyChange={form.actions.handleCurrencyChange}
           onQuantidadeChange={form.actions.handleQuantidadeChange}
           onCheckboxChange={form.actions.handleCheckboxChange}

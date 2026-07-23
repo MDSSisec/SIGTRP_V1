@@ -15,6 +15,7 @@ import {
   VAZIO_DADOS_GERAIS,
   type DadosGeraisForm,
 } from "../types/dados-gerais-form"
+import { useDadosGeraisReview } from "./useDadosGeraisReview"
 
 type Options = {
   readOnlyView?: boolean
@@ -26,7 +27,8 @@ type Options = {
  * Responsabilidades:
  * - carregar dados do contexto;
  * - controlar edição;
- * - validar e salvar no contexto (com sync de cursos).
+ * - validar e salvar no contexto (com sync de cursos);
+ * - aplicar regras de revisão.
  */
 export function useDadosGerais({ readOnlyView }: Options) {
   const projectData = useProjectData()
@@ -39,6 +41,11 @@ export function useDadosGerais({ readOnlyView }: Options) {
     useState<DadosGeraisForm>(VAZIO_DADOS_GERAIS)
   const [dadosFormulario, setDadosFormulario] =
     useState<DadosGeraisForm>(VAZIO_DADOS_GERAIS)
+
+  const review = useDadosGeraisReview({
+    readOnlyView,
+    isEditing,
+  })
 
   const resetForm = useCallback(() => {
     const loaded = toDadosGeraisForm(
@@ -113,18 +120,19 @@ export function useDadosGerais({ readOnlyView }: Options) {
     }
   }, [dadosFormulario, projectData, updateProjectData])
 
-  const isLocked = Boolean(readOnlyView) || !isEditing
-  const isViewMode = !isEditing
-
   return {
     form: dadosFormulario,
+    review: {
+      fieldClass: review.fieldClass,
+    },
     ui: {
       isEditing,
       isSaving,
       saveError,
-      isLocked,
-      isViewMode,
-      canStartEditing: !readOnlyView,
+      isLocked: review.isLocked,
+      isCampoLocked: review.isCampoLocked,
+      isViewMode: review.isViewMode,
+      canStartEditing: review.canStartEditing,
     },
     actions: {
       handleCurrencyChange,
