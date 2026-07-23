@@ -24,6 +24,9 @@ import { FormularioDetalhamentoDaBase } from "./03-participantes/detalhamentoDaB
 // Dados Gerais
 import { DadosGeraisDoProjeto } from "./dados-gerais-do-projeto/dados-gerais"
 import { DetalhamentoCursos } from "./dados-gerais-do-projeto/detalhamento-dos-cursos"
+import { DespesasEtapa11 } from "./dados-gerais-do-projeto/etapa-evento-1-1"
+import { DespesasEtapa12 } from "./dados-gerais-do-projeto/etapa-evento-1-2"
+import { DespesasEventoFinal } from "./dados-gerais-do-projeto/evento-final"
 import type { ProjectFormSectionProps } from "./types"
 import { InformacoesDoProjeto } from "./visao-geral/informacoes-do-projeto"
 import { FormularioPublicoBeneficiarioDoProjeto } from "./03-participantes/publicoBeneficiarioDoProjeto"
@@ -51,6 +54,9 @@ export const SECTIONS_WITHOUT_VISAO_GERAL: Record<
   "informacoes-projeto": InformacoesDoProjeto,
   "dados-gerais-projeto": DadosGeraisDoProjeto,
   "detalhamento-cursos": DetalhamentoCursos,
+  "despesas-etapa-1-1": DespesasEtapa11,
+  "despesas-etapa-1-2": DespesasEtapa12,
+  "despesas-evento-final": DespesasEventoFinal,
   "identificacao-projeto": IdentificacaoProjeto,
   "identificacao-proponente": IdentificacaoProponente,
   "identificacao-representante-legal": IdentificacaoRepresentanteLegal,

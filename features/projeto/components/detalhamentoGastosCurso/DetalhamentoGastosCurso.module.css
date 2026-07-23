@@ -46,6 +46,10 @@
   border-collapse: collapse;
 }
 
+.tableEtapa {
+  min-width: 1280px;
+}
+
 .table th,
 .table td {
   padding: 0.55rem 0.6rem;

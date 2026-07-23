@@ -55,19 +55,21 @@ export const PROJETO_SECOES = {
     title:
       "3. Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1",
     subtitle:
-      "Planejamento, Mobilização, Execução e Monitoramento — Etapa 1.1",
+      "Detalhe as despesas para planejar, executar, monitorar, mobilizar, sensibilizar e divulgar as ações do projeto, incluindo contratações, bens e insumos.",
   },
   despesasEtapa12: {
     titleKey: "TITLE_SESSAO_DESPESAS_ETAPA_1_2",
     slug: "despesas-etapa-1-2",
     title: "4. Estruturação e Equipamento dos Espaços — Etapa 1.2",
-    subtitle: "Estruturação e Equipamento dos Espaços — Etapa 1.2",
+    subtitle:
+      "Detalhe as despesas para estruturar os espaços de capacitação e adquirir os equipamentos necessários às ações de qualificação profissional.",
   },
   despesasEventoFinal: {
     titleKey: "TITLE_SESSAO_DESPESAS_EVENTO_FINAL",
     slug: "despesas-evento-final",
     title: "5. Celebração, Certificação e Encerramento — Etapa Final",
-    subtitle: "Celebração, Certificação e Encerramento — Etapa Final",
+    subtitle:
+      "Detalhe as despesas dos eventos de celebração do termo, certificação, avaliação dos avanços e encerramento com entrega de certificados.",
   },
   identificacaoProjeto: {
     titleKey: "TITLE_SESSAO_IDENTIFICACAO_PROJETO",

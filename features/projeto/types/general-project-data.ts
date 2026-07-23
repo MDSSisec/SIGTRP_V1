@@ -17,6 +17,11 @@ export type CursoDespesaRow = {
   unidade: string
   quantidadeItens: string
   valorUnitario: string
+  /** Campos extras usados na variante de despesas de etapa. */
+  fonteRecurso?: string
+  inicioEtapa?: string
+  fimEtapa?: string
+  tipoDespesa?: string
 }
 
 export type CursoDetalhamentoDados = {
@@ -43,6 +48,23 @@ export function createEmptyDespesa(): CursoDespesaRow {
     unidade: "",
     quantidadeItens: "",
     valorUnitario: "",
+  }
+}
+
+export function createEmptyDespesaEtapa(): CursoDespesaRow {
+  despesaSeq += 1
+  return {
+    id: `etapa-despesa-${Date.now()}-${despesaSeq}`,
+    tipoItemDespesa: "",
+    itemDespesa: "",
+    codigoElementoDespesa: "",
+    unidade: "",
+    quantidadeItens: "",
+    valorUnitario: "",
+    fonteRecurso: "",
+    inicioEtapa: "",
+    fimEtapa: "",
+    tipoDespesa: "",
   }
 }
 
