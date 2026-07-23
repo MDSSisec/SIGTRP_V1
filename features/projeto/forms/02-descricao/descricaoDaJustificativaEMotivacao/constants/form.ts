@@ -24,4 +24,4 @@ export const ATTENTION_FIELD_CLASS =
  * Quantidade máxima de caracteres permitida em cada campo textual
  * da seção "Descrição da Justificativa e Motivação".
  */
-export const JUSTIFICATIVA_MAX_LENGTH = 1000
+export const JUSTIFICATIVA_MAX_LENGTH = 5000

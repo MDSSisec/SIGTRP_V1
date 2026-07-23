@@ -173,37 +173,34 @@ export function MetodologiaFields({
               <div className={styles.label}>
                 <span>
                   {etapa.item} {etapa.etapa} -{" "}
-                </span>
+                  {etapa.partes.map((parte, index) => {
+                    if (parte.type === "text") {
+                      return (
+                        <span key={`${etapa.item}-text-${index}`}>
+                          {parte.value}
+                          {index < etapa.partes.length - 1 ? " " : ""}
+                        </span>
+                      )
+                    }
 
-                {etapa.partes.map((parte, index) => {
-                  if (parte.type === "text") {
                     return (
-                      <span
-                        key={`${etapa.item}-text-${index}`}
-                      >
-                        {parte.value}{" "}
+                      <span key={`${etapa.item}-slot-${parte.key}`}>
+                        {" "}
+                        <DbSlot
+                          id={`${inputId}-${parte.key}`}
+                          size={parte.size}
+                          aria-label={parte.key}
+                        />{" "}
                       </span>
                     )
-                  }
-
-                  return (
-                    <span
-                      key={`${etapa.item}-slot-${parte.key}`}
-                    >
-                      <DbSlot
-                        id={`${inputId}-${parte.key}`}
-                        size={parte.size}
-                        aria-label={parte.key}
-                      />{" "}
-                    </span>
-                  )
-                })}
+                  })}
+                </span>
               </div>
 
               <TextareaComLimite
                 id={inputId}
                 placeholder={etapa.placeholder}
-                rows={5}
+                rows={15}
                 value={value}
                 disabled={isLocked}
                 onChange={(value) =>

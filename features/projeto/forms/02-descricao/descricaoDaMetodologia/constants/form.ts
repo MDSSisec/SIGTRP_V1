@@ -1,5 +1,5 @@
 /** Quantidade máxima de caracteres por campo textual da Metodologia. */
-export const METODOLOGIA_MAX_LENGTH = 1000
+export const METODOLOGIA_MAX_LENGTH = 5000
 
 export const VIEW_MODE_FIELD_CLASS =
   "!bg-[var(--field)] disabled:!bg-[var(--field)] disabled:!opacity-100 text-foreground " +

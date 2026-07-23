@@ -62,14 +62,14 @@
      ========================================================================== */
   
   .label {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 0.35rem;
-  
+    display: block;
     font-weight: 500;
     line-height: 1.5;
     color: var(--foreground);
+  }
+
+  .label > span {
+    display: inline;
   }
   
   /* ==========================================================================
