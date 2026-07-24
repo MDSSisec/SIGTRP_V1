@@ -3,4 +3,4 @@ export {
   USUARIO_TIPOS,
   normalizeUsuarioTipo,
   type UsuarioTipo,
-} from "../screens/users/constants"
+} from "./users"

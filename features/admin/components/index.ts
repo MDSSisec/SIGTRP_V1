@@ -7,4 +7,4 @@ export {
   PopUpNewUser,
   type NewUsuarioFormValues,
   type PopUpNewUserProps,
-} from "./popUpNewUser"
+} from "../screens/users/components"

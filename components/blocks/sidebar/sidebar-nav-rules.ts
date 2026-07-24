@@ -1,4 +1,7 @@
-import { ADMIN_ROUTE } from "@/features/admin"
+import {
+  ADMIN_ROUTE,
+  ADMIN_USUARIOS_ROUTE,
+} from "@/features/admin"
 import { DASHBOARD_ROUTE } from "@/features/dashboard"
 import { PROJETOS_ROUTE } from "@/features/projeto"
 import type { PublicUser } from "@/features/login/types"
@@ -33,12 +36,16 @@ function normalizeTipo(tipo: string) {
   return tipo.trim().toLowerCase()
 }
 
+function canSeeAdminMenu(user: PublicUser) {
+  return Boolean(user.isAdmin || user.isGestorProjeto)
+}
+
 export function getAllowedSidebarNavItems(user: PublicUser): SidebarNavKey[] {
   if (normalizeTipo(user.tipo) === "externo") {
     return [SIDEBAR_NAV.PROJETOS]
   }
 
-  if (user.isAdmin) {
+  if (canSeeAdminMenu(user)) {
     return ADMIN_ITEMS
   }
 
@@ -59,6 +66,14 @@ export function getDefaultAuthenticatedRoute(user: PublicUser): string {
   return NAV_ROUTE_BY_KEY[firstNavKey]
 }
 
+function canGestorAccessAdminPath(pathname: string) {
+  return (
+    pathname === ADMIN_ROUTE ||
+    pathname === ADMIN_USUARIOS_ROUTE ||
+    pathname.startsWith(`${ADMIN_USUARIOS_ROUTE}/`)
+  )
+}
+
 export function canAccessRoute(user: PublicUser, pathname: string): boolean {
   if (
     pathname === DASHBOARD_ROUTE ||
@@ -75,7 +90,16 @@ export function canAccessRoute(user: PublicUser, pathname: string): boolean {
   }
 
   if (pathname.startsWith(ADMIN_ROUTE)) {
-    return canAccessSidebarNav(user, SIDEBAR_NAV.ADMINISTRADOR)
+    if (!canAccessSidebarNav(user, SIDEBAR_NAV.ADMINISTRADOR)) {
+      return false
+    }
+
+    // Gestor do Projeto: só Usuários (não perfis/permissões/status).
+    if (user.isGestorProjeto && !user.isAdmin) {
+      return canGestorAccessAdminPath(pathname)
+    }
+
+    return true
   }
 
   return true

@@ -1,0 +1,37 @@
+.actionsHead {
+  text-align: right;
+}
+
+.nameCell {
+  font-weight: 500;
+}
+
+.tipoCell {
+  text-transform: capitalize;
+}
+
+.senhaCell {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
+}
+
+.editButton {
+  background-color: var(--background);
+}
+
+.deleteButton {
+  border: 0;
+  background-color: color-mix(in oklch, var(--destructive) 10%, transparent);
+  color: var(--destructive);
+}
+
+.deleteButton:hover {
+  background-color: color-mix(in oklch, var(--destructive) 20%, transparent);
+}

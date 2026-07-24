@@ -6,6 +6,7 @@ import { listRoles } from "./roles.repository"
 import {
   createUsuario,
   deleteUsuario,
+  getUsuarioById,
   listUsuarios,
   updateUsuario,
 } from "./usuarios.repository"
@@ -16,14 +17,21 @@ export async function handleAdminRequest(
   path: string[],
 ) {
   const sessionUser = await getSessionUser()
+  const isAdmin = Boolean(sessionUser?.isAdmin)
+  const isGestorProjeto = Boolean(sessionUser?.isGestorProjeto)
+  const canAccessUsuarios = isAdmin || isGestorProjeto
 
-  if (!sessionUser?.isAdmin) {
+  if (!sessionUser || (!isAdmin && !isGestorProjeto)) {
     return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
   }
 
   const [resource, ...rest] = path
 
   if (resource === "usuarios" && rest.length === 0 && request.method === "GET") {
+    if (!canAccessUsuarios) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const usuarios = await listUsuarios()
 
@@ -39,6 +47,10 @@ export async function handleAdminRequest(
   }
 
   if (resource === "usuarios" && rest.length === 0 && request.method === "POST") {
+    if (!canAccessUsuarios) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const body = (await request.json()) as {
         nome?: string
@@ -54,8 +66,10 @@ export async function handleAdminRequest(
       const email = body.email?.trim().toLowerCase() ?? ""
       const tipo = normalizeUsuarioTipo(body.tipo ?? "")
       const perfilId = body.perfilId
-      const roles = Array.isArray(body.roles)
-        ? body.roles.filter((role): role is number => typeof role === "number")
+      const roles = isAdmin
+        ? Array.isArray(body.roles)
+          ? body.roles.filter((role): role is number => typeof role === "number")
+          : []
         : []
       const ativo = body.ativo ?? true
       const senha = body.senha?.trim() ?? ""
@@ -89,6 +103,10 @@ export async function handleAdminRequest(
   }
 
   if (resource === "usuarios" && rest.length === 1 && request.method === "PATCH") {
+    if (!canAccessUsuarios) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const usuarioId = rest[0]?.trim() ?? ""
       const body = (await request.json()) as {
@@ -105,9 +123,6 @@ export async function handleAdminRequest(
       const email = body.email?.trim().toLowerCase() ?? ""
       const tipo = normalizeUsuarioTipo(body.tipo ?? "")
       const perfilId = body.perfilId
-      const roles = Array.isArray(body.roles)
-        ? body.roles.filter((role): role is number => typeof role === "number")
-        : []
       const ativo = body.ativo ?? true
       const senha = body.senha?.trim() ?? ""
 
@@ -116,6 +131,19 @@ export async function handleAdminRequest(
           { error: "Dados do usuário inválidos. Verifique o tipo (interno ou externo)." },
           { status: 400 },
         )
+      }
+
+      let roles: number[] = []
+      if (isAdmin) {
+        roles = Array.isArray(body.roles)
+          ? body.roles.filter((role): role is number => typeof role === "number")
+          : []
+      } else {
+        const existing = await getUsuarioById(usuarioId)
+        if (!existing) {
+          return NextResponse.json({ error: "Usuário não encontrado." }, { status: 404 })
+        }
+        roles = existing.roles
       }
 
       const usuario = await updateUsuario(usuarioId, {
@@ -141,6 +169,10 @@ export async function handleAdminRequest(
   }
 
   if (resource === "usuarios" && rest.length === 1 && request.method === "DELETE") {
+    if (!canAccessUsuarios) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const usuarioId = rest[0]?.trim() ?? ""
 
@@ -162,6 +194,10 @@ export async function handleAdminRequest(
   }
 
   if (resource === "roles" && rest.length === 0 && request.method === "GET") {
+    if (!isAdmin) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const roles = await listRoles()
 
@@ -177,6 +213,10 @@ export async function handleAdminRequest(
   }
 
   if (resource === "profiles" && rest.length === 0 && request.method === "GET") {
+    if (!canAccessUsuarios) {
+      return NextResponse.json({ error: "Acesso não autorizado." }, { status: 403 })
+    }
+
     try {
       const profiles = await listProfiles()
 

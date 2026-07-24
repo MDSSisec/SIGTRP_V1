@@ -2,4 +2,5 @@ export {
   PopUpNewUser,
   type NewUsuarioFormValues,
   type PopUpNewUserProps,
-} from "../../screens/users/components"
+} from "./popUpNewUser"
+export { UsuariosTable } from "./UsuariosTable"

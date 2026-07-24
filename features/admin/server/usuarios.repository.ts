@@ -47,6 +47,33 @@ export async function listUsuarios(): Promise<Usuario[]> {
   return result.rows.map(toUsuario)
 }
 
+export async function getUsuarioById(id: string): Promise<Usuario | null> {
+  const pool = getDbPool()
+
+  const result = await pool.query<UsuarioRow>(
+    `
+      SELECT
+        id,
+        nome,
+        email,
+        tipo,
+        perfil_id,
+        senha,
+        roles,
+        ativo,
+        criado_em,
+        atualizado_em
+      FROM "SIGTRP_TB_USERS"
+      WHERE id = $1
+      LIMIT 1
+    `,
+    [id],
+  )
+
+  const row = result.rows[0]
+  return row ? toUsuario(row) : null
+}
+
 export async function createUsuario(data: CreateUsuarioData): Promise<Usuario> {
   const pool = getDbPool()
 

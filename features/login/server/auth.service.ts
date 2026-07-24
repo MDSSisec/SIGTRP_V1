@@ -1,4 +1,4 @@
-import { isAdminProfile } from "../constants"
+import { isAdminProfile, isGestorProjetoProfile } from "../constants"
 import type { PublicUser } from "../types/public-user"
 import { findUserByEmail } from "./users.repository"
 
@@ -31,6 +31,7 @@ export function toPublicUser(user: AuthUserRecord): PublicUser {
     perfilNome,
     roles: parseRoles(user.roles),
     isAdmin: !isExterno && isAdminProfile(perfilNome),
+    isGestorProjeto: !isExterno && isGestorProjetoProfile(perfilNome),
   }
 }
 

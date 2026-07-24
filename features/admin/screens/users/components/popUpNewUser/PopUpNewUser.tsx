@@ -6,10 +6,10 @@ import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
-import { ADMIN_USERS_FORM, normalizeUsuarioTipo, USUARIO_TIPOS } from "../../constants/users"
-import type { Profile } from "../../types/profile"
-import type { Role } from "../../types/role"
-import type { Usuario } from "../../types/usuario"
+import { ADMIN_USERS_FORM, normalizeUsuarioTipo, USUARIO_TIPOS } from "../../constants"
+import type { Profile } from "@/features/admin/types/profile"
+import type { Role } from "@/features/admin/types/role"
+import type { Usuario } from "../../types"
 import styles from "./PopUpNewUser.styles.module.css"
 
 export type NewUsuarioFormValues = {
@@ -31,6 +31,8 @@ export type PopUpNewUserProps = {
   mode?: "create" | "edit" | "view"
   profiles: Profile[]
   roles: Role[]
+  /** Campo de permissões (roles) só para administrador do sistema. */
+  canManageRoles?: boolean
 }
 
 const INITIAL_FORM: NewUsuarioFormValues = {
@@ -74,6 +76,7 @@ export function PopUpNewUser({
   mode = "create",
   profiles,
   roles,
+  canManageRoles = false,
 }: PopUpNewUserProps) {
   const [formValues, setFormValues] =
     React.useState<NewUsuarioFormValues>(INITIAL_FORM)
@@ -154,12 +157,18 @@ export function PopUpNewUser({
           ? generateSenha12Digitos()
           : formValues.senha.trim() || generateSenha12Digitos()
 
+      const rolesPayload = canManageRoles
+        ? formValues.roles
+        : mode === "edit"
+          ? toFormValues(initialValues).roles
+          : []
+
       await onSubmit({
         nome: formValues.nome.trim(),
         email: formValues.email.trim().toLowerCase(),
         tipo,
         perfilId: formValues.perfilId,
-        roles: formValues.roles,
+        roles: rolesPayload,
         senha,
         ativo: formValues.ativo,
       })
@@ -311,39 +320,43 @@ export function PopUpNewUser({
               </div>
             </div>
 
-            <div className={styles.fullField}>
-              <label className={styles.label} htmlFor="usuario-permissoes">
-                {ADMIN_USERS_FORM.fields.roles}
-              </label>
+            {canManageRoles ? (
+              <div className={styles.fullField}>
+                <label className={styles.label} htmlFor="usuario-permissoes">
+                  {ADMIN_USERS_FORM.fields.roles}
+                </label>
 
-              {roles.length === 0 ? (
-                <p className={styles.roleDescription}>
-                  Nenhuma permissão cadastrada.
-                </p>
-              ) : (
-                <select
-                  id="usuario-permissoes"
-                  className={styles.select}
-                  value={formValues.roles[0]?.toString() ?? ""}
-                  onChange={(event) =>
-                    handleChange(
-                      "roles",
-                      event.target.value
-                        ? [Number(event.target.value)]
-                        : [],
-                    )
-                  }
-                  disabled={isReadOnly}
-                >
-                  <option value="">{ADMIN_USERS_FORM.placeholders.roles}</option>
-                  {roles.map((role) => (
-                    <option key={role.id} value={role.id}>
-                      {role.descricao}
+                {roles.length === 0 ? (
+                  <p className={styles.roleDescription}>
+                    Nenhuma permissão cadastrada.
+                  </p>
+                ) : (
+                  <select
+                    id="usuario-permissoes"
+                    className={styles.select}
+                    value={formValues.roles[0]?.toString() ?? ""}
+                    onChange={(event) =>
+                      handleChange(
+                        "roles",
+                        event.target.value
+                          ? [Number(event.target.value)]
+                          : [],
+                      )
+                    }
+                    disabled={isReadOnly}
+                  >
+                    <option value="">
+                      {ADMIN_USERS_FORM.placeholders.roles}
                     </option>
-                  ))}
-                </select>
-              )}
-            </div>
+                    {roles.map((role) => (
+                      <option key={role.id} value={role.id}>
+                        {role.descricao}
+                      </option>
+                    ))}
+                  </select>
+                )}
+              </div>
+            ) : null}
 
             <label className={styles.checkboxField}>
               <input

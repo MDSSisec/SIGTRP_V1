@@ -118,21 +118,18 @@ export function ProjetosTable({
                       >
                         <PencilIcon />
                       </Button>
-                      <Button
-                        type="button"
-                        size="icon-sm"
-                        className="border-0 bg-destructive/10 text-destructive hover:bg-destructive/20"
-                        aria-label={`Excluir projeto ${projeto.nome}`}
-                        disabled={!canDelete || !onDelete}
-                        title={
-                          canDelete
-                            ? `Excluir projeto ${projeto.nome}`
-                            : "Sem permissão para excluir projetos"
-                        }
-                        onClick={() => setProjetoToDelete(projeto)}
-                      >
-                        <Trash2Icon />
-                      </Button>
+                      {canDelete && onDelete ? (
+                        <Button
+                          type="button"
+                          size="icon-sm"
+                          className="border-0 bg-destructive/10 text-destructive hover:bg-destructive/20"
+                          aria-label={`Excluir projeto ${projeto.nome}`}
+                          title={`Excluir projeto ${projeto.nome}`}
+                          onClick={() => setProjetoToDelete(projeto)}
+                        >
+                          <Trash2Icon />
+                        </Button>
+                      ) : null}
                     </div>
                   </TableCell>
                 </TableRow>

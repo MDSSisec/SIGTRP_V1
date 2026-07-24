@@ -3,4 +3,4 @@ export {
   deleteUsuario,
   fetchUsuarios,
   updateUsuario,
-} from "../screens/users/action"
+} from "./usuarios"

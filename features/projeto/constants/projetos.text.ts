@@ -4,6 +4,10 @@
  * Centralizar as mensagens neste arquivo facilita a manutenção,
  * padronização da interface e futura internacionalização (i18n).
  */
+
+import type { PublicUser } from "@/features/login/types"
+import { isUsuarioExterno } from "../domain/projeto.permissions"
+
 export const PROJETOS_TEXT = {
   /**
    * Informações da página.
@@ -11,6 +15,8 @@ export const PROJETOS_TEXT = {
   page: {
     title: "Projetos",
     subtitle: "Gerencie os projetos do sistema.",
+    subtitleResponsavelTecnico:
+      "Gerencie os projetos sob sua responsabilidade.",
   },
 
   /**
@@ -70,3 +76,14 @@ export const PROJETOS_TEXT = {
     deleteProjeto: "Projeto excluído com sucesso!",
   },
 } as const
+
+/**
+ * Subtítulo da listagem conforme o perfil (Responsável Técnico / externo).
+ */
+export function getProjetosPageSubtitle(user: PublicUser | null): string {
+  if (user && isUsuarioExterno(user)) {
+    return PROJETOS_TEXT.page.subtitleResponsavelTecnico
+  }
+
+  return PROJETOS_TEXT.page.subtitle
+}

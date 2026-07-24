@@ -13,7 +13,7 @@ import { PopUpNewProject } from "../../components/popUpNewProject"
 import { AsyncLoadState } from "@/components/ui/async-load-state"
 import { useProjetoScreen } from "../../hooks/useProjetoScreen"
 import { ProjetosTable } from "../../components/projetosTable"
-import { PROJETOS_TEXT } from "../../constants/projetos.text"
+import { PROJETOS_TEXT, getProjetosPageSubtitle } from "../../constants/projetos.text"
 import { PlusIcon, SearchIcon } from "lucide-react"
 import { MenuBar } from "@/components/ui/menuBar"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,7 @@ export function ScreenProjeto() {
     <>
       <PageHeader
         title={PROJETOS_TEXT.page.title}
-        subtitle={PROJETOS_TEXT.page.subtitle}
+        subtitle={getProjetosPageSubtitle(screen.permissions.sessionUser)}
         action={
           screen.permissions.canCreate ? (
             <Button type="button" onClick={screen.popup.open}>

@@ -30,6 +30,11 @@ export function useAsyncData<T>(
   const [isLoading, setIsLoading] = useState(loadOnMount)
   const [error, setError] = useState<string | null>(null)
   const isMountedRef = useRef(true)
+  const loaderRef = useRef(loader)
+  const errorMessageRef = useRef(errorMessage)
+
+  loaderRef.current = loader
+  errorMessageRef.current = errorMessage
 
   useEffect(() => {
     isMountedRef.current = true
@@ -44,7 +49,7 @@ export function useAsyncData<T>(
       setIsLoading(true)
       setError(null)
 
-      const result = await loader()
+      const result = await loaderRef.current()
 
       if (!isMountedRef.current) return
 
@@ -53,14 +58,16 @@ export function useAsyncData<T>(
       if (!isMountedRef.current) return
 
       setError(
-        loadError instanceof Error ? loadError.message : errorMessage,
+        loadError instanceof Error
+          ? loadError.message
+          : errorMessageRef.current,
       )
     } finally {
       if (isMountedRef.current) {
         setIsLoading(false)
       }
     }
-  }, [loader, errorMessage])
+  }, [])
 
   useEffect(() => {
     if (!loadOnMount) return

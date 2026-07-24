@@ -1,8 +1,25 @@
 import { cookies } from "next/headers"
 
+import { isAdminProfile, isGestorProjetoProfile } from "../constants"
 import type { PublicUser } from "../types/public-user"
 
 const SESSION_COOKIE = "sigtrp_session"
+
+function normalizeSessionUser(user: PublicUser): PublicUser {
+  const isExterno = user.tipo.trim().toLowerCase() === "externo"
+
+  return {
+    ...user,
+    isAdmin:
+      typeof user.isAdmin === "boolean"
+        ? user.isAdmin
+        : !isExterno && isAdminProfile(user.perfilNome),
+    isGestorProjeto:
+      typeof user.isGestorProjeto === "boolean"
+        ? user.isGestorProjeto
+        : !isExterno && isGestorProjetoProfile(user.perfilNome),
+  }
+}
 
 export async function createSession(user: PublicUser) {
   const cookieStore = await cookies()
@@ -24,7 +41,7 @@ export async function getSessionUser(): Promise<PublicUser | null> {
   }
 
   try {
-    return JSON.parse(value) as PublicUser
+    return normalizeSessionUser(JSON.parse(value) as PublicUser)
   } catch {
     return null
   }

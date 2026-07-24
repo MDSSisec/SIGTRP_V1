@@ -7,4 +7,6 @@ export type PublicUser = {
   perfilNome: string
   roles: number[]
   isAdmin: boolean
+  /** Usuário interno com perfil Gestor do Projeto / Gestor Interno. */
+  isGestorProjeto: boolean
 }
