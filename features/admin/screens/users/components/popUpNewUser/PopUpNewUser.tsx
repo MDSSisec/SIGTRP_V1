@@ -6,6 +6,10 @@ import { XIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Spinner } from "@/components/ui/spinner"
+import {
+  isAdminProfile,
+  isGestorProjetoProfile,
+} from "@/features/login/constants"
 import { ADMIN_USERS_FORM, normalizeUsuarioTipo, USUARIO_TIPOS } from "../../constants"
 import type { Profile } from "@/features/admin/types/profile"
 import type { Role } from "@/features/admin/types/role"
@@ -67,6 +71,33 @@ function isValidEmail(email: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 }
 
+/**
+ * Perfis disponíveis no select.
+ * Admin vê todos; Gestor do Projeto tem restrições por tipo.
+ */
+function getAvailableProfiles(
+  profiles: Profile[],
+  tipo: string,
+  isSystemAdmin: boolean,
+): Profile[] {
+  if (isSystemAdmin) return profiles
+
+  const tipoNormalizado = normalizeUsuarioTipo(tipo)
+
+  return profiles.filter((profile) => {
+    if (isAdminProfile(profile.nome)) return false
+
+    if (
+      tipoNormalizado === USUARIO_TIPOS.EXTERNO &&
+      isGestorProjetoProfile(profile.nome)
+    ) {
+      return false
+    }
+
+    return true
+  })
+}
+
 export function PopUpNewUser({
   open,
   onClose,
@@ -89,6 +120,23 @@ export function PopUpNewUser({
     setSubmitError(null)
   }, [initialValues, open])
 
+  const availableProfiles = React.useMemo(
+    () => getAvailableProfiles(profiles, formValues.tipo, canManageRoles),
+    [profiles, formValues.tipo, canManageRoles],
+  )
+
+  React.useEffect(() => {
+    if (formValues.perfilId === null) return
+
+    const aindaDisponivel = availableProfiles.some(
+      (profile) => profile.id === formValues.perfilId,
+    )
+
+    if (!aindaDisponivel) {
+      setFormValues((current) => ({ ...current, perfilId: null }))
+    }
+  }, [availableProfiles, formValues.perfilId])
+
   if (!open) return null
 
   const isViewMode = mode === "view"
@@ -102,6 +150,15 @@ export function PopUpNewUser({
     setFormValues((currentValues) => ({
       ...currentValues,
       [field]: value,
+    }))
+  }
+
+  function handleTipoChange(value: string) {
+    setSubmitError(null)
+    setFormValues((currentValues) => ({
+      ...currentValues,
+      tipo: value,
+      perfilId: null,
     }))
   }
 
@@ -147,6 +204,15 @@ export function PopUpNewUser({
     }
 
     if (formValues.perfilId === null) {
+      setSubmitError(ADMIN_USERS_FORM.validation.perfil)
+      return
+    }
+
+    const perfilPermitido = availableProfiles.some(
+      (profile) => profile.id === formValues.perfilId,
+    )
+
+    if (!perfilPermitido) {
       setSubmitError(ADMIN_USERS_FORM.validation.perfil)
       return
     }
@@ -281,9 +347,7 @@ export function PopUpNewUser({
                   id="usuario-tipo"
                   className={styles.select}
                   value={formValues.tipo}
-                  onChange={(event) =>
-                    handleChange("tipo", event.target.value)
-                  }
+                  onChange={(event) => handleTipoChange(event.target.value)}
                   disabled={isReadOnly}
                   required
                 >
@@ -311,7 +375,7 @@ export function PopUpNewUser({
                   required
                 >
                   <option value="">{ADMIN_USERS_FORM.placeholders.perfil}</option>
-                  {profiles.map((profile) => (
+                  {availableProfiles.map((profile) => (
                     <option key={profile.id} value={profile.id}>
                       {profile.nome}
                     </option>

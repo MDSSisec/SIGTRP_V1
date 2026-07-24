@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server"
 
 import { getSessionUser } from "@/features/login/server/session"
+import { isAdminProfile } from "@/features/login/constants"
 import { listProfiles } from "./profiles.repository"
 import { listRoles } from "./roles.repository"
 import {
@@ -35,7 +36,21 @@ export async function handleAdminRequest(
     try {
       const usuarios = await listUsuarios()
 
-      return NextResponse.json({ usuarios })
+      if (isAdmin) {
+        return NextResponse.json({ usuarios })
+      }
+
+      const profiles = await listProfiles()
+      const adminPerfilIds = new Set(
+        profiles
+          .filter((profile) => isAdminProfile(profile.nome))
+          .map((profile) => profile.id),
+      )
+      const usuariosVisiveis = usuarios.filter(
+        (usuario) => !adminPerfilIds.has(usuario.perfilId),
+      )
+
+      return NextResponse.json({ usuarios: usuariosVisiveis })
     } catch (error) {
       const message =
         error instanceof Error

@@ -18,7 +18,7 @@ import {
 } from "../action"
 import type { NewUsuarioFormValues } from "../components"
 import type { Usuario, UsuarioFilter } from "../types"
-import { buildUsuarioMenuItems, filterUsuarios } from "../utils"
+import { buildUsuarioMenuItems, excludeAdministradores, filterUsuarios } from "../utils"
 
 export function useAdminUsuariosScreen() {
   const [filter, setFilter] = useState<UsuarioFilter>("todos")
@@ -78,11 +78,6 @@ export function useAdminUsuariosScreen() {
     loadOnMount: canManageRoles,
   })
 
-  const menuItems = useMemo(() => buildUsuarioMenuItems(usuarios), [usuarios])
-  const items = useMemo(
-    () => filterUsuarios(usuarios, filter, search),
-    [usuarios, filter, search],
-  )
   const perfilNomeById = useMemo(() => {
     const map = new Map<number, string>()
     for (const profile of profiles) {
@@ -90,6 +85,20 @@ export function useAdminUsuariosScreen() {
     }
     return map
   }, [profiles])
+
+  const usuariosVisiveis = useMemo(() => {
+    if (sessionUser?.isAdmin) return usuarios
+    return excludeAdministradores(usuarios, perfilNomeById)
+  }, [usuarios, perfilNomeById, sessionUser?.isAdmin])
+
+  const menuItems = useMemo(
+    () => buildUsuarioMenuItems(usuariosVisiveis),
+    [usuariosVisiveis],
+  )
+  const items = useMemo(
+    () => filterUsuarios(usuariosVisiveis, filter, search),
+    [usuariosVisiveis, filter, search],
+  )
 
   async function handleCreateUsuario(data: NewUsuarioFormValues) {
     setIsSubmitting(true)

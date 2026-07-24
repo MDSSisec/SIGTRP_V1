@@ -1,4 +1,5 @@
 import type { MenuBarItem } from "@/components/ui/menuBar"
+import { isAdminProfile } from "@/features/login/constants"
 import {
   normalizeUsuarioTipo,
   USUARIO_TIPOS,
@@ -24,6 +25,20 @@ export function buildUsuarioMenuItems(
     { value: "ativos", label: "Ativos", count: ativos },
     { value: "inativos", label: "Inativos", count: inativos },
   ]
+}
+
+/**
+ * Remove usuários com perfil Administrador.
+ * Usado para Gestor do Projeto, que não deve ver administradores.
+ */
+export function excludeAdministradores(
+  usuarios: Usuario[],
+  perfilNomeById: Map<number, string>,
+): Usuario[] {
+  return usuarios.filter((usuario) => {
+    const perfilNome = perfilNomeById.get(usuario.perfilId) ?? ""
+    return !isAdminProfile(perfilNome)
+  })
 }
 
 export function filterUsuarios(

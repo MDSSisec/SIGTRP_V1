@@ -78,6 +78,7 @@ export function AdminUsuariosScreen() {
           <UsuariosTable
             items={items}
             perfilNomeById={perfilNomeById}
+            canViewSenha={canManageRoles}
             onEdit={openEditPopup}
             onDelete={requestDeleteUsuario}
           />

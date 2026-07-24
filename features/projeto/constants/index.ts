@@ -13,7 +13,10 @@ export { PROJETOS_FORM } from "./project"
 export { PROJETOS_TEXT } from "./projetos.text"
 
 export {
+  buildProjetoMenuGroups,
   buildTedMenuGroups,
+  CONVENIO_MENU_GRUPOS,
+  EMENDA_MENU_GRUPOS,
   PROJETO_SECOES,
   PROJETO_SECOES_TRP_VISAO_GERAL,
   SECAO_SLUG_TO_TITLE,

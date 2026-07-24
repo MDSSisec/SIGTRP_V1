@@ -25,7 +25,9 @@ export type ProjetoSecaoDef = {
 
 /**
  * Catálogo único de seções do formulário de projeto (slug + títulos).
- * Novas seções: adicione aqui e referencie em `TED_MENU_GRUPOS` / `PROJETO_SECOES_TRP_VISAO_GERAL`.
+ * Novas seções: adicione aqui e referencie nos menus do modelo
+ * (`TED_MENU_GRUPOS` / `EMENDA_MENU_GRUPOS` / `CONVENIO_MENU_GRUPOS`)
+ * e em `PROJETO_SECOES_TRP_VISAO_GERAL`.
  */
 export const PROJETO_SECOES = {
   informacoesProjeto: {
@@ -262,8 +264,16 @@ type MenuGrupoDef = {
   sections: MenuSecaoRef[]
 }
 
-/** Menu lateral TED — referencia apenas chaves de `PROJETO_SECOES`. */
-export const TED_MENU_GRUPOS: MenuGrupoDef[] = [
+type CustomizeMenuOptions = {
+  /** IDs de grupos que NÃO devem aparecer no menu deste modelo. Ex.: `["descricao"]`. */
+  omitGroupIds?: readonly string[]
+}
+
+/**
+ * Base compartilhada do menu lateral (referência de `PROJETO_SECOES`).
+ * Não exporte/use direto nos modelos — use `TED_MENU_GRUPOS` / `EMENDA_…` / `CONVENIO_…`.
+ */
+const PROJETO_MENU_GRUPOS_BASE: MenuGrupoDef[] = [
   {
     id: "visao-geral",
     title: "Visão Geral do Projeto",
@@ -343,15 +353,79 @@ export const TED_MENU_GRUPOS: MenuGrupoDef[] = [
       { secao: "indicadoresEficiencia", required: true, review: true },
     ],
   },
-  {
-    id: "observacoes",
-    title: "Observações",
-    sections: [
-      { secao: "observacoes", required: false, review: true },
-      { secao: "andamentoProjeto", required: false, review: true },
-    ],
-  },
+  // {
+  //   id: "observacoes",
+  //   title: "Observações",
+  //   sections: [
+  //     { secao: "observacoes", required: false, review: true },
+  //     { secao: "andamentoProjeto", required: false, review: true },
+  //   ],
+  // },
 ]
+
+function cloneMenuGrupos(grupos: MenuGrupoDef[]): MenuGrupoDef[] {
+  return grupos.map((group) => ({
+    ...group,
+    sections: group.sections.map((section) => ({ ...section })),
+  }))
+}
+
+/**
+ * Clona a base e aplica customizações por modelo.
+ * Use `omitGroupIds` para esconder grupos inteiros (ex.: descrição).
+ */
+function customizeMenuGrupos(
+  base: MenuGrupoDef[],
+  options: CustomizeMenuOptions = {},
+): MenuGrupoDef[] {
+  const omit = new Set(options.omitGroupIds ?? [])
+  return cloneMenuGrupos(base).filter((group) => !omit.has(group.id))
+}
+
+/**
+ * ---------------------------------------------------------------------------
+ * Menus por tipo de projeto
+ *
+ * Hoje os 3 usam a mesma base. Para esconder um grupo no futuro, adicione o
+ * `id` do grupo em `omitGroupIds` do modelo correspondente.
+ *
+ * IDs disponíveis: visao-geral | dados-gerais | identificacao | descricao |
+ * participantes | caracterizacao | planilhas | monitoramento | observacoes
+ *
+ * Exemplo (Convênio sem descrição):
+ *   omitGroupIds: ["descricao"]
+ * ---------------------------------------------------------------------------
+ */
+
+/** TED — grupos omitidos neste modelo. */
+const TED_MENU_OMIT_GROUP_IDS: readonly string[] = [
+  // "descricao",
+]
+
+/** Emenda — grupos omitidos neste modelo. */
+const EMENDA_MENU_OMIT_GROUP_IDS: readonly string[] = [
+  // "descricao",
+]
+
+/** Convênio — grupos omitidos neste modelo. */
+const CONVENIO_MENU_OMIT_GROUP_IDS: readonly string[] = [
+  // "descricao",
+]
+
+export const TED_MENU_GRUPOS: MenuGrupoDef[] = customizeMenuGrupos(
+  PROJETO_MENU_GRUPOS_BASE,
+  { omitGroupIds: TED_MENU_OMIT_GROUP_IDS },
+)
+
+export const EMENDA_MENU_GRUPOS: MenuGrupoDef[] = customizeMenuGrupos(
+  PROJETO_MENU_GRUPOS_BASE,
+  { omitGroupIds: EMENDA_MENU_OMIT_GROUP_IDS },
+)
+
+export const CONVENIO_MENU_GRUPOS: MenuGrupoDef[] = customizeMenuGrupos(
+  PROJETO_MENU_GRUPOS_BASE,
+  { omitGroupIds: CONVENIO_MENU_OMIT_GROUP_IDS },
+)
 
 export function projetoSecaoToMenuConfig(ref: MenuSecaoRef): SecaoConfig {
   const def = PROJETO_SECOES[ref.secao]
@@ -366,13 +440,20 @@ export function projetoSecaoToMenuConfig(ref: MenuSecaoRef): SecaoConfig {
   }
 }
 
-export function buildTedMenuGroups(): GrupoSecaoConfig[] {
-  return TED_MENU_GRUPOS.map((group) => ({
+export function buildProjetoMenuGroups(
+  menuGrupos: MenuGrupoDef[],
+): GrupoSecaoConfig[] {
+  return menuGrupos.map((group) => ({
     id: group.id,
     title: group.title,
     disabled: group.disabled,
     sections: group.sections.map(projetoSecaoToMenuConfig),
   }))
+}
+
+/** @deprecated Preferir `buildProjetoMenuGroups(TED_MENU_GRUPOS)`. */
+export function buildTedMenuGroups(): GrupoSecaoConfig[] {
+  return buildProjetoMenuGroups(TED_MENU_GRUPOS)
 }
 
 export function getProjetoSecao(slug: string): ProjetoSecaoDef | undefined {

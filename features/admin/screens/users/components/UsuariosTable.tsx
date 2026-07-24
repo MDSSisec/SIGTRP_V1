@@ -17,6 +17,7 @@ import styles from "./UsuariosTable.module.css"
 type UsuariosTableProps = {
   items: Usuario[]
   perfilNomeById: Map<number, string>
+  canViewSenha?: boolean
   onEdit: (usuario: Usuario) => void
   onDelete: (usuario: Usuario) => void
 }
@@ -24,6 +25,7 @@ type UsuariosTableProps = {
 export function UsuariosTable({
   items,
   perfilNomeById,
+  canViewSenha = false,
   onEdit,
   onDelete,
 }: UsuariosTableProps) {
@@ -35,7 +37,7 @@ export function UsuariosTable({
           <TableHead>Email</TableHead>
           <TableHead>Tipo</TableHead>
           <TableHead>Perfil</TableHead>
-          <TableHead>Senha</TableHead>
+          {canViewSenha ? <TableHead>Senha</TableHead> : null}
           <TableHead>Status</TableHead>
           <TableHead className={styles.actionsHead}>Ações</TableHead>
         </TableRow>
@@ -49,7 +51,9 @@ export function UsuariosTable({
             <TableCell>
               {perfilNomeById.get(usuario.perfilId) ?? "—"}
             </TableCell>
-            <TableCell className={styles.senhaCell}>{usuario.senha}</TableCell>
+            {canViewSenha ? (
+              <TableCell className={styles.senhaCell}>{usuario.senha}</TableCell>
+            ) : null}
             <TableCell>{usuario.ativo ? "Ativo" : "Inativo"}</TableCell>
             <TableCell>
               <div className={styles.actions}>
